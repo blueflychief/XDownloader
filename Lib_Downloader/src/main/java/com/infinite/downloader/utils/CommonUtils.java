@@ -1,5 +1,8 @@
 package com.infinite.downloader.utils;
 
+import android.text.TextUtils;
+import android.util.Patterns;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -38,4 +41,10 @@ public class CommonUtils {
         return sb.toString();
     }
 
+    public static boolean isUrl(String s) {
+        if (!TextUtils.isEmpty(s)) {
+            return Patterns.WEB_URL.matcher(s).matches();
+        }
+        return false;
+    }
 }

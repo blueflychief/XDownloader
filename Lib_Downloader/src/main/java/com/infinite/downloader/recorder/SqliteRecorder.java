@@ -1,4 +1,4 @@
-package com.infinite.downloader.record;
+package com.infinite.downloader.recorder;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import com.infinite.downloader.download.FileInfo;
+import com.infinite.downloader.FileInfo;
 import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DbUtils;
 import com.infinite.downloader.utils.Logger;
@@ -69,7 +69,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     private Context context;
 
     public SqliteRecorder(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+        super(context.getApplicationContext(), DB_NAME, null, DB_VERSION);
         this.context = context;
     }
 
@@ -148,11 +148,9 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             FileInfo info = get(url);
             exist = info != null;
             if (exist) {
-                fileInfo.setUrlMd5(info.getUrlMd5());
                 result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
                         COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
             } else {
-                fileInfo.setUrlMd5(CommonUtils.computeMd5(url));
                 result = getWritableDatabase().insert(TABLE_NAME,
                         null, convertColumns(fileInfo));
             }
@@ -197,8 +195,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     /**
      * 注意：这里的顺序必须要与{@link #ALL_COLUMNS}保持一致
      *
-     * @param cursor
-     * @return
+     * @param cursor result set cursor
+     * @return FileInfo
      */
     private FileInfo convertFileInfo(Cursor cursor) {
         long id = cursor.getLong(0);

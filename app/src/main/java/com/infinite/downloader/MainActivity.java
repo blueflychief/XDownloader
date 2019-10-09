@@ -7,10 +7,9 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.infinite.downloader.download.FileInfo;
-import com.infinite.downloader.record.Recorder;
-import com.infinite.downloader.record.SqliteRecorder;
-import com.infinite.downloader.sample.DownloadTask;
+import com.infinite.downloader.recorder.Recorder;
+import com.infinite.downloader.recorder.SqliteRecorder;
+import com.infinite.downloader.task.DownloadTask;
 import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.Logger;
 

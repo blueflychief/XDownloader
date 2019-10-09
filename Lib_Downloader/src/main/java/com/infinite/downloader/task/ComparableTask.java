@@ -1,4 +1,4 @@
-package com.infinite.downloader.download;
+package com.infinite.downloader.task;
 
 import androidx.annotation.NonNull;
 

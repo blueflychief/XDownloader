@@ -1,4 +1,11 @@
-package com.infinite.downloader.download;
+package com.infinite.downloader;
+
+import android.text.TextUtils;
+
+import com.infinite.downloader.utils.CommonUtils;
+
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * Email: 690797861@qq.com
@@ -6,7 +13,7 @@ package com.infinite.downloader.download;
  * Date: 2019-08-28 - 18:10
  * Description: Class description
  */
-public class FileInfo {
+public class FileInfo implements Serializable {
     private long id;
     private String requestUrl;
     private String downloadUrl;
@@ -17,6 +24,7 @@ public class FileInfo {
     private boolean supportRange;
     private long currentSize;
     private String savePath;
+    private String message;
 
     public long getId() {
         return id;
@@ -32,6 +40,7 @@ public class FileInfo {
 
     public void setRequestUrl(String requestUrl) {
         this.requestUrl = requestUrl;
+        this.urlMd5 = CommonUtils.computeMd5(requestUrl);
     }
 
     public String getDownloadUrl() {
@@ -98,6 +107,39 @@ public class FileInfo {
         this.savePath = savePath;
     }
 
+    public boolean canDownload() {
+        return fileSize > 0;
+    }
+
+    public boolean changed(FileInfo info) {
+        return info == null
+                || fileSize != info.getFileSize()
+                || !TextUtils.equals(fileMd5, info.getFileMd5())
+                || !localFileExists();
+    }
+
+
+    public boolean localFileExists() {
+        File file = new File(savePath);
+        return file.exists() && file.isFile();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getFileName() {
+        int index = requestUrl.lastIndexOf("/");
+        if (index > -1) {
+            return requestUrl.substring(index + 1);
+        }
+        return urlMd5;
+    }
+
     @Override
     public String toString() {
         return "FileInfo{" +
@@ -111,6 +153,7 @@ public class FileInfo {
                 ", supportRange=" + supportRange +
                 ", currentSize=" + currentSize +
                 ", savePath='" + savePath + '\'' +
+                ", message='" + message + '\'' +
                 '}';
     }
 }
