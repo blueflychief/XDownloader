@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Download"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btSleep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sleep Download"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btResume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resume Download"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Download"
+        android:textAllCaps="false" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#ff00ff" />
+
+    <EditText
+        android:id="@+id/etIndex"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加记录" />
+
+    <Button
+        android:id="@+id/btQuery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询记录" />
+
+    <Button
+        android:id="@+id/btDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除记录" />
+
+    <Button
+        android:id="@+id/btQueryAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询所有记录" />
+</LinearLayout>
