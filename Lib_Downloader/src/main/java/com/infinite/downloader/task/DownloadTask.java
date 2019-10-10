@@ -7,12 +7,12 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import com.infinite.downloader.Config;
 import com.infinite.downloader.DownloadListener;
-import com.infinite.downloader.DownloadStatus;
-import com.infinite.downloader.FileInfo;
-import com.infinite.downloader.HttpStreamReader;
-import com.infinite.downloader.StreamReader;
+import com.infinite.downloader.config.Config;
+import com.infinite.downloader.config.DownloadStatus;
+import com.infinite.downloader.config.FileInfo;
+import com.infinite.downloader.reader.HttpStreamReader;
+import com.infinite.downloader.reader.StreamReader;
 import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.recorder.SqliteRecorder;
 import com.infinite.downloader.utils.CommonUtils;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class DownloadTask extends ComparableTask {
     private static final String TAG = "DownloadTask";
-    private static final int BUFFER_SIZE = 8192;
+    private static final int BUFFER_SIZE = 8_192;
     private Config config;
     private Recorder recorder;
     private Writer writer;
@@ -42,6 +42,7 @@ public class DownloadTask extends ComparableTask {
     private DownloadListener downloadListener;
     private String requestUrl;
     private FileInfo fileInfo;
+    private long startTime;
 
     public DownloadTask(Context context, String url) {
         this(context, url, null, null);
@@ -60,38 +61,55 @@ public class DownloadTask extends ComparableTask {
 
     @Override
     public void run() {
+        startTime = System.currentTimeMillis();
         if (!isStopped()) {
             Logger.d(TAG, "task start running");
-            if (fileInfo != null && fileInfo.finished()) {
-                boolean checkRemote = config.isCheckRemote();
-                Logger.d("file has downloaded already,need check remote?" + checkRemote);
-                if (!checkRemote) {
-                    downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
-                    return;
+            if (fileInfo != null) {
+                if (fileInfo.finished()) {
+                    boolean checkRemote = config.isCheckRemote();
+                    Logger.d("file has downloaded already,need check remote?" + checkRemote);
+                    if (!checkRemote) {
+                        downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
+                        return;
+                    }
+                } else {
+                    boolean fileAvailable = fileInfo.localFileAvailable();
+                    Logger.d("local save file available?" + fileAvailable);
+                    boolean supportRange = fileInfo.isSupportRange();
+                    Logger.d("remote server support range?" + supportRange);
+                    if (!fileAvailable || !supportRange) {
+                        Logger.d("need delete local file");
+                        resetDownloadInfo();
+                    }
                 }
             }
             Logger.d("start get file info from remote server");
             FileInfo info = streamReader.getFileInfo(requestUrl,
-                    this.fileInfo == null ? 0 : this.fileInfo.getCurrentSize());
+                    this.fileInfo == null
+                            || this.fileInfo.finished()
+                            || !this.fileInfo.isSupportRange() ?
+                            0 : this.fileInfo.getCurrentSize());
             Logger.d("get file info from remote server:" + info);
             if (!isStopped()) {
                 if (info != null && info.canDownload()) {
+                    if (!config.existSaveDir()) {
+                        Logger.d("save dir not exist");
+                        fileInfo.setMessage("please ensure the save dir exist!!!");
+                        downloadListener.onDownloadStatus(DownloadStatus.ERROR, fileInfo);
+                        return;
+                    }
                     String savePath = config.getSaveDirPath() + File.separator + info.getFileName();
                     info.setSavePath(savePath);
                     if (info.changed(fileInfo)) {
-                        //远程文件发生改变，需要重新下载
                         Logger.d("remote file has changed or local file not exist,need download file");
-                        if (fileInfo != null) {
-                            CommonUtils.deleteFile(fileInfo.getSavePath());
-                        }
                         fileInfo = info;
-                        recorder.put(requestUrl, info);
+                        resetDownloadInfo();
                         download();
                     } else {
-                        //远程文件未改变，继续下载
-                        Logger.d("remote file not change");
+                        Logger.d("remote file not change,continue download");
                         if (fileInfo.finished()) {
                             Logger.d("file has downloaded already");
+                            fileInfo.setMessage("file is finish download already");
                             downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
                         } else {
                             Logger.d("file download incomplete,continue download");
@@ -102,11 +120,14 @@ public class DownloadTask extends ComparableTask {
                     Logger.d("get file info error:" + (info != null ? info.getMessage() : ""));
                     downloadListener.onDownloadStatus(DownloadStatus.ERROR, info);
                 }
+            } else {
+                onTaskTerminal();
             }
+        } else {
+            onTaskTerminal();
         }
         Logger.e(TAG, "task end running");
     }
-
 
     private void download() {
         downloadListener.onDownloadStatus(DownloadStatus.PREPARED, fileInfo);
@@ -115,38 +136,47 @@ public class DownloadTask extends ComparableTask {
         long count = 1;
         long currentSize = fileInfo.getCurrentSize();
         long start = currentSize;
+        long costTime;
+        long nowTime;
+        Logger.d(TAG, "start download file,start size:" + start);
         try {
             writer = new FileWriter(fileInfo.getSavePath(), currentSize);
+            fileInfo.setBreakpointDownload(currentSize > 0);
+            downloadListener.onDownloadStatus(DownloadStatus.DOWNLOADING, fileInfo);
             while ((length = streamReader.readInputStream(buffer)) != -1) {
                 if (!isStopped()) {
                     currentSize = writer.saveFile(buffer, length);
+                    nowTime = System.currentTimeMillis();
+                    costTime = nowTime - startTime;
+                    startTime = nowTime;
                     fileInfo.setCurrentSize(currentSize);
+                    fileInfo.setMessage("file is downloading");
+                    fileInfo.setCostTime(costTime + fileInfo.getCostTime());
+                    fileInfo.setSpeed(computeSpeed(length, costTime));
                     recorder.put(fileInfo.getRequestUrl(), fileInfo);
-                    //256k
-                    if (currentSize > ((count << 18) + start)) {
+                    //128k
+                    if (currentSize > ((count << 17) + start)) {
                         Logger.d("file downloading,current size:" + currentSize);
                         downloadListener.onDownloadStatus(DownloadStatus.DOWNLOADING, fileInfo);
                         count++;
                     }
                 } else {
                     Logger.d("file download stop,current size:" + currentSize);
-                    downloadListener.onDownloadStatus(DownloadStatus.STOP, fileInfo);
+                    onTaskTerminal();
                 }
             }
             Logger.d("file download finish,current size:" + currentSize);
+            fileInfo.setMessage("file is finish download");
+            recorder.put(fileInfo.getRequestUrl(), fileInfo);
             downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
         } catch (IOException e) {
             e.printStackTrace();
             Logger.e("download file exception:" + e.getMessage());
             fileInfo.setMessage(e.getMessage());
+            recorder.put(fileInfo.getRequestUrl(), fileInfo);
             downloadListener.onDownloadStatus(DownloadStatus.ERROR, fileInfo);
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
-            if (streamReader != null) {
-                streamReader.close();
-            }
+            close();
         }
     }
 
@@ -156,6 +186,38 @@ public class DownloadTask extends ComparableTask {
 
     public void removeDownloadListener(DownloadListener listener) {
         downloadListenerList.remove(listener);
+    }
+
+    public void close() {
+        if (writer != null) {
+            writer.close();
+        }
+        if (streamReader != null) {
+            streamReader.close();
+        }
+    }
+
+    private float computeSpeed(long length, long time) {
+        //KB/s
+        return length / 1024f / (time / 1000f);
+    }
+
+    private void resetDownloadInfo() {
+        fileInfo.setCostTime(0);
+        fileInfo.setCurrentSize(0);
+        CommonUtils.deleteFile(fileInfo.getSavePath());
+        recorder.put(requestUrl, fileInfo);
+    }
+
+    private void onTaskTerminal() {
+        if (fileInfo != null) {
+            long costTime = System.currentTimeMillis() - startTime;
+            fileInfo.setCostTime(fileInfo.getCostTime() + costTime);
+            fileInfo.setMessage("task is terminal,stop download file");
+            recorder.put(fileInfo.getRequestUrl(), fileInfo);
+        }
+        downloadListener.onDownloadStatus(DownloadStatus.STOP, fileInfo);
+        close();
     }
 
     private static class UiListenerHandler extends Handler implements DownloadListener {

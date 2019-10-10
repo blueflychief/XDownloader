@@ -1,4 +1,4 @@
-package com.infinite.downloader;
+package com.infinite.downloader.config;
 
 import androidx.annotation.IntDef;
 

@@ -3,6 +3,9 @@ package com.infinite.downloader;
 
 import androidx.annotation.Nullable;
 
+import com.infinite.downloader.config.DownloadStatus;
+import com.infinite.downloader.config.FileInfo;
+
 /**
  * Email: 690797861@qq.com
  * Author: Infinite

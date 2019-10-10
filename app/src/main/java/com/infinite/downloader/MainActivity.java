@@ -2,13 +2,13 @@ package com.infinite.downloader;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.recorder.SqliteRecorder;
 import com.infinite.downloader.task.DownloadTask;
@@ -16,67 +16,27 @@ import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.Logger;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btStart;
-    private Button btStop;
-    private Button btSleep;
-    private Button btResume;
-    private DownloadTask demoTask;
-    private Thread thread;
     private EditText etIndex;
     private Recorder recorder;
-    private int index;
     private static final String URL = "http:/www.baidu.com/";
 
     private DownloadTask downloadTask;
     private Thread downloadThread;
     private TextView tvResult;
+    private ExecutorService executorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btStart = findViewById(R.id.btStart);
-        btStop = findViewById(R.id.btStop);
-        btSleep = findViewById(R.id.btSleep);
-        btResume = findViewById(R.id.btResume);
         etIndex = findViewById(R.id.etIndex);
         tvResult = findViewById(R.id.tvResult);
-        btStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                thread = new Thread(demoTask);
-                thread.start();
-            }
-        });
-
-        btSleep.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                try {
-//                    thread.wait(5000L);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                    Log.e("MainActivity", e.getMessage());
-//                }
-            }
-        });
-        btResume.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        btStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                thread.interrupt();
-            }
-        });
-
         recorder = new SqliteRecorder(this);
-
         findViewById(R.id.btAdd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,20 +71,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final String downloadUrl = Urls.URLS[0];
         findViewById(R.id.btStartDownload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                downloadTask = new DownloadTask(MainActivity.this, downloadUrl);
+                DownloadTask downloadTask = new DownloadTask(MainActivity.this, Urls.URLS[0]);
                 downloadThread = new Thread(downloadTask);
-                downloadTask.addDownloadListener(new DownloadListener() {
-                    @Override
-                    public void onDownloadStatus(int status, @Nullable FileInfo info) {
-                        if (info != null) {
-                            tvResult.setText("status:" + status + ",message:" + info.getMessage());
-                        }
-                    }
-                });
+                downloadTask.addDownloadListener(downloadListener);
                 downloadThread.start();
             }
         });
@@ -135,5 +87,40 @@ public class MainActivity extends AppCompatActivity {
                 downloadThread.interrupt();
             }
         });
+
+        findViewById(R.id.btStartAllDownload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                executorService = Executors.newFixedThreadPool(10);
+                DownloadTask downloadTask;
+                for (String url : Urls.URLS) {
+                    downloadTask = new DownloadTask(MainActivity.this, url);
+                    downloadTask.addDownloadListener(downloadListener);
+                    executorService.submit(downloadTask);
+                }
+
+            }
+        });
+        findViewById(R.id.btStopAllDownload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (executorService != null) {
+                    executorService.shutdownNow();
+                }
+            }
+        });
     }
+
+    private DownloadListener downloadListener = new DownloadListener() {
+        @Override
+        public void onDownloadStatus(int status, @Nullable FileInfo info) {
+            if (info != null) {
+                tvResult.setText("status:" + status + ",message:" + info.getMessage()
+                        + "\nspeed:" + String.format("%.2f", info.getSpeed())
+                        + "\ncurrent:" + info.getCurrentSize()
+                        + "\ncost time:" + info.getCostTime()
+                        + "\nbreakpoint download:" + info.isBreakpointDownload());
+            }
+        }
+    };
 }

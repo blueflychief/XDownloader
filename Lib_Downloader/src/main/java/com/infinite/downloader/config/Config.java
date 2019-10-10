@@ -1,6 +1,7 @@
-package com.infinite.downloader;
+package com.infinite.downloader.config;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.File;
 
@@ -31,6 +32,14 @@ public class Config {
         }
         config.setSaveDirPath(dirPath);
         return config;
+    }
+
+    public boolean existSaveDir() {
+        if (TextUtils.isEmpty(saveDirPath)) {
+            return false;
+        }
+        File dir = new File(saveDirPath);
+        return dir.exists() && dir.isDirectory();
     }
 
     public String getSaveDirPath() {

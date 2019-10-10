@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import com.infinite.downloader.FileInfo;
+import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DbUtils;
 import com.infinite.downloader.utils.Logger;
@@ -39,6 +39,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     private static final String COL_CONTENT_TYPE = "content_type";
     private static final String COL_SUPPORT_RANGE = "support_range";
     private static final String COL_COST_TIME = "cost_time";
+    private static final String COL_FILE_NAME = "file_name";
 
     private static final String[] ALL_COLUMNS = new String[]{
             COL_ID,
@@ -52,6 +53,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             COL_COMPLETED_LENGTH,
             COL_SUPPORT_RANGE,
             COL_COST_TIME,
+            COL_FILE_NAME,
     };
 
     private static final String SQL_CREATE_RECORD_TABLE =
@@ -66,7 +68,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
                     COL_CONTENT_TYPE + " TEXT," +
                     COL_COMPLETED_LENGTH + " INTEGER," +
                     COL_SUPPORT_RANGE + " INTEGER," +
-                    COL_COST_TIME + " INTEGER" +
+                    COL_COST_TIME + " INTEGER," +
+                    COL_FILE_NAME + " TEXT" +
                     ");";
 
     private Context context;
@@ -193,6 +196,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         values.put(COL_CONTENT_TYPE, fileInfo.getContentType());
         values.put(COL_SUPPORT_RANGE, fileInfo.isSupportRange() ? 1 : 0);
         values.put(COL_COST_TIME, fileInfo.getCostTime());
+        values.put(COL_FILE_NAME, fileInfo.getFileName());
         return values;
     }
 
@@ -213,7 +217,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         String contentType = cursor.getString(7);
         long completedLength = cursor.getLong(8);
         int supportRange = cursor.getInt(9);
-        int costTime = cursor.getInt(10);
+        long costTime = cursor.getLong(10);
+        String fileName = cursor.getString(11);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setId(id);
         fileInfo.setUrlMd5(urlMd5);
@@ -226,6 +231,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         fileInfo.setContentType(contentType);
         fileInfo.setSupportRange(supportRange == 1);
         fileInfo.setCostTime(costTime);
+        fileInfo.setFileName(fileName);
         return fileInfo;
     }
 }

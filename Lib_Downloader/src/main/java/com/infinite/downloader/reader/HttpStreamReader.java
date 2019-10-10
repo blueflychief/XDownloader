@@ -1,7 +1,8 @@
-package com.infinite.downloader;
+package com.infinite.downloader.reader;
 
 import android.text.TextUtils;
 
+import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.Logger;
 
@@ -34,9 +35,7 @@ public class HttpStreamReader implements StreamReader {
             HttpURLConnection connection = null;
             boolean redirected = false;
             int redirectCount = 0;
-            int tryCount = 0;
-            String method = "HEAD";
-            Logger.d("尝试HEAD方式获取文件信息");
+            String method = "GET";
             try {
                 do {
                     connection = (HttpURLConnection) new URL(url).openConnection();
@@ -48,16 +47,9 @@ public class HttpStreamReader implements StreamReader {
                     connection.setRequestProperty("Content-Type", "");
                     int responseCode = connection.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_BAD_METHOD) {
-                        connection.disconnect();
-                        connection = null;
-                        method = "GET";
-                        redirected = true;
-                        Logger.d("尝试HEAD方式失败，改用GET方式请求:" + tryCount);
-                        tryCount++;
-                        if (tryCount > 5) {
-                            fileInfo.setMessage("error,get remote file with too much redirect");
-                            break;
-                        }
+                        closeConnection(connection);
+                        fileInfo.setMessage("error,get remote file with too much redirect");
+                        break;
                     } else if (responseCode == HTTP_MOVED_PERM
                             || responseCode == HTTP_MOVED_TEMP
                             || responseCode == HTTP_SEE_OTHER) {  //重定向
@@ -66,7 +58,8 @@ public class HttpStreamReader implements StreamReader {
                             || responseCode == HttpURLConnection.HTTP_PARTIAL) {
                         redirected = false;
                         inputStream = connection.getInputStream();
-                        fileInfo.setFileSize(connection.getContentLength());
+                        fileInfo.setFileName(parseFileName(connection.getURL()));
+                        fileInfo.setFileSize(connection.getContentLength() + offset);
                         fileInfo.setContentType(connection.getContentType());
                         fileInfo.setDownloadUrl(url);
                         fileInfo.setSupportRange(!TextUtils.isEmpty(connection.getHeaderField("Content-Range")));
@@ -77,7 +70,7 @@ public class HttpStreamReader implements StreamReader {
                     if (redirected) {
                         url = connection.getHeaderField("Location");
                         redirectCount++;
-                        connection.disconnect();
+                        closeConnection(connection);
                         //允许5次重定位
                         if (redirectCount > 5) {
                             fileInfo.setMessage("error,get remote file with too much redirect");
@@ -87,19 +80,27 @@ public class HttpStreamReader implements StreamReader {
                 } while (redirected);
             } catch (IOException e) {
                 e.printStackTrace();
+                closeConnection(connection);
                 fileInfo.setMessage("error,get remote file with io exception");
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
             }
         }
         return fileInfo;
     }
 
+    private String parseFileName(URL url) {
+        String path = url.getPath();
+        int index = path.lastIndexOf("/");
+        if (index > -1 && index < path.length() - 1) {
+            return path.substring(index + 1);
+        }
+        return null;
+    }
+
     @Override
     public int readInputStream(byte[] buffer) throws IOException {
-        return inputStream.read(buffer);
+        int total = inputStream.read(buffer);
+        Logger.d("Http StreamReader readInputStream total:" + total);
+        return total;
     }
 
     @Override
@@ -110,6 +111,12 @@ public class HttpStreamReader implements StreamReader {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void closeConnection(HttpURLConnection conn) {
+        if (conn != null) {
+            conn.disconnect();
         }
     }
 }

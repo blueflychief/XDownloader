@@ -23,7 +23,8 @@ public class DbUtils {
         } else {
             Cursor cursor = null;
             try {
-                String sql = "select count(*) as c from sqlite_master where type ='table' and name ='" + tableName.trim() + "' ";
+                String sql = "select count(*) as c from sqlite_master " +
+                        "where type ='table' and name ='" + tableName.trim() + "' ";
                 cursor = database.rawQuery(sql, null);
                 if (cursor.moveToNext()) {
                     int var5 = cursor.getInt(0);

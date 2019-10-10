@@ -2,62 +2,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btStartDownload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始下载" />
-
-    <Button
-        android:id="@+id/btStopDownload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="停止下载" />
-
-    <TextView
-        android:id="@+id/tvResult"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="下载结果"
-        android:textSize="16sp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/btStartDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始下载" />
+
+        <Button
+            android:id="@+id/btStopDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止下载" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_marginTop="20dp"
         android:background="#ff00ff" />
 
-    <Button
-        android:id="@+id/btStart"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Download"
-        android:textAllCaps="false" />
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btSleep"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sleep Download"
-        android:textAllCaps="false" />
+        <Button
+            android:id="@+id/btStartAllDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全部开始下载" />
 
-    <Button
-        android:id="@+id/btResume"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Resume Download"
-        android:textAllCaps="false" />
+        <Button
+            android:id="@+id/btStopAllDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全部停止下载" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop Download"
-        android:textAllCaps="false" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:lineSpacingExtra="4dp"
+            android:text="下载结果"
+            android:textSize="12sp" />
+    </ScrollView>
+
 
     <View
         android:layout_width="match_parent"

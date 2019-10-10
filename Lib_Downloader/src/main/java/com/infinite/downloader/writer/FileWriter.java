@@ -1,5 +1,7 @@
 package com.infinite.downloader.writer;
 
+import com.infinite.downloader.utils.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,6 +42,7 @@ public class FileWriter implements Writer {
         mbb = raf.getChannel().map(READ_WRITE, currentSize, length);
         mbb.put(buffer, 0, length);
         currentSize += length;
+        Logger.d("save buffer to file,current size:" + currentSize);
         return currentSize;
     }
 

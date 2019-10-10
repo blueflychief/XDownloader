@@ -1,4 +1,4 @@
-package com.infinite.downloader;
+package com.infinite.downloader.config;
 
 import android.text.TextUtils;
 
@@ -25,7 +25,10 @@ public class FileInfo implements Serializable {
     private long currentSize;
     private String savePath;
     private String message;
-    private int costTime;
+    private long costTime;
+    private String fileName;
+    private float speed;
+    private boolean breakpointDownload;
 
     public long getId() {
         return id;
@@ -123,6 +126,18 @@ public class FileInfo implements Serializable {
         return fileSize > 0 && fileSize == currentSize && localFileExists();
     }
 
+    public long getLocalFileSize() {
+        if (TextUtils.isEmpty(savePath)) {
+            return 0;
+        }
+        File file = new File(savePath);
+        return file.exists() && file.isFile() ? file.length() : 0;
+    }
+
+    public boolean localFileAvailable() {
+        return currentSize == getLocalFileSize();
+    }
+
     public boolean localFileExists() {
         if (TextUtils.isEmpty(savePath)) {
             return false;
@@ -139,17 +154,40 @@ public class FileInfo implements Serializable {
         this.message = message;
     }
 
-    public int getCostTime() {
+    public long getCostTime() {
         return costTime;
     }
 
-    public void setCostTime(int costTime) {
+    public void setCostTime(long costTime) {
         this.costTime = costTime;
     }
 
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public boolean isBreakpointDownload() {
+        return breakpointDownload;
+    }
+
+    public void setBreakpointDownload(boolean breakpointDownload) {
+        this.breakpointDownload = breakpointDownload;
+    }
+
     public String getFileName() {
+        if (!TextUtils.isEmpty(fileName)) {
+            return fileName;
+        }
         int index = requestUrl.lastIndexOf("/");
-        if (index > -1) {
+        if (index > -1 && index < requestUrl.length() - 1) {
             return requestUrl.substring(index + 1);
         }
         return urlMd5;
@@ -159,8 +197,8 @@ public class FileInfo implements Serializable {
     public String toString() {
         return "FileInfo{" +
                 "id=" + id +
-                ", requestUrl='" + requestUrl + '\'' +
-                ", downloadUrl='" + downloadUrl + '\'' +
+//                ", requestUrl='" + requestUrl + '\'' +
+//                ", downloadUrl='" + downloadUrl + '\'' +
                 ", fileSize=" + fileSize +
                 ", urlMd5='" + urlMd5 + '\'' +
                 ", fileMd5='" + fileMd5 + '\'' +
@@ -170,6 +208,9 @@ public class FileInfo implements Serializable {
                 ", savePath='" + savePath + '\'' +
                 ", message='" + message + '\'' +
                 ", costTime='" + costTime + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", speed='" + speed + '\'' +
+                ", breakpointDownload='" + breakpointDownload + '\'' +
                 '}';
     }
 }

@@ -1,4 +1,6 @@
-package com.infinite.downloader;
+package com.infinite.downloader.reader;
+
+import com.infinite.downloader.config.FileInfo;
 
 import java.io.IOException;
 

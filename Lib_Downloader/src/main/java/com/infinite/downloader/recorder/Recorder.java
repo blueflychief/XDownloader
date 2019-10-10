@@ -1,7 +1,7 @@
 package com.infinite.downloader.recorder;
 
 
-import com.infinite.downloader.FileInfo;
+import com.infinite.downloader.config.FileInfo;
 
 import java.util.List;
 
