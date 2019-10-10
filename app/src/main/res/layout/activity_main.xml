@@ -7,6 +7,31 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/btStartDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始下载" />
+
+    <Button
+        android:id="@+id/btStopDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="停止下载" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="下载结果"
+        android:textSize="16sp" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#ff00ff" />
+
+    <Button
         android:id="@+id/btStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,9 +66,9 @@
 
     <EditText
         android:id="@+id/etIndex"
-        android:inputType="number"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:inputType="number" />
 
     <Button
         android:id="@+id/btAdd"
@@ -68,4 +93,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="查询所有记录" />
+
+
 </LinearLayout>

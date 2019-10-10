@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.infinite.downloader.recorder.Recorder;
@@ -28,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
     private int index;
     private static final String URL = "http:/www.baidu.com/";
 
+    private DownloadTask downloadTask;
+    private Thread downloadThread;
+    private TextView tvResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         btSleep = findViewById(R.id.btSleep);
         btResume = findViewById(R.id.btResume);
         etIndex = findViewById(R.id.etIndex);
+        tvResult = findViewById(R.id.tvResult);
         btStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,5 +111,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final String downloadUrl = Urls.URLS[0];
+        findViewById(R.id.btStartDownload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadTask = new DownloadTask(MainActivity.this, downloadUrl);
+                downloadThread = new Thread(downloadTask);
+                downloadTask.addDownloadListener(new DownloadListener() {
+                    @Override
+                    public void onDownloadStatus(int status, @Nullable FileInfo info) {
+                        if (info != null) {
+                            tvResult.setText("status:" + status + ",message:" + info.getMessage());
+                        }
+                    }
+                });
+                downloadThread.start();
+            }
+        });
+
+        findViewById(R.id.btStopDownload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadThread.interrupt();
+            }
+        });
     }
 }

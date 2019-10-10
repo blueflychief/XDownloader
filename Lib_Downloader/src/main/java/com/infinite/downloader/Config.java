@@ -16,6 +16,7 @@ public class Config {
     private String saveDirPath;
     private int connectTimeout = CONNECT_TIMEOUT;
     private int readTimeout = READ_TIMEOUT;
+    private boolean checkRemote = false;
 
     public static Config defaultConfig(Context context) {
         Config config = new Config();
@@ -23,7 +24,12 @@ public class Config {
         if (cacheDir == null) {
             throw new NullPointerException("external cache dir null exist!!!");
         }
-        config.setSaveDirPath(cacheDir.getAbsolutePath() + File.separator + "download");
+        String dirPath = cacheDir.getAbsolutePath() + File.separator + "download";
+        File dir = new File(dirPath);
+        if (!dir.exists() || !dir.isDirectory()) {
+            dir.mkdirs();
+        }
+        config.setSaveDirPath(dirPath);
         return config;
     }
 
@@ -49,5 +55,13 @@ public class Config {
 
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
+    }
+
+    public boolean isCheckRemote() {
+        return checkRemote;
+    }
+
+    public void setCheckRemote(boolean checkRemote) {
+        this.checkRemote = checkRemote;
     }
 }

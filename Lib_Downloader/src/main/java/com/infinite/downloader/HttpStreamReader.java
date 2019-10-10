@@ -101,6 +101,17 @@ public class HttpStreamReader implements StreamReader {
     public int readInputStream(byte[] buffer) throws IOException {
         return inputStream.read(buffer);
     }
+
+    @Override
+    public void close() {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
 

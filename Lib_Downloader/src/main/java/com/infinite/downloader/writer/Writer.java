@@ -1,5 +1,7 @@
 package com.infinite.downloader.writer;
 
+import java.io.IOException;
+
 /**
  * Email: 690797861@qq.com
  * Author: Infinite
@@ -7,4 +9,8 @@ package com.infinite.downloader.writer;
  * Description: class description
  */
 public interface Writer {
+
+    long saveFile(byte[] buffer, int length) throws IOException;
+
+    void close();
 }

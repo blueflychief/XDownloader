@@ -1,8 +1,8 @@
 package com.infinite.downloader.utils;
 
 import android.text.TextUtils;
-import android.util.Patterns;
 
+import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -43,8 +43,21 @@ public class CommonUtils {
 
     public static boolean isUrl(String s) {
         if (!TextUtils.isEmpty(s)) {
-            return Patterns.WEB_URL.matcher(s).matches();
+//            return Patterns.WEB_URL.matcher(s).matches();
+            String p = "(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
+            return s.matches(p);
         }
         return false;
+    }
+
+    public static boolean deleteFile(String filePath) {
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            if (file.exists()) {
+                return file.delete();
+            }
+            return true;
+        }
+        return true;
     }
 }

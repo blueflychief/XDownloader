@@ -2,6 +2,8 @@ package com.infinite.downloader.task;
 
 import androidx.annotation.NonNull;
 
+import com.infinite.downloader.utils.Logger;
+
 /**
  * Email: 690797861@qq.com
  * Author: Infinite
@@ -28,7 +30,9 @@ public abstract class ComparableTask implements Runnable, Comparable<ComparableT
     }
 
     protected boolean isStopped() {
-        return Thread.currentThread().isInterrupted() || stopped;
+        boolean isStopped = Thread.currentThread().isInterrupted() || stopped;
+        Logger.d("task is shutdown?" + isStopped);
+        return isStopped;
     }
 
     @Override

@@ -25,6 +25,7 @@ public class FileInfo implements Serializable {
     private long currentSize;
     private String savePath;
     private String message;
+    private int costTime;
 
     public long getId() {
         return id;
@@ -115,11 +116,17 @@ public class FileInfo implements Serializable {
         return info == null
                 || fileSize != info.getFileSize()
                 || !TextUtils.equals(fileMd5, info.getFileMd5())
-                || !localFileExists();
+                || !TextUtils.equals(downloadUrl, info.getDownloadUrl());
     }
 
+    public boolean finished() {
+        return fileSize > 0 && fileSize == currentSize && localFileExists();
+    }
 
     public boolean localFileExists() {
+        if (TextUtils.isEmpty(savePath)) {
+            return false;
+        }
         File file = new File(savePath);
         return file.exists() && file.isFile();
     }
@@ -130,6 +137,14 @@ public class FileInfo implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public int getCostTime() {
+        return costTime;
+    }
+
+    public void setCostTime(int costTime) {
+        this.costTime = costTime;
     }
 
     public String getFileName() {
@@ -154,6 +169,7 @@ public class FileInfo implements Serializable {
                 ", currentSize=" + currentSize +
                 ", savePath='" + savePath + '\'' +
                 ", message='" + message + '\'' +
+                ", costTime='" + costTime + '\'' +
                 '}';
     }
 }

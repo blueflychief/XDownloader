@@ -13,4 +13,6 @@ public interface StreamReader {
     FileInfo getFileInfo(String url, long offset);
 
     int readInputStream(byte[] buffer) throws IOException;
+
+    void close();
 }
