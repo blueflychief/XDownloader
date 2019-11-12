@@ -10,7 +10,7 @@ import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.recorder.SqliteRecorder;
 import com.infinite.downloader.task.DownloadTask;
 import com.infinite.downloader.utils.CommonUtils;
-import com.infinite.downloader.utils.Logger;
+import com.infinite.downloader.utils.DLogger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,9 +71,9 @@ public class XDownload {
                         }
                     });
             initialized = true;
-            Logger.d("XDownload is initialized");
+            DLogger.d("XDownload is initialized");
         } else {
-            Logger.d("XDownload has initialized already!");
+            DLogger.d("XDownload has initialized already!");
         }
     }
 
@@ -91,17 +91,17 @@ public class XDownload {
                     task = new DownloadTask(appContext, url, recorder, downloadConfig);
                     threadPoolExecutor.submit(task);
                     taskMap.put(md5, task);
-                    Logger.d("add a new task:" + task.getUrlMd5());
+                    DLogger.d("add a new task:" + task.getUrlMd5());
                 } else {
                     task = t;
-                    Logger.d("task:" + task.getUrlMd5() + " has exist already");
+                    DLogger.d("task:" + task.getUrlMd5() + " has exist already");
                 }
             }
             if (listener != null) {
                 task.addDownloadListener(listener);
             }
         }
-//        shrink();
+        shrink();
         return task;
     }
 
@@ -129,9 +129,33 @@ public class XDownload {
         return r;
     }
 
+
+    public String getVersion() {
+        return BuildConfig.VERSION_NAME;
+    }
+
+    public void shutdown() {
+        synchronized (taskMap) {
+            if (taskMap != null && taskMap.size() > 0) {
+                Iterator<Map.Entry<String, DownloadTask>> iterator = taskMap.entrySet()
+                        .iterator();
+                DownloadTask task;
+                while (iterator.hasNext()) {
+                    task = iterator.next().getValue();
+                    task.stop();
+                    task.removeAllDownloadListener();
+                    DLogger.d("shutdown,remove task " + task.getUrl());
+                    iterator.remove();
+                }
+            }
+        }
+        threadPoolExecutor.shutdownNow();
+        initialized = false;
+    }
+
     private void shrink() {
         synchronized (taskMap) {
-            if (taskMap != null && !taskMap.isEmpty()) {
+            if (taskMap != null && taskMap.size() > 0) {
                 Iterator<Map.Entry<String, DownloadTask>> iterator = taskMap.entrySet()
                         .iterator();
                 DownloadTask task;
@@ -139,7 +163,7 @@ public class XDownload {
                     task = iterator.next().getValue();
                     if (task.dead()) {
                         task.removeAllDownloadListener();
-                        Logger.d("task dead,remove task " + task.getUrl());
+                        DLogger.d("task dead,remove task " + task.getUrl());
                         iterator.remove();
                     }
                 }

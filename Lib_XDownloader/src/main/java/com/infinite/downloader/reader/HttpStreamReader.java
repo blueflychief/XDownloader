@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.utils.CommonUtils;
-import com.infinite.downloader.utils.Logger;
+import com.infinite.downloader.utils.DLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,7 +99,7 @@ public class HttpStreamReader implements StreamReader {
     @Override
     public int readInputStream(byte[] buffer) throws IOException {
         int total = inputStream.read(buffer);
-        Logger.d("Http StreamReader readInputStream total:" + total);
+        DLogger.d("Http StreamReader readInputStream total:" + total);
         return total;
     }
 

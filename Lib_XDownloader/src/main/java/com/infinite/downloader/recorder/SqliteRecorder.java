@@ -9,8 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.infinite.downloader.config.FileInfo;
+import com.infinite.downloader.utils.DLogger;
 import com.infinite.downloader.utils.DbUtils;
-import com.infinite.downloader.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +80,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Logger.d("SQLiteDataSaver onCreate");
+        DLogger.d("SQLiteDataSaver onCreate");
         try {
             db.beginTransaction();
             DbUtils.executeSQL(db, SQL_CREATE_RECORD_TABLE);
@@ -89,21 +89,21 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             DbUtils.deleteDbFile(context, DB_NAME);
             DbUtils.executeSQL(db, SQL_CREATE_RECORD_TABLE);
         } catch (Throwable throwable) {
-            Logger.d(throwable.getMessage());
+            DLogger.d(throwable.getMessage());
         } finally {
             try {
                 if (db != null) {
                     db.endTransaction();
                 }
             } catch (Exception e) {
-                Logger.d(e.getMessage());
+                DLogger.d(e.getMessage());
             }
         }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Logger.d("SQLiteDataSaver onUpgrade");
+        DLogger.d("SQLiteDataSaver onUpgrade");
     }
 
     @Override
@@ -121,7 +121,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
                 cursor.close();
             }
         }
-        Logger.d("query item finish，result exist?" + (fileInfo != null)
+        DLogger.d("query item finish，result exist?" + (fileInfo != null)
                 + ",cost time：" + (System.currentTimeMillis() - start));
         return fileInfo;
     }
@@ -138,7 +138,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             }
             cursor.close();
         }
-        Logger.d("query all item finish,count:" + list.size()
+        DLogger.d("query all item finish,count:" + list.size()
                 + ",cost time:" + (System.currentTimeMillis() - start));
         return list;
     }
@@ -157,7 +157,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             result = getWritableDatabase().insert(TABLE_NAME,
                     null, convertColumns(fileInfo));
         }
-        Logger.d((exist ? "update" : "insert") + " item finish,"
+        DLogger.d((exist ? "update" : "insert") + " item finish,"
                 + (exist ? "affected rows:" : "record id") + ":" + result +
                 ",cost time：" + (System.currentTimeMillis() - start));
         return result;
@@ -171,7 +171,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             result = getWritableDatabase().delete(TABLE_NAME,
                     COL_URL_MD5 + "=?", new String[]{urlMd5});
         }
-        Logger.d("delete item finish,count:" + result
+        DLogger.d("delete item finish,count:" + result
                 + ",cost time:" + (System.currentTimeMillis() - start));
         return result;
     }

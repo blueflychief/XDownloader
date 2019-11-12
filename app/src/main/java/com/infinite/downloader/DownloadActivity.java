@@ -1,6 +1,7 @@
 package com.infinite.downloader;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -10,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.task.DownloadTask;
-import com.infinite.downloader.utils.Logger;
+import com.infinite.downloader.utils.DLogger;
 
 /**
  * Email: 690797861@qq.com
@@ -26,6 +27,7 @@ public class DownloadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
         tvResult = findViewById(R.id.tvResult);
+        DLogger.enable();
         findViewById(R.id.btStart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +93,7 @@ public class DownloadActivity extends AppCompatActivity {
     private DownloadListener downloadListener = new DownloadListener() {
         @Override
         public void onDownloadStatus(final int status, @Nullable final FileInfo info) {
-            Logger.d("onDownloadStatus:" + status);
+            Log.d("Downloader", "onDownloadStatus:" + status);
             if (info != null) {
                 runOnUiThread(new Runnable() {
                     @Override

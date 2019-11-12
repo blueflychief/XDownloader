@@ -10,23 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.infinite.downloader.config.FileInfo;
-import com.infinite.downloader.recorder.Recorder;
-import com.infinite.downloader.recorder.SqliteRecorder;
 import com.infinite.downloader.task.DownloadTask;
-import com.infinite.downloader.utils.CommonUtils;
-import com.infinite.downloader.utils.Logger;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText etIndex;
-    private Recorder recorder;
     private static final String URL = "http:/www.baidu.com/";
 
-    private DownloadTask downloadTask;
     private Thread downloadThread;
     private TextView tvResult;
     private ExecutorService executorService;
@@ -37,46 +30,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         etIndex = findViewById(R.id.etIndex);
         tvResult = findViewById(R.id.tvResult);
-        recorder = new SqliteRecorder(this);
         findViewById(R.id.btDownloadPage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, DownloadActivity.class));
             }
         });
-        findViewById(R.id.btAdd).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String index = etIndex.getText().toString();
-                String url = URL + index;
-                FileInfo fileInfo = new FileInfo();
-                fileInfo.setRequestUrl(url);
-                fileInfo.setDownloadUrl(url);
-                recorder.put(url, fileInfo);
 
-            }
-        });
-        findViewById(R.id.btQuery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String index = etIndex.getText().toString();
-                recorder.get(CommonUtils.computeMd5(URL + index));
-            }
-        });
-        findViewById(R.id.btDelete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String index = etIndex.getText().toString();
-                recorder.delete(CommonUtils.computeMd5(URL + index));
-            }
-        });
-        findViewById(R.id.btQueryAll).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<FileInfo> list = recorder.queryAll();
-                Logger.d("query result:\n" + CommonUtils.getListString(list));
-            }
-        });
 
         findViewById(R.id.btStartDownload).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,2 +1,2 @@
-include ':app', ':Lib_Downloader'
+include ':app', ':Lib_XDownloader'
 rootProject.name='Downloader'

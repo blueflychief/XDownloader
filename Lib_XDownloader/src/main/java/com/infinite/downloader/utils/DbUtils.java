@@ -60,7 +60,7 @@ public class DbUtils {
     }
 
     public static void executeSQL(SQLiteDatabase db, String sql) throws SQLException {
-        Logger.d("executeSQL：" + sql);
+        DLogger.d("executeSQL：" + sql);
         db.execSQL(sql);
     }
 
