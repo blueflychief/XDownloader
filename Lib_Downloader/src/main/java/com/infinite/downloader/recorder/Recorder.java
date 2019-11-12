@@ -12,11 +12,11 @@ import java.util.List;
  * Description: Class description
  */
 public interface Recorder {
-    FileInfo get(String url);
+    FileInfo get(String urlMd5);
 
-    long put(String url, FileInfo fileInfo);
+    long put(String urlMd5, FileInfo fileInfo);
 
-    int delete(String url);
+    int delete(String urlMd5);
 
     List<FileInfo> queryAll();
 

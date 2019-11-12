@@ -1,5 +1,6 @@
 package com.infinite.downloader;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -37,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
         etIndex = findViewById(R.id.etIndex);
         tvResult = findViewById(R.id.tvResult);
         recorder = new SqliteRecorder(this);
+        findViewById(R.id.btDownloadPage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+            }
+        });
         findViewById(R.id.btAdd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,14 +60,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String index = etIndex.getText().toString();
-                recorder.get(URL + index);
+                recorder.get(CommonUtils.computeMd5(URL + index));
             }
         });
         findViewById(R.id.btDelete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String index = etIndex.getText().toString();
-                recorder.delete(URL + index);
+                recorder.delete(CommonUtils.computeMd5(URL + index));
             }
         });
         findViewById(R.id.btQueryAll).setOnClickListener(new View.OnClickListener() {
@@ -113,13 +120,19 @@ public class MainActivity extends AppCompatActivity {
 
     private DownloadListener downloadListener = new DownloadListener() {
         @Override
-        public void onDownloadStatus(int status, @Nullable FileInfo info) {
+        public void onDownloadStatus(final int status, @Nullable final FileInfo info) {
             if (info != null) {
-                tvResult.setText("status:" + status + ",message:" + info.getMessage()
-                        + "\nspeed:" + String.format("%.2f", info.getSpeed())
-                        + "\ncurrent:" + info.getCurrentSize()
-                        + "\ncost time:" + info.getCostTime()
-                        + "\nbreakpoint download:" + info.isBreakpointDownload());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvResult.setText("status:" + status + ",message:" + info.getMessage()
+                                + "\nspeed:" + String.format("%.2f", info.getSpeed())
+                                + "\ncurrent:" + info.getCurrentSize()
+                                + "\ncost time:" + info.getCostTime()
+                                + "\nbreakpoint download:" + info.isBreakpointDownload());
+                    }
+                });
+
             }
         }
     };

@@ -25,7 +25,7 @@ public class Config {
         if (cacheDir == null) {
             throw new NullPointerException("external cache dir null exist!!!");
         }
-        String dirPath = cacheDir.getAbsolutePath() + File.separator + "download";
+        String dirPath = cacheDir.getAbsolutePath() + File.separator + "xdownload";
         File dir = new File(dirPath);
         if (!dir.exists() || !dir.isDirectory()) {
             dir.mkdirs();

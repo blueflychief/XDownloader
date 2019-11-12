@@ -67,10 +67,6 @@ public class FileInfo implements Serializable {
         return urlMd5;
     }
 
-    public void setUrlMd5(String urlMd5) {
-        this.urlMd5 = urlMd5;
-    }
-
     public String getFileMd5() {
         return fileMd5;
     }

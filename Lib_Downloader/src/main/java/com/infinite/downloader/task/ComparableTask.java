@@ -11,8 +11,8 @@ import com.infinite.downloader.utils.Logger;
  * Description: Class description
  */
 public abstract class ComparableTask implements Runnable, Comparable<ComparableTask> {
-    private volatile boolean stopped = false;
-    private int priority = 5;
+    protected volatile boolean stopped = false;
+    protected int priority = 5;
 
     public ComparableTask() {
     }
@@ -30,9 +30,13 @@ public abstract class ComparableTask implements Runnable, Comparable<ComparableT
     }
 
     protected boolean isStopped() {
-        boolean isStopped = Thread.currentThread().isInterrupted() || stopped;
-        Logger.d("task is shutdown?" + isStopped);
+        boolean isStopped = stopped || Thread.currentThread().isInterrupted();
+        Logger.d("task is shutdown?" + isStopped + ",thread name:" + Thread.currentThread().getName());
         return isStopped;
+    }
+
+    public boolean dead() {
+        return stopped;
     }
 
     @Override

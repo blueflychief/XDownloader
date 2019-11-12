@@ -16,13 +16,17 @@ import java.util.List;
 public class CommonUtils {
 
     public static String computeMd5(String string) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            byte[] digestBytes = messageDigest.digest(string.getBytes());
-            return bytesToHexString(digestBytes);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
+        String md5 = null;
+        if (!TextUtils.isEmpty(string)) {
+            try {
+                MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+                byte[] digestBytes = messageDigest.digest(string.getBytes());
+                return bytesToHexString(digestBytes);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         }
+        return md5;
     }
 
     public static String bytesToHexString(byte[] bytes) {

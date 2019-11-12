@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.infinite.downloader.config.FileInfo;
-import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DbUtils;
 import com.infinite.downloader.utils.Logger;
 
@@ -108,11 +107,10 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
-    public FileInfo get(String url) {
+    public FileInfo get(String urlMd5) {
         long start = System.currentTimeMillis();
         FileInfo fileInfo = null;
-        if (!TextUtils.isEmpty(url)) {
-            String urlMd5 = CommonUtils.computeMd5(url);
+        if (!TextUtils.isEmpty(urlMd5)) {
             Cursor cursor = getReadableDatabase().query(TABLE_NAME, ALL_COLUMNS,
                     COL_URL_MD5 + "=?", new String[]{urlMd5},
                     null, null, null);
@@ -146,20 +144,18 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
-    public long put(String url, FileInfo fileInfo) {
+    public long put(String urlMd5, FileInfo fileInfo) {
         long start = System.currentTimeMillis();
-        long result = 0;
-        boolean exist = false;
-        if (!TextUtils.isEmpty(url)) {
-            FileInfo info = get(url);
-            exist = info != null;
-            if (exist) {
-                result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
-                        COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
-            } else {
-                result = getWritableDatabase().insert(TABLE_NAME,
-                        null, convertColumns(fileInfo));
-            }
+        long result;
+        boolean exist;
+        FileInfo info = get(urlMd5);
+        exist = info != null;
+        if (exist) {
+            result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
+                    COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
+        } else {
+            result = getWritableDatabase().insert(TABLE_NAME,
+                    null, convertColumns(fileInfo));
         }
         Logger.d((exist ? "update" : "insert") + " item finish,"
                 + (exist ? "affected rows:" : "record id") + ":" + result +
@@ -168,11 +164,13 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
-    public int delete(String url) {
+    public int delete(String urlMd5) {
         long start = System.currentTimeMillis();
-        String urlMd5 = CommonUtils.computeMd5(url);
-        int result = getWritableDatabase().delete(TABLE_NAME,
-                COL_URL_MD5 + "=?", new String[]{urlMd5});
+        int result = 0;
+        if (!TextUtils.isEmpty(urlMd5)) {
+            result = getWritableDatabase().delete(TABLE_NAME,
+                    COL_URL_MD5 + "=?", new String[]{urlMd5});
+        }
         Logger.d("delete item finish,count:" + result
                 + ",cost time:" + (System.currentTimeMillis() - start));
         return result;
@@ -221,7 +219,6 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         String fileName = cursor.getString(11);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setId(id);
-        fileInfo.setUrlMd5(urlMd5);
         fileInfo.setRequestUrl(requestUrl);
         fileInfo.setDownloadUrl(downloadUrl);
         fileInfo.setFileSize(fileLength);

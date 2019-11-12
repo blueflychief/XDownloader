@@ -1,0 +1,328 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#20FF0000">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="姓                名："
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/et_name"
+        app:layout_constraintTop_toTopOf="@+id/et_name" />
+
+    <TextView
+        android:id="@+id/tv_contract"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="联系方式："
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/et_contract"
+        app:layout_constraintTop_toTopOf="@+id/et_contract" />
+
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="请输入姓名"
+        android:textSize="10sp"
+        app:layout_constraintLeft_toLeftOf="@+id/barrier"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/et_contract"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="请输入联系方式"
+        android:textSize="10sp"
+        app:layout_constraintLeft_toLeftOf="@+id/barrier"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_name" />
+
+
+    <!--Barrier的使用
+       意思就是将左侧当做一个整体，阻碍右侧，右侧随着左侧的宽度而调整
+   -->
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="tv_name,tv_contract" />
+
+
+    <!--Group的使用
+       意思就是将左侧当做一个整体，控制可见性
+   -->
+    <android.support.constraint.Group
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="tv_name,tv_contract" />
+
+
+    <!--在父布局中居中-->
+    <TextView
+        android:id="@+id/tvCenter"
+        android:layout_width="200dp"
+        android:layout_height="80dp"
+        android:background="#00ff00"
+        android:text="在父布局中居中"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--相对兄弟View居中-->
+    <TextView
+        android:id="@+id/tvDesc0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#44FFFF00"
+        android:padding="10dp"
+        android:text="相对兄弟View居中"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCenter"
+        app:layout_constraintEnd_toEndOf="@+id/tvCenter"
+        app:layout_constraintStart_toStartOf="@+id/tvCenter"
+        app:layout_constraintTop_toTopOf="@+id/tvCenter" />
+
+
+    <!--以tvDesc0为圆心，圆形角度相对-->
+    <TextView
+        android:id="@+id/tvDesc2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:padding="20dp"
+        android:text="圆形角度相对"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintCircle="@+id/tvDesc0"
+        app:layout_constraintCircleAngle="145"
+        app:layout_constraintCircleRadius="100dp" />
+
+
+    <!--右上相对-->
+    <TextView
+        android:id="@+id/tvDesc3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#6600ff00"
+        android:padding="10dp"
+        android:text="右上相对"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvCenter"
+        app:layout_constraintLeft_toRightOf="@+id/tvCenter" />
+
+    <TextView
+        android:id="@+id/tvDesc4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@color/colorAccent"
+        android:padding="4dp"
+        android:text="左上左上左上左上左上左上左上左上"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_contract" />
+
+
+    <!--超过宽度进行宽度约束，内容被挤压-->
+    <TextView
+        android:id="@+id/tvDesc5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#33ff00dd"
+        android:text="超过宽度进行宽度约束超过宽度进行宽度约束"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintLeft_toRightOf="@+id/tvDesc4"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDesc4" />
+
+    <!--宽度是父控件的一半-->
+    <TextView
+        android:id="@+id/tvDesc6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#99FFFF00"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="父控件的一半"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/tvDesc5"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <!--
+    宽度是父控件的40%：  android:layout_width="0dp"，app:layout_constraintWidth_percent="0.5"
+    约束宽高比：          android:layout_height="0dp"，app:layout_constraintDimensionRatio="W,9:16"
+    在父控件中水平居中：   app:layout_constraintEnd_toEndOf="parent"，app:layout_constraintStart_toStartOf="parent"
+    -->
+    <TextView
+        android:id="@+id/tvDesc7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#55FF0000"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="父控件的40%\n约束宽高比为16：9\n在父控件中水平居中"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintDimensionRatio="W,9:16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDesc6"
+        app:layout_constraintWidth_percent="0.4" />
+
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/bt1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/bt2"
+        app:layout_constraintTop_toBottomOf="@+id/tvCenter" />
+
+    <Button
+        android:id="@+id/bt2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BBBBBBBBBBB"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintLeft_toRightOf="@+id/bt1"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt1" />
+
+
+    <!--
+    一个链条里面的第一个元素即为头，水平最左边，垂直最上边的控件，
+    链头的作用是控制整个链条的属性，如上面的A控件就是链头
+    在链头上面设置margin，整个链条都会响应这个margin
+
+    layout_constraintHorizontal_chainStyle取值
+    spread(默认)-元素被分散开
+    spread_inside-与spread类似，只是链条的端点不会被分散
+    packed-链条内的元素将被捆在一起
+    -->
+    <TextView
+        android:id="@+id/btChain1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#77008899"
+        android:padding="4dp"
+        android:text="Chain Header"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@id/btChain2"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt2" />
+
+    <TextView
+        android:id="@+id/btChain2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#77008899"
+        android:padding="4dp"
+        android:text="Chain2"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@id/btChain3"
+        app:layout_constraintStart_toEndOf="@id/btChain1"
+        app:layout_constraintTop_toBottomOf="@+id/bt2" />
+
+
+    <TextView
+        android:id="@+id/btChain3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#77008899"
+        android:padding="4dp"
+        android:text="Chain3"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btChain2"
+        app:layout_constraintTop_toBottomOf="@+id/bt2" />
+
+
+    <!--weight chain-->
+    <TextView
+        android:id="@+id/btChain4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#77001199"
+        android:padding="4dp"
+        android:text="Weight Chain Header"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@+id/btChain5"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btChain1" />
+
+    <TextView
+        android:id="@+id/btChain5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#77006699"
+        android:padding="4dp"
+        android:text="Chain5"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@+id/btChain6"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/btChain4"
+        app:layout_constraintTop_toBottomOf="@+id/btChain1" />
+
+    <TextView
+        android:id="@+id/btChain6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#7700dd99"
+        android:padding="4dp"
+        android:text="Chain6"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/btChain5"
+        app:layout_constraintTop_toBottomOf="@+id/btChain1" />
+
+
+    <TextView
+        android:id="@+id/tvGone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#66666666"
+        android:padding="4dp"
+        android:text="Gone"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/btChain6" />
+
+
+    <!--goneMargin使用-->
+    <TextView
+        android:id="@+id/tvVisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#66660000"
+        android:padding="4dp"
+        android:text="goneMargin使用"
+        app:layout_constraintStart_toEndOf="@+id/tvGone"
+        app:layout_constraintTop_toBottomOf="@+id/btChain6"
+        app:layout_goneMarginStart="20dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

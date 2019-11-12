@@ -1,11 +1,6 @@
 package com.infinite.downloader.task;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.Config;
@@ -22,8 +17,8 @@ import com.infinite.downloader.writer.Writer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Email: 690797861@qq.com
@@ -38,8 +33,8 @@ public class DownloadTask extends ComparableTask {
     private Recorder recorder;
     private Writer writer;
     private StreamReader streamReader;
-    private List<DownloadListener> downloadListenerList;
-    private DownloadListener downloadListener;
+    private Set<DownloadListener> downloadListenerSet;
+    private String requestUrlMd5;
     private String requestUrl;
     private FileInfo fileInfo;
     private long startTime;
@@ -49,19 +44,20 @@ public class DownloadTask extends ComparableTask {
     }
 
     public DownloadTask(Context context, String url, Recorder recorder, Config config) {
+        super();
         this.requestUrl = url;
+        this.requestUrlMd5 = CommonUtils.computeMd5(url);
         this.recorder = recorder == null ? new SqliteRecorder(context) : recorder;
         this.config = config == null ? Config.defaultConfig(context) : config;
         this.streamReader = new HttpStreamReader();
-        this.downloadListenerList = new ArrayList<>(4);
-        this.downloadListener = new UiListenerHandler(this.downloadListenerList);
-        this.fileInfo = this.recorder.get(url);
-        this.downloadListener.onDownloadStatus(DownloadStatus.PREPARE, this.fileInfo);
+        this.downloadListenerSet = new HashSet<>(4);
+        this.fileInfo = this.recorder.get(requestUrlMd5);
     }
 
     @Override
     public void run() {
         startTime = System.currentTimeMillis();
+        updateStatus(DownloadStatus.PREPARE, this.fileInfo);
         if (!isStopped()) {
             Logger.d(TAG, "task start running");
             if (fileInfo != null) {
@@ -69,7 +65,9 @@ public class DownloadTask extends ComparableTask {
                     boolean checkRemote = config.isCheckRemote();
                     Logger.d("file has downloaded already,need check remote?" + checkRemote);
                     if (!checkRemote) {
-                        downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
+                        updateStatus(DownloadStatus.FINISH, fileInfo);
+                        stopped = true;
+                        downloadListenerSet.clear();
                         return;
                     }
                 } else {
@@ -95,7 +93,8 @@ public class DownloadTask extends ComparableTask {
                     if (!config.existSaveDir()) {
                         Logger.d("save dir not exist");
                         fileInfo.setMessage("please ensure the save dir exist!!!");
-                        downloadListener.onDownloadStatus(DownloadStatus.ERROR, fileInfo);
+                        updateStatus(DownloadStatus.ERROR, fileInfo);
+                        stopped = true;
                         return;
                     }
                     String savePath = config.getSaveDirPath() + File.separator + info.getFileName();
@@ -110,7 +109,9 @@ public class DownloadTask extends ComparableTask {
                         if (fileInfo.finished()) {
                             Logger.d("file has downloaded already");
                             fileInfo.setMessage("file is finish download already");
-                            downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
+                            updateStatus(DownloadStatus.FINISH, fileInfo);
+                            stopped = true;
+                            downloadListenerSet.clear();
                         } else {
                             Logger.d("file download incomplete,continue download");
                             download();
@@ -118,7 +119,9 @@ public class DownloadTask extends ComparableTask {
                     }
                 } else {
                     Logger.d("get file info error:" + (info != null ? info.getMessage() : ""));
-                    downloadListener.onDownloadStatus(DownloadStatus.ERROR, info);
+                    updateStatus(DownloadStatus.ERROR, info);
+                    stopped = true;
+                    downloadListenerSet.clear();
                 }
             } else {
                 onTaskTerminal();
@@ -130,7 +133,7 @@ public class DownloadTask extends ComparableTask {
     }
 
     private void download() {
-        downloadListener.onDownloadStatus(DownloadStatus.PREPARED, fileInfo);
+        updateStatus(DownloadStatus.PREPARED, fileInfo);
         byte[] buffer = new byte[BUFFER_SIZE];
         int length;
         long count = 1;
@@ -142,7 +145,7 @@ public class DownloadTask extends ComparableTask {
         try {
             writer = new FileWriter(fileInfo.getSavePath(), currentSize);
             fileInfo.setBreakpointDownload(currentSize > 0);
-            downloadListener.onDownloadStatus(DownloadStatus.DOWNLOADING, fileInfo);
+            updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
             while ((length = streamReader.readInputStream(buffer)) != -1) {
                 if (!isStopped()) {
                     currentSize = writer.saveFile(buffer, length);
@@ -153,11 +156,11 @@ public class DownloadTask extends ComparableTask {
                     fileInfo.setMessage("file is downloading");
                     fileInfo.setCostTime(costTime + fileInfo.getCostTime());
                     fileInfo.setSpeed(computeSpeed(length, costTime));
-                    recorder.put(fileInfo.getRequestUrl(), fileInfo);
+                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
                     //128k
                     if (currentSize > ((count << 17) + start)) {
                         Logger.d("file downloading,current size:" + currentSize);
-                        downloadListener.onDownloadStatus(DownloadStatus.DOWNLOADING, fileInfo);
+                        updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
                         count++;
                     }
                 } else {
@@ -167,25 +170,43 @@ public class DownloadTask extends ComparableTask {
             }
             Logger.d("file download finish,current size:" + currentSize);
             fileInfo.setMessage("file is finish download");
-            recorder.put(fileInfo.getRequestUrl(), fileInfo);
-            downloadListener.onDownloadStatus(DownloadStatus.FINISH, fileInfo);
+            recorder.put(fileInfo.getUrlMd5(), fileInfo);
+            updateStatus(DownloadStatus.FINISH, fileInfo);
         } catch (IOException e) {
             e.printStackTrace();
             Logger.e("download file exception:" + e.getMessage());
             fileInfo.setMessage(e.getMessage());
-            recorder.put(fileInfo.getRequestUrl(), fileInfo);
-            downloadListener.onDownloadStatus(DownloadStatus.ERROR, fileInfo);
+            recorder.put(fileInfo.getUrlMd5(), fileInfo);
+            updateStatus(DownloadStatus.ERROR, fileInfo);
         } finally {
             close();
         }
     }
 
+    public String getUrlMd5() {
+        return requestUrlMd5;
+    }
+
+    public String getUrl() {
+        return requestUrl;
+    }
+
     public void addDownloadListener(DownloadListener listener) {
-        downloadListenerList.add(listener);
+        downloadListenerSet.add(listener);
     }
 
     public void removeDownloadListener(DownloadListener listener) {
-        downloadListenerList.remove(listener);
+        downloadListenerSet.remove(listener);
+    }
+
+    public void removeAllDownloadListener() {
+        downloadListenerSet.clear();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        removeAllDownloadListener();
     }
 
     public void close() {
@@ -195,6 +216,8 @@ public class DownloadTask extends ComparableTask {
         if (streamReader != null) {
             streamReader.close();
         }
+        stopped = true;
+        downloadListenerSet.clear();
     }
 
     private float computeSpeed(long length, long time) {
@@ -206,7 +229,7 @@ public class DownloadTask extends ComparableTask {
         fileInfo.setCostTime(0);
         fileInfo.setCurrentSize(0);
         CommonUtils.deleteFile(fileInfo.getSavePath());
-        recorder.put(requestUrl, fileInfo);
+        recorder.put(requestUrlMd5, fileInfo);
     }
 
     private void onTaskTerminal() {
@@ -214,43 +237,19 @@ public class DownloadTask extends ComparableTask {
             long costTime = System.currentTimeMillis() - startTime;
             fileInfo.setCostTime(fileInfo.getCostTime() + costTime);
             fileInfo.setMessage("task is terminal,stop download file");
-            recorder.put(fileInfo.getRequestUrl(), fileInfo);
+            recorder.put(fileInfo.getUrlMd5(), fileInfo);
         }
-        downloadListener.onDownloadStatus(DownloadStatus.STOP, fileInfo);
+        updateStatus(DownloadStatus.STOP, fileInfo);
         close();
     }
 
-    private static class UiListenerHandler extends Handler implements DownloadListener {
-        private List<DownloadListener> downloadListenerList;
-
-        public UiListenerHandler(List<DownloadListener> downloadListenerList) {
-            super(Looper.getMainLooper());
-            this.downloadListenerList = downloadListenerList;
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            int status = msg.arg1;
-            FileInfo fileInfo = null;
-            if (msg.obj instanceof FileInfo) {
-                fileInfo = (FileInfo) msg.obj;
-            }
-            if (downloadListenerList != null && !downloadListenerList.isEmpty()) {
-                for (DownloadListener listener : downloadListenerList) {
-                    if (listener != null) {
-                        listener.onDownloadStatus(status, fileInfo);
-                    }
+    private void updateStatus(int status, FileInfo info) {
+        if (downloadListenerSet != null && !downloadListenerSet.isEmpty()) {
+            for (DownloadListener listener : downloadListenerSet) {
+                if (listener != null) {
+                    listener.onDownloadStatus(status, info);
                 }
             }
-        }
-
-        @Override
-        public void onDownloadStatus(int status, FileInfo info) {
-            Message message = Message.obtain(this);
-            message.arg1 = status;
-            message.obj = info;
-            sendMessage(message);
         }
     }
 }

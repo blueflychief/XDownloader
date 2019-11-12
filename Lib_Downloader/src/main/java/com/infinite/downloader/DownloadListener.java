@@ -13,5 +13,16 @@ import com.infinite.downloader.config.FileInfo;
  * Description: Class description
  */
 public interface DownloadListener {
+    /**
+     * This method will not run in ui thread,so if you need change view,handle with these:
+     * runOnUiThread(new Runnable() {
+     *
+     * @param status download status,see{@link DownloadStatus}
+     * @param info   information of the file what downloading
+     * @Override public void run() {
+     * <p>
+     * }
+     * });
+     */
     void onDownloadStatus(@DownloadStatus.Status int status, @Nullable FileInfo info);
 }
