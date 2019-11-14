@@ -70,9 +70,8 @@ public class DownloadTask extends ComparableTask {
                     }
                 } else {
                     boolean fileAvailable = fileInfo.localFileAvailable();
-                    DLogger.d("local save file available?" + fileAvailable);
                     boolean supportRange = fileInfo.isSupportRange();
-                    DLogger.d("remote server support range?" + supportRange);
+                    DLogger.d("local save file available?" + fileAvailable + "，supportRange：" + supportRange);
                     if (!fileAvailable || !supportRange) {
                         DLogger.d("need delete local file");
                         resetDownloadInfo();
@@ -127,22 +126,38 @@ public class DownloadTask extends ComparableTask {
         DLogger.e(TAG, "task end running");
     }
 
-    private void onFinishDownload() {
-        String info = "file is finish download already:" + (fileInfo != null ? fileInfo.getFileName() : "");
-        DLogger.d(info);
-        fileInfo.setMessage(info);
-        updateStatus(DownloadStatus.FINISH, fileInfo);
-        stopped = true;
+    public String getUrlMd5() {
+        return requestUrlMd5;
+    }
+
+    public String getUrl() {
+        return requestUrl;
+    }
+
+    public void addDownloadListener(DownloadListener listener) {
+        downloadListenerSet.add(listener);
+    }
+
+    public void removeDownloadListener(DownloadListener listener) {
+        downloadListenerSet.remove(listener);
+    }
+
+    public void removeAllDownloadListener() {
         downloadListenerSet.clear();
-        recorder.shrink();
-        File file = fileInfo.getLocalFile();
-        if (config.getDiskUsage() != null && file != null) {
-            try {
-                config.getDiskUsage().touch(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-                DLogger.e("shrink file error:" + e.getMessage());
-            }
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        removeAllDownloadListener();
+    }
+
+    public void close() {
+        if (writer != null) {
+            writer.close();
+        }
+        if (streamReader != null) {
+            streamReader.close();
         }
     }
 
@@ -196,44 +211,23 @@ public class DownloadTask extends ComparableTask {
         }
     }
 
-    public String getUrlMd5() {
-        return requestUrlMd5;
-    }
-
-    public String getUrl() {
-        return requestUrl;
-    }
-
-    public void addDownloadListener(DownloadListener listener) {
-        downloadListenerSet.add(listener);
-    }
-
-    public void removeDownloadListener(DownloadListener listener) {
-        downloadListenerSet.remove(listener);
-    }
-
-    public void removeAllDownloadListener() {
+    private void onFinishDownload() {
+        String info = "file is finish download already:" + (fileInfo != null ? fileInfo.getFileName() : "");
+        DLogger.d(info);
+        fileInfo.setMessage(info);
+        updateStatus(DownloadStatus.FINISH, fileInfo);
+        stopped = true;
         downloadListenerSet.clear();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        removeAllDownloadListener();
-    }
-
-    public void close() {
-        if (writer != null) {
-            writer.close();
+        recorder.shrink();
+        File file = fileInfo.getLocalFile();
+        if (config.getDiskUsage() != null && file != null) {
+            try {
+                config.getDiskUsage().touch(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+                DLogger.e("shrink file error:" + e.getMessage());
+            }
         }
-        if (streamReader != null) {
-            streamReader.close();
-        }
-    }
-
-    private float computeSpeed(long length, long time) {
-        //KB/s
-        return length / 1024f / (time / 1000f);
     }
 
     private void resetDownloadInfo() {
@@ -264,5 +258,10 @@ public class DownloadTask extends ComparableTask {
                 }
             }
         }
+    }
+
+    private float computeSpeed(long length, long time) {
+        //KB/s
+        return length / 1024f / (time / 1000f);
     }
 }

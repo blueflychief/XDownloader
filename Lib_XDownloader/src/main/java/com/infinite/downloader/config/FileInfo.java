@@ -2,6 +2,8 @@ package com.infinite.downloader.config;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.infinite.downloader.utils.CommonUtils;
 
 import java.io.File;
@@ -131,6 +133,7 @@ public class FileInfo implements Serializable {
         return file != null ? file.length() : 0;
     }
 
+    @Nullable
     public File getLocalFile() {
         if (TextUtils.isEmpty(savePath)) {
             return null;
