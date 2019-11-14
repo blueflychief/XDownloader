@@ -104,6 +104,7 @@ public *; #类的所有public方法和字段不混淆
 }
 -keep class com.infinite.downloader.config.** {*;}
 
+-keep public class * extends com.infinite.downloader.lru.DiskUsage
 
 #####2.第三方库，包括jar包和dependencies方式引入的库
 

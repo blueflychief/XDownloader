@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.task.DownloadTask;
-import com.infinite.downloader.utils.DLogger;
 
 /**
  * Email: 690797861@qq.com
@@ -21,17 +20,18 @@ import com.infinite.downloader.utils.DLogger;
  */
 public class DownloadActivity extends AppCompatActivity {
     private TextView tvResult;
+    private int index;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
         tvResult = findViewById(R.id.tvResult);
-        DLogger.enable();
         findViewById(R.id.btStart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XDownload.get().addTask(Urls.URLS[0], downloadListener);
+                XDownload.get().addTask(Urls.IMAGES[index % (Urls.IMAGES.length - 1)], downloadListener);
+                index++;
             }
         });
         findViewById(R.id.btEnd).setOnClickListener(new View.OnClickListener() {

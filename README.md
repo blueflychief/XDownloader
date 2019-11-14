@@ -66,6 +66,18 @@ XDownload.init(Context context)
 //或者
 XDownload.init(Context context, Config config)
 ```
+示例App配置
+```
+public class DownloadApp extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Config config = Config.defaultConfig(this);
+        config.setDiskUsage(new TotalSizeLruDiskUsage(20 * 1024 * 1024));//限制20M
+        XDownload.get().init(this, config);
+    }
+}
+```
 * 添加一个下载任务，如果任务已经存在，则不再添加，返回当前url对应的task对象
 ```
  XDownload.get().addTask(url, allDownloadListener);
@@ -84,3 +96,24 @@ XDownload.get().removeTask(String url)
 XDownload.get().shutdown()
 ```
 
+## 设置文件删除策略
+可以在Config中设置文件删除策略
+
+- 根据下载文件夹大小
+
+    TotalSizeLruDiskUsage
+
+    当文件夹大小超过给定的值后，按照下载完成时间先后，删除几个文件
+
+
+- 根据文件数量
+
+    TotalCountLruDiskUsage
+
+    根据下载文件夹中的文件数量，当文件数量超过给定的值后，按照下载完成时间先后，删除几个文件
+
+- 无任何限制
+
+    UnlimitedDiskUsage
+
+注意：默认使用TotalSizeLruDiskUsage，限制大小1G。

@@ -18,7 +18,9 @@ public interface Recorder {
 
     int delete(String urlMd5);
 
-    List<FileInfo> queryAll();
+    List<FileInfo> query(int count);
+
+    void shrink();
 
     void release();
 }

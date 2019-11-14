@@ -3,6 +3,9 @@ package com.infinite.downloader.config;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.infinite.downloader.lru.DiskUsage;
+import com.infinite.downloader.lru.TotalSizeLruDiskUsage;
+
 import java.io.File;
 
 /**
@@ -12,12 +15,14 @@ import java.io.File;
  * Description: class description
  */
 public class Config {
+    private static final long ONE_M = 1024 * 1024;
     private static final int CONNECT_TIMEOUT = 15_000;
     private static final int READ_TIMEOUT = 15_000;
     private String saveDirPath;
     private int connectTimeout = CONNECT_TIMEOUT;
     private int readTimeout = READ_TIMEOUT;
     private boolean checkRemote = false;
+    private DiskUsage diskUsage;
 
     public static Config defaultConfig(Context context) {
         Config config = new Config();
@@ -30,6 +35,7 @@ public class Config {
         if (!dir.exists() || !dir.isDirectory()) {
             dir.mkdirs();
         }
+        config.setDiskUsage(new TotalSizeLruDiskUsage(1024 * ONE_M));
         config.setSaveDirPath(dirPath);
         return config;
     }
@@ -72,5 +78,13 @@ public class Config {
 
     public void setCheckRemote(boolean checkRemote) {
         this.checkRemote = checkRemote;
+    }
+
+    public DiskUsage getDiskUsage() {
+        return diskUsage;
+    }
+
+    public void setDiskUsage(DiskUsage diskUsage) {
+        this.diskUsage = diskUsage;
     }
 }

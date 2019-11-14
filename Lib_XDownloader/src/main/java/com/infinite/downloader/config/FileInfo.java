@@ -122,12 +122,21 @@ public class FileInfo implements Serializable {
         return fileSize > 0 && fileSize == currentSize && localFileExists();
     }
 
+    public boolean recordInvalid() {
+        return fileSize > 0 && fileSize == currentSize && !localFileExists();
+    }
+
     public long getLocalFileSize() {
+        File file = getLocalFile();
+        return file != null ? file.length() : 0;
+    }
+
+    public File getLocalFile() {
         if (TextUtils.isEmpty(savePath)) {
-            return 0;
+            return null;
         }
         File file = new File(savePath);
-        return file.exists() && file.isFile() ? file.length() : 0;
+        return file.exists() && file.isFile() ? file : null;
     }
 
     public boolean localFileAvailable() {

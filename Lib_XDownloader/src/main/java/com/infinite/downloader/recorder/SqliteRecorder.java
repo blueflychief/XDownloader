@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 
 import com.infinite.downloader.config.FileInfo;
@@ -127,11 +128,12 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
-    public List<FileInfo> queryAll() {
+    public List<FileInfo> query(int count) {
         long start = System.currentTimeMillis();
         Cursor cursor = getReadableDatabase().query(TABLE_NAME, ALL_COLUMNS, null,
-                null, null, null, null);
-        List<FileInfo> list = new ArrayList<>(10);
+                null, null, null,
+                null, count > 0 ? String.valueOf(count) : null);
+        List<FileInfo> list = new ArrayList<>(16);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 list.add(convertFileInfo(cursor));
@@ -141,6 +143,43 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         DLogger.d("query all item finish,count:" + list.size()
                 + ",cost time:" + (System.currentTimeMillis() - start));
         return list;
+    }
+
+    @Override
+    public void shrink() {
+        List<FileInfo> infoList = query(0);
+        if (infoList != null && infoList.size() > 0) {
+            List<FileInfo> deleteList = new ArrayList<>(16);
+            for (FileInfo info : infoList) {
+                if (info != null && info.recordInvalid()) {
+                    deleteList.add(info);
+                }
+            }
+            if (deleteList.size() > 0) {
+                long start = System.currentTimeMillis();
+                int count = 0;
+                String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + COL_URL_MD5 + "=?";
+                SQLiteDatabase db = getWritableDatabase();
+                try {
+                    SQLiteStatement stat = db.compileStatement(sql);
+                    db.beginTransaction();
+                    for (FileInfo entity : deleteList) {
+                        if (entity != null) {
+                            stat.bindString(1, entity.getUrlMd5());
+                            stat.execute();
+                            count++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } catch (Exception e) {
+                    DLogger.e(e.getMessage());
+                } finally {
+                    DbUtils.endTransaction(db);
+                }
+                DLogger.d("delete item finish，cost：" + (System.currentTimeMillis() - start)
+                        + ",delete count：" + count);
+            }
+        }
     }
 
     @Override
@@ -206,7 +245,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
      */
     private FileInfo convertFileInfo(Cursor cursor) {
         long id = cursor.getLong(0);
-        String urlMd5 = cursor.getString(1);
+//        String urlMd5 = cursor.getString(1);
         String requestUrl = cursor.getString(2);
         String downloadUrl = cursor.getString(3);
         long fileLength = cursor.getLong(4);

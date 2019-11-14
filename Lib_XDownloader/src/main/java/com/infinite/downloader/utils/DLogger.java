@@ -45,4 +45,10 @@ public class DLogger {
             Log.d(tag, message);
         }
     }
+
+    public static void i(String message) {
+        if (debugEnable) {
+            Log.d(DEBUG_TAG, message);
+        }
+    }
 }
