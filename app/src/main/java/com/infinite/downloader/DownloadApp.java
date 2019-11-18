@@ -18,7 +18,7 @@ public class DownloadApp extends Application {
         super.onCreate();
         Config config = Config.defaultConfig(this);
         DLogger.enable();
-        config.setDiskUsage(new TotalSizeLruDiskUsage(6 * 1024 * 1024));//限制20M
+        config.setDiskUsage(new TotalSizeLruDiskUsage(20 * 1024 * 1024));//限制20M
         XDownload.get().init(this, config);
     }
 }

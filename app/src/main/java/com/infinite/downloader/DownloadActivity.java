@@ -3,6 +3,7 @@ package com.infinite.downloader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -10,7 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
+import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.task.DownloadTask;
+import com.infinite.downloader.utils.CommonUtils;
+import com.infinite.downloader.utils.DLogger;
+
+import java.io.File;
 
 /**
  * Email: 690797861@qq.com
@@ -20,6 +26,7 @@ import com.infinite.downloader.task.DownloadTask;
  */
 public class DownloadActivity extends AppCompatActivity {
     private TextView tvResult;
+    private EditText etId;
     private int index;
 
     @Override
@@ -27,6 +34,7 @@ public class DownloadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
         tvResult = findViewById(R.id.tvResult);
+        etId = findViewById(R.id.etId);
         findViewById(R.id.btStart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +70,53 @@ public class DownloadActivity extends AppCompatActivity {
                 }
             }
         });
+
+        findViewById(R.id.btGetFile).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File file = XDownload.get().getFile(Urls.IMAGES[0]);
+                String fileInfo = "file name:";
+                if (file != null) {
+                    fileInfo += (file.getName() + ",length:" + file.length());
+                }
+                tvResult.setText(fileInfo);
+            }
+        });
+
+
+        findViewById(R.id.btAddRecord).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Recorder recorder = XDownload.get().getRecorder();
+                FileInfo fileInfo;
+                for (int i = 0; i < 30_000; i++) {
+                    fileInfo = new FileInfo();
+                    fileInfo.setRequestUrl(Urls.IMAGES[0] + index);
+                    fileInfo.setDownloadUrl(Urls.IMAGES[0] + index);
+                    fileInfo.setContentType("jpg");
+                    fileInfo.setFileSize(100);
+                    fileInfo.setCostTime(20);
+                    fileInfo.setSupportRange(true);
+                    fileInfo.setFileName("file_name");
+                    fileInfo.setSavePath("/save/path");
+                    index++;
+                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
+                }
+            }
+        });
+
+        findViewById(R.id.btQueryRecord).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id = Urls.IMAGES[0] + etId.getText().toString();
+                Recorder recorder = XDownload.get().getRecorder();
+                String md5 = CommonUtils.computeMd5(id);
+                FileInfo fileInfo = recorder.get(md5);
+                DLogger.d("query result:" + fileInfo);
+            }
+        });
     }
+
 
     @Override
     protected void onDestroy() {

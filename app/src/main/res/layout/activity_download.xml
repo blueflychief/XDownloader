@@ -35,4 +35,29 @@
         android:id="@+id/tvResult"
         android:layout_width="match_parent"
         android:layout_height="200dp" />
+
+
+    <Button
+        android:id="@+id/btGetFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="获取文件信息" />
+
+    <Button
+        android:id="@+id/btAddRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加记录(索引测试)" />
+
+    <EditText
+        android:id="@+id/etId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="输入需要查询的id" />
+
+    <Button
+        android:id="@+id/btQueryRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询记录(索引测试)" />
 </LinearLayout>

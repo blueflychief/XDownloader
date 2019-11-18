@@ -116,4 +116,4 @@ XDownload.get().shutdown()
 
     UnlimitedDiskUsage
 
-注意：默认使用TotalSizeLruDiskUsage，限制大小1G。
+注意：默认使用TotalSizeLruDiskUsage，限制大小512M。

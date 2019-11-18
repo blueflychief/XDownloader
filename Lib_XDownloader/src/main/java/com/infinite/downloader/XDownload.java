@@ -6,12 +6,14 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import com.infinite.downloader.config.Config;
+import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.recorder.SqliteRecorder;
 import com.infinite.downloader.task.DownloadTask;
 import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DLogger;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -129,6 +131,24 @@ public class XDownload {
         return r;
     }
 
+    /**
+     * Just for sqlite test
+     *
+     * @return Recorder
+     */
+    @Nullable
+    @Deprecated
+    public Recorder getRecorder() {
+        return recorder;
+    }
+
+    @Nullable
+    public File getFile(String url) {
+        String md5 = CommonUtils.computeMd5(url);
+        FileInfo fileInfo = recorder != null ?
+                recorder.get(md5) : new SqliteRecorder(appContext).get(md5);
+        return fileInfo != null ? fileInfo.getLocalFile() : null;
+    }
 
     public String getVersion() {
         return BuildConfig.VERSION_NAME;

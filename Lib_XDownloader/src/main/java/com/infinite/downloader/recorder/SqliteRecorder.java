@@ -27,6 +27,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "download_record.db";
     private static final String TABLE_NAME = "tb_record";
+    private static final String URL_MD5_INDEX_NAME = "idx_url_md5";
 
     private static final String COL_ID = "_id";
     private static final String COL_URL_MD5 = "url_md5";
@@ -72,6 +73,10 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
                     COL_FILE_NAME + " TEXT" +
                     ");";
 
+    private static final String SQL_CREATE_URL_MD5_INDEX =
+            "CREATE UNIQUE INDEX IF NOT EXISTS " + URL_MD5_INDEX_NAME
+                    + " ON " + TABLE_NAME + " (" + COL_URL_MD5 + ")";
+
     private Context context;
 
     public SqliteRecorder(Context context) {
@@ -85,10 +90,12 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         try {
             db.beginTransaction();
             DbUtils.executeSQL(db, SQL_CREATE_RECORD_TABLE);
+            DbUtils.executeSQL(db, SQL_CREATE_URL_MD5_INDEX);
             db.setTransactionSuccessful();
         } catch (SQLiteDatabaseCorruptException var13) {
             DbUtils.deleteDbFile(context, DB_NAME);
             DbUtils.executeSQL(db, SQL_CREATE_RECORD_TABLE);
+            DbUtils.executeSQL(db, SQL_CREATE_URL_MD5_INDEX);
         } catch (Throwable throwable) {
             DLogger.d(throwable.getMessage());
         } finally {
@@ -190,11 +197,11 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         FileInfo info = get(urlMd5);
         exist = info != null;
         if (exist) {
-            result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
+            result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo, false),
                     COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
         } else {
             result = getWritableDatabase().insert(TABLE_NAME,
-                    null, convertColumns(fileInfo));
+                    null, convertColumns(fileInfo, true));
         }
         DLogger.d((exist ? "update" : "insert") + " item finish,"
                 + (exist ? "affected rows:" : "record id") + ":" + result +
@@ -221,9 +228,11 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         close();
     }
 
-    private ContentValues convertColumns(FileInfo fileInfo) {
+    private ContentValues convertColumns(FileInfo fileInfo, boolean updateUrlMd5) {
         ContentValues values = new ContentValues(16);
-        values.put(COL_URL_MD5, fileInfo.getUrlMd5());
+        if (updateUrlMd5) {
+            values.put(COL_URL_MD5, fileInfo.getUrlMd5());
+        }
         values.put(COL_REQUEST_URL, fileInfo.getRequestUrl());
         values.put(COL_DOWNLOAD_URL, fileInfo.getDownloadUrl());
         values.put(COL_FILE_LENGTH, fileInfo.getFileSize());
@@ -245,7 +254,6 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
      */
     private FileInfo convertFileInfo(Cursor cursor) {
         long id = cursor.getLong(0);
-//        String urlMd5 = cursor.getString(1);
         String requestUrl = cursor.getString(2);
         String downloadUrl = cursor.getString(3);
         long fileLength = cursor.getLong(4);
