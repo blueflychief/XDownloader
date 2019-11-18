@@ -4,8 +4,8 @@ android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.infinite.downloader"
-        minSdkVersion 21
+        applicationId "com.infinite.downloaderapp"
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -25,9 +25,9 @@ android {
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    implementation(name: 'Lib_XDownloader-release', ext: 'aar')
-    implementation project(path: ':Lib_XDownloader')
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation(name: 'Lib_XDownloader-release', ext: 'aar')
+//    implementation project(path: ':Lib_XDownloader')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

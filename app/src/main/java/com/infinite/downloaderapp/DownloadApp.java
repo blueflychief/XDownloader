@@ -1,7 +1,8 @@
-package com.infinite.downloader;
+package com.infinite.downloaderapp;
 
 import android.app.Application;
 
+import com.infinite.downloader.XDownload;
 import com.infinite.downloader.config.Config;
 import com.infinite.downloader.lru.TotalSizeLruDiskUsage;
 import com.infinite.downloader.utils.DLogger;

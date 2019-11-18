@@ -1,4 +1,4 @@
-package com.infinite.downloader;
+package com.infinite.downloaderapp;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -9,11 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.infinite.downloader.DownloadListener;
+import com.infinite.downloader.XDownload;
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
-import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.task.DownloadTask;
-import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
@@ -74,6 +74,7 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btGetFile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 File file = XDownload.get().getFile(Urls.IMAGES[0]);
                 String fileInfo = "file name:";
                 if (file != null) {
@@ -87,7 +88,7 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btAddRecord).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Recorder recorder = XDownload.get().getRecorder();
+                a.a.a.d.a recorder = XDownload.get().getRecorder();
                 FileInfo fileInfo;
                 for (int i = 0; i < 30_000; i++) {
                     fileInfo = new FileInfo();
@@ -100,7 +101,7 @@ public class DownloadActivity extends AppCompatActivity {
                     fileInfo.setFileName("file_name");
                     fileInfo.setSavePath("/save/path");
                     index++;
-                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
+                    recorder.a(fileInfo.getUrlMd5(), fileInfo);
                 }
             }
         });
@@ -109,9 +110,9 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String id = Urls.IMAGES[0] + etId.getText().toString();
-                Recorder recorder = XDownload.get().getRecorder();
-                String md5 = CommonUtils.computeMd5(id);
-                FileInfo fileInfo = recorder.get(md5);
+                a.a.a.d.a recorder = XDownload.get().getRecorder();
+                String md5 = a.a.a.f.a.a(id);
+                FileInfo fileInfo = recorder.a(md5);
                 DLogger.d("query result:" + fileInfo);
             }
         });

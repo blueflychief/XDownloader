@@ -1,4 +1,4 @@
-package com.infinite.downloader;
+package com.infinite.downloaderapp;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.task.DownloadTask;
 

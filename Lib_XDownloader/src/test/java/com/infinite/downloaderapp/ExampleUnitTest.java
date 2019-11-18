@@ -1,4 +1,4 @@
-package com.infinite.downloader;
+package com.infinite.downloaderapp;
 
 import org.junit.Test;
 

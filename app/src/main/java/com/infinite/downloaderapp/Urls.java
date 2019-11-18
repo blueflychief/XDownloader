@@ -1,4 +1,4 @@
-package com.infinite.downloader;
+package com.infinite.downloaderapp;
 
 /**
  * Email: 690797861@qq.com
