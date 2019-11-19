@@ -10,10 +10,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.infinite.downloader.DownloadListener;
-import com.infinite.downloader.XDownload;
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
+import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.task.DownloadTask;
+import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
@@ -38,14 +39,14 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btStart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XDownload.get().addTask(Urls.IMAGES[index % (Urls.IMAGES.length - 1)], downloadListener);
+                DownloadApp.getDownload().addTask(Urls.IMAGES[index % (Urls.IMAGES.length - 1)], downloadListener);
                 index++;
             }
         });
         findViewById(R.id.btEnd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DownloadTask task = XDownload.get().getTask(Urls.URLS[0]);
+                DownloadTask task = DownloadApp.getDownload().getTask(Urls.URLS[0]);
                 if (task != null) {
                     task.stop();
                 }
@@ -58,7 +59,7 @@ public class DownloadActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finishCount = 0;
                 for (String image : Urls.IMAGES) {
-                    XDownload.get().addTask(image, allDownloadListener);
+                    DownloadApp.getDownload().addTask(image, allDownloadListener);
                 }
             }
         });
@@ -66,7 +67,7 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 for (String image : Urls.IMAGES) {
-                    XDownload.get().removeTask(image);
+                    DownloadApp.getDownload().removeTask(image);
                 }
             }
         });
@@ -75,7 +76,7 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                File file = XDownload.get().getFile(Urls.IMAGES[0]);
+                File file = DownloadApp.getDownload().getFile(Urls.IMAGES[0]);
                 String fileInfo = "file name:";
                 if (file != null) {
                     fileInfo += (file.getName() + ",length:" + file.length());
@@ -88,7 +89,7 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btAddRecord).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                a.a.a.d.a recorder = XDownload.get().getRecorder();
+                Recorder recorder = DownloadApp.getDownload().getRecorder();
                 FileInfo fileInfo;
                 for (int i = 0; i < 30_000; i++) {
                     fileInfo = new FileInfo();
@@ -101,7 +102,7 @@ public class DownloadActivity extends AppCompatActivity {
                     fileInfo.setFileName("file_name");
                     fileInfo.setSavePath("/save/path");
                     index++;
-                    recorder.a(fileInfo.getUrlMd5(), fileInfo);
+                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
                 }
             }
         });
@@ -110,9 +111,9 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String id = Urls.IMAGES[0] + etId.getText().toString();
-                a.a.a.d.a recorder = XDownload.get().getRecorder();
-                String md5 = a.a.a.f.a.a(id);
-                FileInfo fileInfo = recorder.a(md5);
+                Recorder recorder = DownloadApp.getDownload().getRecorder();
+                String md5 = CommonUtils.computeMd5(id);
+                FileInfo fileInfo = recorder.get(md5);
                 DLogger.d("query result:" + fileInfo);
             }
         });
@@ -122,7 +123,7 @@ public class DownloadActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DownloadTask task = XDownload.get().getTask(Urls.URLS[0]);
+        DownloadTask task = DownloadApp.getDownload().getTask(Urls.URLS[0]);
         if (task != null) {
             task.removeDownloadListener(downloadListener);
         }

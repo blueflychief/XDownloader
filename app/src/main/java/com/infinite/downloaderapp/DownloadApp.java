@@ -4,8 +4,9 @@ import android.app.Application;
 
 import com.infinite.downloader.XDownload;
 import com.infinite.downloader.config.Config;
-import com.infinite.downloader.lru.TotalSizeLruDiskUsage;
 import com.infinite.downloader.utils.DLogger;
+
+import java.io.File;
 
 /**
  * Email: 690797861@qq.com
@@ -14,12 +15,22 @@ import com.infinite.downloader.utils.DLogger;
  * Description: Class description
  */
 public class DownloadApp extends Application {
+    private static XDownload xDownload;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Config config = Config.defaultConfig(this);
+        File saveDir = new File(getExternalCacheDir().getAbsolutePath(), "cache_dir");
+        if (!saveDir.isDirectory() || !saveDir.exists()) {
+            saveDir.mkdir();
+        }
+        config.setSaveDirPath(saveDir.getAbsolutePath());
         DLogger.enable();
-        config.setDiskUsage(new TotalSizeLruDiskUsage(20 * 1024 * 1024));//限制20M
-        XDownload.get().init(this, config);
+        xDownload = new XDownload(this, config);
+    }
+
+    public static XDownload getDownload() {
+        return xDownload;
     }
 }

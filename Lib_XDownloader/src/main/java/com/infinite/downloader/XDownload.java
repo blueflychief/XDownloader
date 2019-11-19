@@ -36,22 +36,18 @@ public class XDownload {
     private boolean initialized;
     private final Map<String, DownloadTask> taskMap = new HashMap<>(8);
 
-    private static final class Holder {
-        private static XDownload INSTANCE = new XDownload();
-    }
-
-    public static XDownload get() {
-        return Holder.INSTANCE;
-    }
-
     private XDownload() {
     }
 
-    public void init(Context context) {
-        init(context, null);
+    public XDownload(Context appContext) {
+        init(appContext, null);
     }
 
-    public void init(Context context, Config config) {
+    public XDownload(Context appContext, Config config) {
+        init(appContext, config);
+    }
+
+    private void init(Context context, Config config) {
         if (!initialized) {
             appContext = context.getApplicationContext();
             downloadConfig = config != null ? config : Config.defaultConfig(appContext);
@@ -150,7 +146,7 @@ public class XDownload {
         return fileInfo != null ? fileInfo.getLocalFile() : null;
     }
 
-    public String getVersion() {
+    public static String getVersion() {
         return BuildConfig.VERSION_NAME;
     }
 

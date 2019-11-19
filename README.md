@@ -58,42 +58,52 @@ DLogger.enable()
 ```
 
 ## 使用XDownload下载文件
-XDownload可以统一管理所有下载任务，使用XDownload必须先初始化，请根据自己的需要传入Config，Config为空则使用默认的配置
+XDownload对象可以统一管理多个下载任务，请根据自己的需要传入Config，Config为空则使用默认的配置
+建议创建一个单例类管理XDownload对象。
 
-注意：默认的下载存储路径为/storage/emulated/0/Android/data/{package}/cache/xdownload/，package为你的app包名
-```
-XDownload.init(Context context)
-//或者
-XDownload.init(Context context, Config config)
-```
-示例App配置
+注意：默认的下载存储路径为/storage/emulated/0/Android/data/{package}/cache/xdownload/，package为你的app包名。
+如果你需要在其他位置创建下载存储文件夹，务必保证在下载之前已经获取到读写文件夹运行时权限!
+
+参考示例App配置，可以在Application中设置一个全局的XDownload，你也可以在你需要的地方创建XDownload对象，使用完之后释放即可
 ```
 public class DownloadApp extends Application {
+    private static XDownload xDownload;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Config config = Config.defaultConfig(this);
-        config.setDiskUsage(new TotalSizeLruDiskUsage(20 * 1024 * 1024));//限制20M
-        XDownload.get().init(this, config);
+        //这里务必保证文件夹已经获取到运行时读写权限
+        File saveDir = new File(getExternalCacheDir().getAbsolutePath(), "cache_dir");
+        if (!saveDir.isDirectory() || !saveDir.exists()) {
+            saveDir.mkdir();
+        }
+        config.setSaveDirPath(saveDir.getAbsolutePath());
+        DLogger.enable();
+        xDownload = new XDownload(this, config);
+    }
+
+    public static XDownload getDownload() {
+        return xDownload;
     }
 }
 ```
 * 添加一个下载任务，如果任务已经存在，则不再添加，返回当前url对应的task对象
 ```
- XDownload.get().addTask(url, allDownloadListener);
+ xDownload.addTask(url, allDownloadListener);
 ```
 
 * 根据下载url获取一个下载任务，如果任务不存在将返回空
 ```
-XDownload.get().getTask(String url)
+xDownload.getTask(String url)
 ```
 * 根据下载url取消下载任务
 ```
-XDownload.get().removeTask(String url)
+xDownload.removeTask(String url)
 ```
 * 关闭XDownload，会停止所有下载任务
 ```
-XDownload.get().shutdown()
+xDownload.shutdown()
 ```
 
 ## 设置文件删除策略

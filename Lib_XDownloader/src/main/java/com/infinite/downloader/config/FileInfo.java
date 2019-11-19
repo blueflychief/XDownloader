@@ -117,7 +117,8 @@ public class FileInfo implements Serializable {
         return info == null
                 || fileSize != info.getFileSize()
                 || !TextUtils.equals(fileMd5, info.getFileMd5())
-                || !TextUtils.equals(downloadUrl, info.getDownloadUrl());
+                || !TextUtils.equals(downloadUrl, info.getDownloadUrl())
+                || !TextUtils.equals(savePath, info.getSavePath());
     }
 
     public boolean finished() {

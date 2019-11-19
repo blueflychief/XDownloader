@@ -65,7 +65,7 @@ public class DownloadTask extends ComparableTask {
                     boolean checkRemote = config.isCheckRemote();
                     DLogger.d("file has downloaded already,need check remote?" + checkRemote);
                     if (!checkRemote) {
-                        onFinishDownload();
+                        onTaskFinish(false);
                         return;
                     }
                 } else {
@@ -88,10 +88,8 @@ public class DownloadTask extends ComparableTask {
             if (!isStopped()) {
                 if (info != null && info.canDownload()) {
                     if (!config.existSaveDir()) {
-                        DLogger.d("save dir not exist");
                         fileInfo.setMessage("please ensure the save dir exist!!!");
-                        updateStatus(DownloadStatus.ERROR, fileInfo);
-                        stopped = true;
+                        onTaskError("save dir not exist");
                         return;
                     }
                     String savePath = config.getSaveDirPath() + File.separator + info.getFileName();
@@ -104,18 +102,14 @@ public class DownloadTask extends ComparableTask {
                     } else {
                         DLogger.d("remote file not change,continue download");
                         if (fileInfo.finished()) {
-                            DLogger.d("file has downloaded already");
-                            onFinishDownload();
+                            onTaskFinish(false);
                         } else {
                             DLogger.d("file download incomplete,continue download");
                             download();
                         }
                     }
                 } else {
-                    DLogger.d("get file info error:" + (info != null ? info.getMessage() : ""));
-                    updateStatus(DownloadStatus.ERROR, info);
-                    stopped = true;
-                    downloadListenerSet.clear();
+                    onTaskError("get file info error:" + (info != null ? info.getMessage() : ""));
                 }
             } else {
                 onTaskTerminal();
@@ -135,7 +129,9 @@ public class DownloadTask extends ComparableTask {
     }
 
     public void addDownloadListener(DownloadListener listener) {
-        downloadListenerSet.add(listener);
+        if (!downloadListenerSet.contains(listener)) {
+            downloadListenerSet.add(listener);
+        }
     }
 
     public void removeDownloadListener(DownloadListener listener) {
@@ -149,10 +145,9 @@ public class DownloadTask extends ComparableTask {
     @Override
     public void stop() {
         super.stop();
-        removeAllDownloadListener();
     }
 
-    public void close() {
+    private void close() {
         if (writer != null) {
             writer.close();
         }
@@ -199,20 +194,20 @@ public class DownloadTask extends ComparableTask {
             }
             DLogger.d("file download finish,current size:" + currentSize);
             recorder.put(fileInfo.getUrlMd5(), fileInfo);
-            onFinishDownload();
+            onTaskFinish(true);
         } catch (IOException e) {
             e.printStackTrace();
-            DLogger.e("download file exception:" + e.getMessage());
             fileInfo.setMessage(e.getMessage());
             recorder.put(fileInfo.getUrlMd5(), fileInfo);
-            updateStatus(DownloadStatus.ERROR, fileInfo);
+            onTaskError(e.getMessage());
         } finally {
             close();
         }
     }
 
-    private void onFinishDownload() {
-        String info = "file is finish download already:" + (fileInfo != null ? fileInfo.getFileName() : "");
+    private void onTaskFinish(boolean newComplete) {
+        String info = "file is finish download already,is new complete?" + newComplete
+                + ",file name:" + (fileInfo != null ? fileInfo.getFileName() : "");
         DLogger.d(info);
         fileInfo.setMessage(info);
         updateStatus(DownloadStatus.FINISH, fileInfo);
@@ -230,11 +225,11 @@ public class DownloadTask extends ComparableTask {
         }
     }
 
-    private void resetDownloadInfo() {
-        fileInfo.setCostTime(0);
-        fileInfo.setCurrentSize(0);
-        CommonUtils.deleteFile(fileInfo.getSavePath());
-        recorder.put(requestUrlMd5, fileInfo);
+    private void onTaskError(String message) {
+        DLogger.e("download file exception:" + message);
+        updateStatus(DownloadStatus.ERROR, fileInfo);
+        stopped = true;
+        downloadListenerSet.clear();
     }
 
     private void onTaskTerminal() {
@@ -248,6 +243,13 @@ public class DownloadTask extends ComparableTask {
         close();
         stopped = true;
         downloadListenerSet.clear();
+    }
+
+    private void resetDownloadInfo() {
+        fileInfo.setCostTime(0);
+        fileInfo.setCurrentSize(0);
+        CommonUtils.deleteFile(fileInfo.getSavePath());
+        recorder.put(requestUrlMd5, fileInfo);
     }
 
     private void updateStatus(int status, FileInfo info) {
