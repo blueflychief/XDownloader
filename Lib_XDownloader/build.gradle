@@ -16,11 +16,24 @@ android {
     }
 
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            def fileName = "lib_xdownloader-" + defaultConfig.versionName + "-" + variant.buildType.name + ".aar"
+            outputFileName = fileName
+        }
+    }
+
 
 }
 
