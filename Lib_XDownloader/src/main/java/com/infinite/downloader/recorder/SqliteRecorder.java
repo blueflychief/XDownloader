@@ -25,7 +25,7 @@ import java.util.List;
 public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
 
     private static final int DB_VERSION = 1;
-    private static final String DB_NAME = "download_record.db";
+    private static final String DB_NAME = "infinite_xdownload_record.db";
     private static final String TABLE_NAME = "tb_record";
     private static final String URL_MD5_INDEX_NAME = "idx_url_md5";
 

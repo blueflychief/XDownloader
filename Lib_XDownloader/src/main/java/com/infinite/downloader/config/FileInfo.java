@@ -122,7 +122,7 @@ public class FileInfo implements Serializable {
     }
 
     public boolean finished() {
-        return fileSize > 0 && fileSize == currentSize && localFileExists();
+        return fileSize > 0 && fileSize == currentSize && fileSize == getLocalFileSize();
     }
 
     public boolean recordInvalid() {

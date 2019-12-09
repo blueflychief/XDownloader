@@ -143,7 +143,8 @@ public class XDownload {
         String md5 = CommonUtils.computeMd5(url);
         FileInfo fileInfo = recorder != null ?
                 recorder.get(md5) : new SqliteRecorder(appContext).get(md5);
-        return fileInfo != null ? fileInfo.getLocalFile() : null;
+        DLogger.e("getFile info:" + fileInfo);
+        return fileInfo != null && fileInfo.finished() ? fileInfo.getLocalFile() : null;
     }
 
     public static String getVersion() {

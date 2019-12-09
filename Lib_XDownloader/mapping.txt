@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 9e5cc11
+# pg_map_id: 2548bf0
 com.infinite.downloader.BuildConfig -> a.a.a.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -24,17 +24,17 @@ com.infinite.downloader.XDownload -> com.infinite.downloader.XDownload:
     11:11:void <init>(android.content.Context,com.infinite.downloader.config.Config):46:46 -> <init>
     12:22:void <init>(android.content.Context,com.infinite.downloader.config.Config):37:47 -> <init>
     1:24:void init(android.content.Context,com.infinite.downloader.config.Config):51:74 -> a
-    25:39:void shrink():173:187 -> a
+    25:39:void shrink():174:188 -> a
     1:1:com.infinite.downloader.task.DownloadTask addTask(java.lang.String):79:79 -> addTask
     2:13:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):84:95 -> addTask
     14:24:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):89:99 -> addTask
     25:30:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):97:102 -> addTask
-    1:4:java.io.File getFile(java.lang.String):143:146 -> getFile
+    1:5:java.io.File getFile(java.lang.String):143:147 -> getFile
     1:1:com.infinite.downloader.recorder.Recorder getRecorder():138:138 -> getRecorder
     1:6:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):108:113 -> getTask
     1:8:boolean removeTask(java.lang.String):119:126 -> removeTask
-    1:16:void shutdown():154:169 -> shutdown
-    17:17:void shutdown():167:167 -> shutdown
+    1:16:void shutdown():155:170 -> shutdown
+    17:17:void shutdown():168:168 -> shutdown
 com.infinite.downloader.XDownload$1 -> com.infinite.downloader.XDownload$a:
     com.infinite.downloader.XDownload this$0 -> b
     int index -> a
