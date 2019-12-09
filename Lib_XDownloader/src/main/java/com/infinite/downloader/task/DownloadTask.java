@@ -38,6 +38,7 @@ public class DownloadTask extends ComparableTask {
     private String requestUrl;
     private FileInfo fileInfo;
     private long startTime;
+    private boolean needCloseRecorder;
 
     public DownloadTask(Context context, String url) {
         this(context, url, null, null);
@@ -47,6 +48,7 @@ public class DownloadTask extends ComparableTask {
         super();
         this.requestUrl = url;
         this.requestUrlMd5 = CommonUtils.computeMd5(url);
+        this.needCloseRecorder = recorder == null;
         this.recorder = recorder == null ? new SqliteRecorder(context) : recorder;
         this.config = config == null ? Config.defaultConfig(context) : config;
         this.streamReader = new HttpStreamReader();
@@ -148,11 +150,21 @@ public class DownloadTask extends ComparableTask {
     }
 
     private void close() {
+        DLogger.d("task close");
+        closeRecorder();
         if (writer != null) {
             writer.close();
         }
         if (streamReader != null) {
             streamReader.close();
+        }
+    }
+
+    private void closeRecorder() {
+        DLogger.d("task close recorder");
+        if (needCloseRecorder && recorder != null) {
+            recorder.release();
+            recorder = null;
         }
     }
 
@@ -223,6 +235,7 @@ public class DownloadTask extends ComparableTask {
                 DLogger.e("shrink file error:" + e.getMessage());
             }
         }
+        closeRecorder();
     }
 
     private void onTaskError(String message) {

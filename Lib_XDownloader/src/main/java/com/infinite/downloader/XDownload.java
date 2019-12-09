@@ -167,6 +167,10 @@ public class XDownload {
             }
         }
         threadPoolExecutor.shutdownNow();
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+        }
         initialized = false;
     }
 

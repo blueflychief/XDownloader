@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btStartDownload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DownloadTask downloadTask = new DownloadTask(MainActivity.this, Urls.URLS[0]);
+                DownloadTask downloadTask = new DownloadTask(MainActivity.this, Urls.URLS[1]);
                 downloadThread = new Thread(downloadTask);
                 downloadTask.addDownloadListener(downloadListener);
                 downloadThread.start();
