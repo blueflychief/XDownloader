@@ -68,6 +68,7 @@ public class XDownload {
                             return thread;
                         }
                     });
+            recorder.shrink();
             initialized = true;
             DLogger.d("XDownload is initialized");
         } else {

@@ -225,7 +225,7 @@ public class DownloadTask extends ComparableTask {
         updateStatus(DownloadStatus.FINISH, fileInfo);
         stopped = true;
         downloadListenerSet.clear();
-        recorder.shrink();
+//        recorder.shrink();
         File file = fileInfo.getLocalFile();
         if (config.getDiskUsage() != null && file != null) {
             try {

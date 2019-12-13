@@ -35,7 +35,7 @@ public class Config {
         if (!dir.exists() || !dir.isDirectory()) {
             dir.mkdirs();
         }
-        config.setDiskUsage(new TotalSizeLruDiskUsage(512 * ONE_M));
+        config.setDiskUsage(new TotalSizeLruDiskUsage(40 * ONE_M));
         config.setSaveDirPath(dirPath);
         return config;
     }
