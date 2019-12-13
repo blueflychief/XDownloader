@@ -12,12 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
-import com.infinite.downloader.recorder.Recorder;
 import com.infinite.downloader.task.DownloadTask;
-import com.infinite.downloader.utils.CommonUtils;
-import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
+
+//import com.infinite.downloader.recorder.Recorder;
+//import com.infinite.downloader.utils.CommonUtils;
 
 /**
  * Email: 690797861@qq.com
@@ -89,32 +89,32 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btAddRecord).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Recorder recorder = DownloadApp.getDownload().getRecorder();
-                FileInfo fileInfo;
-                for (int i = 0; i < 30_000; i++) {
-                    fileInfo = new FileInfo();
-                    fileInfo.setRequestUrl(Urls.IMAGES[0] + index);
-                    fileInfo.setDownloadUrl(Urls.IMAGES[0] + index);
-                    fileInfo.setContentType("jpg");
-                    fileInfo.setFileSize(100);
-                    fileInfo.setCostTime(20);
-                    fileInfo.setSupportRange(true);
-                    fileInfo.setFileName("file_name");
-                    fileInfo.setSavePath("/save/path");
-                    index++;
-                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
-                }
+//                Recorder recorder = DownloadApp.getDownload().getRecorder();
+//                FileInfo fileInfo;
+//                for (int i = 0; i < 30_000; i++) {
+//                    fileInfo = new FileInfo();
+//                    fileInfo.setRequestUrl(Urls.IMAGES[0] + index);
+//                    fileInfo.setDownloadUrl(Urls.IMAGES[0] + index);
+//                    fileInfo.setContentType("jpg");
+//                    fileInfo.setFileSize(100);
+//                    fileInfo.setCostTime(20);
+//                    fileInfo.setSupportRange(true);
+//                    fileInfo.setFileName("file_name");
+//                    fileInfo.setSavePath("/save/path");
+//                    index++;
+//                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
+//                }
             }
         });
 
         findViewById(R.id.btQueryRecord).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String id = Urls.IMAGES[0] + etId.getText().toString();
-                Recorder recorder = DownloadApp.getDownload().getRecorder();
-                String md5 = CommonUtils.computeMd5(id);
-                FileInfo fileInfo = recorder.get(md5);
-                DLogger.d("query result:" + fileInfo);
+//                String id = Urls.IMAGES[0] + etId.getText().toString();
+//                Recorder recorder = DownloadApp.getDownload().getRecorder();
+//                String md5 = CommonUtils.computeMd5(id);
+//                FileInfo fileInfo = recorder.get(md5);
+//                DLogger.d("query result:" + fileInfo);
             }
         });
     }
