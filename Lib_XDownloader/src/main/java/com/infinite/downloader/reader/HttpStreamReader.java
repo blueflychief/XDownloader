@@ -13,6 +13,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -46,6 +47,15 @@ public class HttpStreamReader implements StreamReader {
             try {
                 do {
                     connection = (HttpURLConnection) new URL(url).openConnection();
+                    try {
+                        if (connection instanceof HttpsURLConnection) {
+                            ((HttpsURLConnection) connection).setSSLSocketFactory(createSSLSocketFactory());
+                            DLogger.d("=====setSSLSocketFactory");
+                        }
+                    } catch (Exception e) {
+                        DLogger.e("=====setSSLSocketFactory exception:" + e.getMessage());
+                        e.printStackTrace();
+                    }
                     connection.setConnectTimeout(CONNECT_TIMEOUT);
                     connection.setReadTimeout(READ_TIMEOUT);
                     connection.setRequestMethod(method);

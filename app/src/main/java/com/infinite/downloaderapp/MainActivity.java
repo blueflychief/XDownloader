@@ -31,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         etIndex = findViewById(R.id.etIndex);
         tvResult = findViewById(R.id.tvResult);
+        findViewById(R.id.btAsyncTask).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, AsyncTaskActivity.class));
+            }
+        });
         findViewById(R.id.btDownloadPage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

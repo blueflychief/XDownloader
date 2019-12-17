@@ -21,6 +21,13 @@
 
 
         <activity android:name="com.infinite.downloaderapp.DownloadActivity" />
+        <activity android:name="com.infinite.downloaderapp.AsyncTaskActivity">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
+
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
+        </activity>
     </application>
 
 </manifest>

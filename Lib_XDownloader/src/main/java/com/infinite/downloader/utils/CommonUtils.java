@@ -48,8 +48,11 @@ public class CommonUtils {
     public static boolean isUrl(String s) {
         if (!TextUtils.isEmpty(s)) {
 //            return Patterns.WEB_URL.matcher(s).matches();
-            String p = "(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
-            return s.matches(p);
+//            String p = "(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
+//            return s.matches(p);
+            return s.startsWith("http://")
+                    || s.startsWith("https://")
+                    || s.startsWith("ftp://");
         }
         return false;
     }

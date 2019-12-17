@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 0cb2290
+# pg_map_id: 48ea7f3
 com.infinite.downloader.BuildConfig -> a.a.a.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -146,16 +146,16 @@ com.infinite.downloader.reader.HttpStreamReader -> a.a.a.c.a:
     int CONNECT_TIMEOUT -> b
     java.io.InputStream inputStream -> a
     int READ_TIMEOUT -> c
-    1:4:void <init>():31:34 -> <init>
-    1:54:com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long):38:91 -> a
-    55:58:java.lang.String parseFileName(java.net.URL):98:101 -> a
-    59:60:int readInputStream(byte[]):108:109 -> a
-    61:63:javax.net.ssl.SSLSocketFactory createSSLSocketFactory():127:129 -> a
-    64:64:void closeConnection(java.net.HttpURLConnection):154:154 -> a
-    1:5:void close():115:119 -> close
+    1:4:void <init>():32:35 -> <init>
+    1:63:com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long):39:101 -> a
+    64:67:java.lang.String parseFileName(java.net.URL):108:111 -> a
+    68:69:int readInputStream(byte[]):118:119 -> a
+    70:72:javax.net.ssl.SSLSocketFactory createSSLSocketFactory():137:139 -> a
+    73:73:void closeConnection(java.net.HttpURLConnection):164:164 -> a
+    1:5:void close():125:129 -> close
 com.infinite.downloader.reader.HttpStreamReader$TrustAllCerts -> a.a.a.c.a$a:
-    1:1:void <init>():135:135 -> <init>
-    1:1:java.security.cert.X509Certificate[] getAcceptedIssuers():148:148 -> getAcceptedIssuers
+    1:1:void <init>():145:145 -> <init>
+    1:1:java.security.cert.X509Certificate[] getAcceptedIssuers():158:158 -> getAcceptedIssuers
 com.infinite.downloader.reader.StreamReader -> a.a.a.c.b:
     com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long) -> a
     int readInputStream(byte[]) -> a
@@ -259,8 +259,8 @@ com.infinite.downloader.utils.CommonUtils -> a.a.a.f.a:
     1:7:java.lang.String computeMd5(java.lang.String):20:26 -> a
     8:12:java.lang.String bytesToHexString(byte[]):33:37 -> a
     13:17:java.lang.String getListString(java.util.List):41:45 -> a
-    1:4:boolean deleteFile(java.lang.String):58:61 -> b
-    1:4:boolean isUrl(java.lang.String):49:52 -> c
+    1:4:boolean deleteFile(java.lang.String):61:64 -> b
+    1:7:boolean isUrl(java.lang.String):49:55 -> c
 com.infinite.downloader.utils.DLogger -> com.infinite.downloader.utils.DLogger:
     java.lang.String DEBUG_TAG -> a
     boolean debugEnable -> b
