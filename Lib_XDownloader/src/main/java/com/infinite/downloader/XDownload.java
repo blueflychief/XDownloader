@@ -34,9 +34,10 @@ public class XDownload {
     private Config downloadConfig;
     private Recorder recorder;
     private boolean initialized;
-    private final Map<String, DownloadTask> taskMap = new HashMap<>(8);
+    private final static Map<String, DownloadTask> TASK_MAP = new HashMap<>(16);
 
     private XDownload() {
+        throw new IllegalStateException("XDownload not allowed invoke this constructor !!!");
     }
 
     public XDownload(Context appContext) {
@@ -84,12 +85,12 @@ public class XDownload {
         DownloadTask task = null;
         String md5 = CommonUtils.computeMd5(url);
         if (!TextUtils.isEmpty(url)) {
-            synchronized (taskMap) {
-                DownloadTask t = taskMap.get(md5);
+            synchronized (TASK_MAP) {
+                DownloadTask t = TASK_MAP.get(md5);
                 if (t == null || t.dead()) {
                     task = new DownloadTask(appContext, url, recorder, downloadConfig);
+                    TASK_MAP.put(md5, task);
                     threadPoolExecutor.submit(task);
-                    taskMap.put(md5, task);
                     DLogger.d("add a new task:" + task.getUrlMd5());
                 } else {
                     task = t;
@@ -108,8 +109,8 @@ public class XDownload {
     public DownloadTask getTask(String url) {
         if (!TextUtils.isEmpty(url)) {
             String md5 = CommonUtils.computeMd5(url);
-            synchronized (taskMap) {
-                DownloadTask task = taskMap.get(md5);
+            synchronized (TASK_MAP) {
+                DownloadTask task = TASK_MAP.get(md5);
                 return task != null && !task.dead() ? task : null;
             }
         }
@@ -153,9 +154,9 @@ public class XDownload {
     }
 
     public void shutdown() {
-        synchronized (taskMap) {
-            if (taskMap != null && taskMap.size() > 0) {
-                Iterator<Map.Entry<String, DownloadTask>> iterator = taskMap.entrySet()
+        synchronized (TASK_MAP) {
+            if (TASK_MAP.size() > 0) {
+                Iterator<Map.Entry<String, DownloadTask>> iterator = TASK_MAP.entrySet()
                         .iterator();
                 DownloadTask task;
                 while (iterator.hasNext()) {
@@ -176,14 +177,17 @@ public class XDownload {
     }
 
     private void shrink() {
-        synchronized (taskMap) {
-            if (taskMap != null && taskMap.size() > 0) {
-                Iterator<Map.Entry<String, DownloadTask>> iterator = taskMap.entrySet()
+        synchronized (TASK_MAP) {
+            if (TASK_MAP.size() > 0) {
+                Iterator<Map.Entry<String, DownloadTask>> iterator = TASK_MAP.entrySet()
                         .iterator();
                 DownloadTask task;
                 while (iterator.hasNext()) {
                     task = iterator.next().getValue();
-                    if (task.dead()) {
+                    if (task == null) {
+                        iterator.remove();
+                        DLogger.d("task is null,remove task");
+                    } else if (task.dead()) {
                         task.removeAllDownloadListener();
                         DLogger.d("task dead,remove task " + task.getUrl());
                         iterator.remove();
