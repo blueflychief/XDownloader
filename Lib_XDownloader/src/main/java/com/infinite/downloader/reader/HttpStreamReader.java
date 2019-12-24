@@ -75,7 +75,7 @@ public class HttpStreamReader implements StreamReader {
                             || responseCode == HttpURLConnection.HTTP_PARTIAL) {
                         redirected = false;
                         inputStream = connection.getInputStream();
-                        fileInfo.setFileName(parseFileName(connection.getURL()));
+                        fileInfo.setFileName(CommonUtils.parseFileName(fileInfo.getRequestUrl()));
                         fileInfo.setFileSize(connection.getContentLength() + offset);
                         fileInfo.setContentType(connection.getContentType());
                         fileInfo.setDownloadUrl(url);
@@ -104,14 +104,6 @@ public class HttpStreamReader implements StreamReader {
         return fileInfo;
     }
 
-    private String parseFileName(URL url) {
-        String path = url.getPath();
-        int index = path.lastIndexOf("/");
-        if (index > -1 && index < path.length() - 1) {
-            return path.substring(index + 1);
-        }
-        return null;
-    }
 
     @Override
     public int readInputStream(byte[] buffer) throws IOException {

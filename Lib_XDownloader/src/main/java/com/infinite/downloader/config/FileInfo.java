@@ -156,11 +156,7 @@ public class FileInfo implements Serializable {
     }
 
     public boolean localFileExists() {
-        if (TextUtils.isEmpty(saveDirPath)) {
-            return false;
-        }
-        File file = new File(saveDirPath, fileName);
-        return file.exists() && file.isFile();
+        return getLocalFile() != null;
     }
 
     public String getMessage() {
@@ -191,23 +187,16 @@ public class FileInfo implements Serializable {
         this.fileName = fileName;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
     public boolean isBreakpointDownload() {
         return breakpointDownload;
     }
 
     public void setBreakpointDownload(boolean breakpointDownload) {
         this.breakpointDownload = breakpointDownload;
-    }
-
-    public String getFileName() {
-        if (!TextUtils.isEmpty(fileName)) {
-            return fileName;
-        }
-        int index = requestUrl.lastIndexOf("/");
-        if (index > -1 && index < requestUrl.length() - 1) {
-            return requestUrl.substring(index + 1);
-        }
-        return urlMd5;
     }
 
     @Override

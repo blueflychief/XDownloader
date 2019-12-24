@@ -16,10 +16,11 @@ import java.util.List;
  * Description: Class description
  */
 public class CommonUtils {
+    private static final String FILE_NAME_JOIN = "_";
 
     @Nullable
     public static String computeMd5(String string) {
-        String md5 = null;
+        String md5 = "";
         if (!TextUtils.isEmpty(string)) {
             try {
                 MessageDigest messageDigest = MessageDigest.getInstance("MD5");
@@ -37,6 +38,19 @@ public class CommonUtils {
             return computeMd5(url + saveDirPath);
         }
         return "";
+    }
+
+    // TODO: 12/24/2019 Android文件名长度为255个英文字符 ，有些url太长
+    public static String parseFileName(String url) {
+        String urlMd5 = CommonUtils.computeMd5(url);
+        String fileName;
+        int index = url.lastIndexOf("/");
+        if (index > -1 && index < url.length() - 1) {
+            fileName = urlMd5 + FILE_NAME_JOIN + url.substring(index + 1);
+        } else {
+            fileName = urlMd5;
+        }
+        return fileName;
     }
 
     public static String bytesToHexString(byte[] bytes) {
@@ -62,7 +76,8 @@ public class CommonUtils {
 //            return s.matches(p);
             return s.startsWith("http://")
                     || s.startsWith("https://")
-                    || s.startsWith("ftp://");
+                    || s.startsWith("ftp://")
+                    || s.startsWith("rtsp://");
         }
         return false;
     }

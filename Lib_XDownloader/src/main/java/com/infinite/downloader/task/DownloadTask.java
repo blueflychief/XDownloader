@@ -194,7 +194,7 @@ public class DownloadTask extends ComparableTask {
                     fileInfo.setMessage("file is downloading");
                     fileInfo.setCostTime(costTime + fileInfo.getCostTime());
                     fileInfo.setSpeed(computeSpeed(length, costTime));
-                    recorder.put(fileInfo.getUrlMd5(), fileInfo);
+                    recorder.put(requestUrlMd5, fileInfo);
                     //128k
                     if (currentSize > ((count << 17) + start)) {
                         DLogger.d("file downloading,current size:" + currentSize);
@@ -207,12 +207,12 @@ public class DownloadTask extends ComparableTask {
                 }
             }
             DLogger.d("file download finish,current size:" + currentSize);
-            recorder.put(fileInfo.getUrlMd5(), fileInfo);
+            recorder.put(requestUrlMd5, fileInfo);
             onTaskFinish(true);
         } catch (IOException e) {
             e.printStackTrace();
             fileInfo.setMessage(e.getMessage());
-            recorder.put(fileInfo.getUrlMd5(), fileInfo);
+            recorder.put(requestUrlMd5, fileInfo);
             onTaskError(e.getMessage());
         } finally {
             close();
@@ -253,7 +253,7 @@ public class DownloadTask extends ComparableTask {
             long costTime = System.currentTimeMillis() - startTime;
             fileInfo.setCostTime(fileInfo.getCostTime() + costTime);
             fileInfo.setMessage("task is terminal,stop download file");
-            recorder.put(fileInfo.getUrlMd5(), fileInfo);
+            recorder.put(requestUrlMd5, fileInfo);
         }
         updateStatus(DownloadStatus.STOP, fileInfo);
         close();
