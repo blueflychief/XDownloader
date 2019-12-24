@@ -199,11 +199,11 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         FileInfo info = get(urlMd5);
         exist = info != null;
         if (exist) {
-            result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo, false),
+            result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
                     COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
         } else {
             result = getWritableDatabase().insert(TABLE_NAME,
-                    null, convertColumns(fileInfo, true));
+                    null, convertColumns(fileInfo));
         }
         DLogger.d((exist ? "update" : "insert") + " item finish,"
                 + (exist ? "affected rows:" : "record id") + ":" + result +
@@ -230,17 +230,15 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         close();
     }
 
-    private ContentValues convertColumns(FileInfo fileInfo, boolean updateUrlMd5) {
+    private ContentValues convertColumns(FileInfo fileInfo) {
         ContentValues values = new ContentValues(16);
-        if (updateUrlMd5) {
-            values.put(COL_URL_MD5, fileInfo.getUrlMd5());
-        }
+        values.put(COL_URL_MD5, fileInfo.getUrlMd5());
         values.put(COL_REQUEST_URL, fileInfo.getRequestUrl());
         values.put(COL_DOWNLOAD_URL, fileInfo.getDownloadUrl());
         values.put(COL_FILE_LENGTH, fileInfo.getFileSize());
         values.put(COL_FILE_MD5, fileInfo.getFileMd5());
         values.put(COL_COMPLETED_LENGTH, fileInfo.getCurrentSize());
-        values.put(COL_SAVE_PATH, fileInfo.getSavePath());
+        values.put(COL_SAVE_PATH, fileInfo.getSaveDirPath());
         values.put(COL_CONTENT_TYPE, fileInfo.getContentType());
         values.put(COL_SUPPORT_RANGE, fileInfo.isSupportRange() ? 1 : 0);
         values.put(COL_COST_TIME, fileInfo.getCostTime());
@@ -256,6 +254,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
      */
     private FileInfo convertFileInfo(Cursor cursor) {
         long id = cursor.getLong(0);
+        String urlMd5 = cursor.getString(1);
         String requestUrl = cursor.getString(2);
         String downloadUrl = cursor.getString(3);
         long fileLength = cursor.getLong(4);
@@ -268,12 +267,13 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         String fileName = cursor.getString(11);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setId(id);
+        fileInfo.setUrlMd5(urlMd5);
+        fileInfo.setSaveDirPath(savePath);
         fileInfo.setRequestUrl(requestUrl);
         fileInfo.setDownloadUrl(downloadUrl);
         fileInfo.setFileSize(fileLength);
         fileInfo.setFileMd5(fileMd5);
         fileInfo.setCurrentSize(completedLength);
-        fileInfo.setSavePath(savePath);
         fileInfo.setContentType(contentType);
         fileInfo.setSupportRange(supportRange == 1);
         fileInfo.setCostTime(costTime);

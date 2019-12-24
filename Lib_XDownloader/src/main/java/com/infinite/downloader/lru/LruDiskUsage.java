@@ -81,8 +81,12 @@ public abstract class LruDiskUsage implements DiskUsage {
         }
 
         @Override
-        public Void call() throws Exception {
-            touchInBackground(file);
+        public Void call() {
+            try {
+                touchInBackground(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return null;
         }
     }

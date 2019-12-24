@@ -1,13 +1,14 @@
 package com.infinite.downloaderapp;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.FileInfo;
@@ -16,8 +17,12 @@ import com.infinite.downloader.task.DownloadTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
+    private static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     private EditText etIndex;
     private static final String URL = "http:/www.baidu.com/";
 
@@ -83,6 +88,29 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        findViewById(R.id.btMultiDownloader).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, MultiDownloaderActivity.class));
+            }
+        });
+
+        if (!permissionsCheck(PERMISSIONS)) {
+            permissionRequest(this, PERMISSIONS, 100);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100) {
+            if (permissionsGranted(grantResults)) {
+
+            }
+        }
     }
 
     private DownloadListener downloadListener = new DownloadListener() {

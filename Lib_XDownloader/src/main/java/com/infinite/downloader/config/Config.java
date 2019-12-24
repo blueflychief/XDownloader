@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.infinite.downloader.lru.DiskUsage;
 import com.infinite.downloader.lru.TotalSizeLruDiskUsage;
+import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
 
@@ -15,9 +16,10 @@ import java.io.File;
  * Description: class description
  */
 public class Config {
-    private static final long ONE_M = 1024 * 1024;
+    private static final long ONE_M = 1_048_576L;
     private static final int CONNECT_TIMEOUT = 15_000;
     private static final int READ_TIMEOUT = 15_000;
+    private static final String DEFAULT_DOWNLOAD_DIR = "xdownload";
     private String saveDirPath;
     private int connectTimeout = CONNECT_TIMEOUT;
     private int readTimeout = READ_TIMEOUT;
@@ -28,14 +30,20 @@ public class Config {
         Config config = new Config();
         File cacheDir = context.getExternalCacheDir();
         if (cacheDir == null) {
+            cacheDir = context.getCacheDir();
+        }
+        if (cacheDir == null) {
             throw new NullPointerException("external cache dir null exist!!!");
         }
-        String dirPath = cacheDir.getAbsolutePath() + File.separator + "xdownload";
+        String dirPath = cacheDir.getAbsolutePath() + File.separator + DEFAULT_DOWNLOAD_DIR;
         File dir = new File(dirPath);
         if (!dir.exists() || !dir.isDirectory()) {
-            dir.mkdirs();
+            boolean isOk = dir.mkdirs();
+            if (!isOk) {
+                throw new IllegalStateException("create dir fail, path:" + dirPath);
+            }
         }
-        config.setDiskUsage(new TotalSizeLruDiskUsage(40 * ONE_M));
+        config.setDiskUsage(new TotalSizeLruDiskUsage(512 * ONE_M));
         config.setSaveDirPath(dirPath);
         return config;
     }
@@ -46,6 +54,24 @@ public class Config {
         }
         File dir = new File(saveDirPath);
         return dir.exists() && dir.isDirectory();
+    }
+
+    public synchronized boolean tryCreateSaveDir() {
+        if (TextUtils.isEmpty(saveDirPath)) {
+            return false;
+        }
+        boolean isOk = false;
+        File dir = new File(saveDirPath);
+        if (dir.exists() && dir.isDirectory()) {
+            return true;
+        }
+        try {
+            isOk = dir.mkdirs();
+        } catch (Exception e) {
+            e.printStackTrace();
+            DLogger.e("create dir exception:" + e.getMessage());
+        }
+        return isOk;
     }
 
     public String getSaveDirPath() {

@@ -83,8 +83,8 @@ public class XDownload {
 
     public DownloadTask addTask(String url, DownloadListener listener) {
         DownloadTask task = null;
-        String md5 = CommonUtils.computeMd5(url);
-        if (!TextUtils.isEmpty(url)) {
+        String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
+        if (!TextUtils.isEmpty(md5)) {
             synchronized (TASK_MAP) {
                 DownloadTask t = TASK_MAP.get(md5);
                 if (t == null || t.dead()) {
@@ -100,6 +100,8 @@ public class XDownload {
             if (listener != null) {
                 task.addDownloadListener(listener);
             }
+        } else {
+            DLogger.e("add task fail,md5 is " + md5);
         }
         shrink();
         return task;
@@ -108,7 +110,7 @@ public class XDownload {
     @Nullable
     public DownloadTask getTask(String url) {
         if (!TextUtils.isEmpty(url)) {
-            String md5 = CommonUtils.computeMd5(url);
+            String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
             synchronized (TASK_MAP) {
                 DownloadTask task = TASK_MAP.get(md5);
                 return task != null && !task.dead() ? task : null;
@@ -142,11 +144,20 @@ public class XDownload {
 
     @Nullable
     public File getFile(String url) {
-        String md5 = CommonUtils.computeMd5(url);
-        FileInfo fileInfo = recorder != null ?
-                recorder.get(md5) : new SqliteRecorder(appContext).get(md5);
+        String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
+        boolean tempRecorder = recorder == null;
+        Recorder r = recorder != null ? recorder : new SqliteRecorder(appContext);
+        FileInfo fileInfo = r.get(md5);
+        if (tempRecorder) {
+            r.release();
+        }
         DLogger.e("getFile info:" + fileInfo);
         return fileInfo != null && fileInfo.finished() ? fileInfo.getLocalFile() : null;
+    }
+
+    @Nullable
+    public String getSaveDirPath() {
+        return downloadConfig != null ? downloadConfig.getSaveDirPath() : null;
     }
 
     public static String getVersion() {

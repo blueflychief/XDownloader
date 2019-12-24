@@ -1,9 +1,11 @@
 package com.infinite.downloaderapp;
 
 import android.app.Application;
+import android.os.Environment;
 
 import com.infinite.downloader.XDownload;
 import com.infinite.downloader.config.Config;
+import com.infinite.downloader.lru.TotalSizeLruDiskUsage;
 import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
@@ -21,11 +23,13 @@ public class DownloadApp extends Application {
     public void onCreate() {
         super.onCreate();
         Config config = Config.defaultConfig(this);
-        File saveDir = new File(getExternalCacheDir().getAbsolutePath(), "cache_dir");
+        File saveDir = new File(Environment.getExternalStorageDirectory() + File.separator + "Android", "11100");
+//        File saveDir = new File(getExternalCacheDir().getAbsolutePath(), "cache_dir");
         if (!saveDir.isDirectory() || !saveDir.exists()) {
             saveDir.mkdir();
         }
         config.setSaveDirPath(saveDir.getAbsolutePath());
+        config.setDiskUsage(new TotalSizeLruDiskUsage(512 * 1024 * 1024));
         DLogger.enable();
         xDownload = new XDownload(this, config);
     }

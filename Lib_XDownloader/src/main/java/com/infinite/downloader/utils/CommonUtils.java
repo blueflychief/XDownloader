@@ -2,6 +2,8 @@ package com.infinite.downloader.utils;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +17,7 @@ import java.util.List;
  */
 public class CommonUtils {
 
+    @Nullable
     public static String computeMd5(String string) {
         String md5 = null;
         if (!TextUtils.isEmpty(string)) {
@@ -27,6 +30,13 @@ public class CommonUtils {
             }
         }
         return md5;
+    }
+
+    public static String computeTaskMd5(String url, String saveDirPath) {
+        if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(saveDirPath)) {
+            return computeMd5(url + saveDirPath);
+        }
+        return "";
     }
 
     public static String bytesToHexString(byte[] bytes) {

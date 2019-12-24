@@ -4,8 +4,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.infinite.downloader.utils.CommonUtils;
-
 import java.io.File;
 import java.io.Serializable;
 
@@ -25,7 +23,7 @@ public class FileInfo implements Serializable {
     private String contentType;
     private boolean supportRange;
     private long currentSize;
-    private String savePath;
+    private String saveDirPath;
     private String message;
     private long costTime;
     private String fileName;
@@ -46,7 +44,6 @@ public class FileInfo implements Serializable {
 
     public void setRequestUrl(String requestUrl) {
         this.requestUrl = requestUrl;
-        this.urlMd5 = CommonUtils.computeMd5(requestUrl);
     }
 
     public String getDownloadUrl() {
@@ -67,6 +64,10 @@ public class FileInfo implements Serializable {
 
     public String getUrlMd5() {
         return urlMd5;
+    }
+
+    public void setUrlMd5(String urlMd5) {
+        this.urlMd5 = urlMd5;
     }
 
     public String getFileMd5() {
@@ -101,28 +102,35 @@ public class FileInfo implements Serializable {
         this.currentSize = currentSize;
     }
 
-    public String getSavePath() {
-        return savePath;
+    public String getSaveDirPath() {
+        return saveDirPath;
     }
 
-    public void setSavePath(String savePath) {
-        this.savePath = savePath;
+    public void setSaveDirPath(String savePath) {
+        this.saveDirPath = savePath;
     }
 
     public boolean canDownload() {
         return fileSize > 0;
     }
 
+    public String getFileSavePath() {
+        return saveDirPath + File.separator + fileName;
+    }
+
     public boolean changed(FileInfo info) {
         return info == null
                 || fileSize != info.getFileSize()
+                || !TextUtils.equals(fileName, info.getFileName())
                 || !TextUtils.equals(fileMd5, info.getFileMd5())
                 || !TextUtils.equals(downloadUrl, info.getDownloadUrl())
-                || !TextUtils.equals(savePath, info.getSavePath());
+                || !TextUtils.equals(saveDirPath, info.getSaveDirPath());
     }
 
     public boolean finished() {
-        return fileSize > 0 && fileSize == currentSize && fileSize == getLocalFileSize();
+        return fileSize > 0
+                && fileSize == currentSize
+                && fileSize == getLocalFileSize();
     }
 
     public boolean recordInvalid() {
@@ -136,10 +144,10 @@ public class FileInfo implements Serializable {
 
     @Nullable
     public File getLocalFile() {
-        if (TextUtils.isEmpty(savePath)) {
+        if (TextUtils.isEmpty(saveDirPath)) {
             return null;
         }
-        File file = new File(savePath);
+        File file = new File(saveDirPath, fileName);
         return file.exists() && file.isFile() ? file : null;
     }
 
@@ -148,10 +156,10 @@ public class FileInfo implements Serializable {
     }
 
     public boolean localFileExists() {
-        if (TextUtils.isEmpty(savePath)) {
+        if (TextUtils.isEmpty(saveDirPath)) {
             return false;
         }
-        File file = new File(savePath);
+        File file = new File(saveDirPath, fileName);
         return file.exists() && file.isFile();
     }
 
@@ -214,7 +222,7 @@ public class FileInfo implements Serializable {
                 ", contentType='" + contentType + '\'' +
                 ", supportRange=" + supportRange +
                 ", currentSize=" + currentSize +
-                ", savePath='" + savePath + '\'' +
+                ", saveDirPath='" + saveDirPath + '\'' +
                 ", message='" + message + '\'' +
                 ", costTime='" + costTime + '\'' +
                 ", fileName='" + fileName + '\'' +

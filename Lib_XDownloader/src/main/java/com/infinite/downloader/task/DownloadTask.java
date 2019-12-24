@@ -27,9 +27,8 @@ import java.util.Set;
  * Description: Class description
  */
 public class DownloadTask extends ComparableTask {
-    private static final String TAG = "DownloadTask";
     private static final int BUFFER_SIZE = 8_192;
-    private Config config;
+    private Config taskConfig;
     private Recorder recorder;
     private Writer writer;
     private StreamReader streamReader;
@@ -47,13 +46,14 @@ public class DownloadTask extends ComparableTask {
     public DownloadTask(Context context, String url, Recorder recorder, Config config) {
         super();
         this.requestUrl = url;
-        this.requestUrlMd5 = CommonUtils.computeMd5(url);
         this.needCloseRecorder = recorder == null;
         this.recorder = recorder == null ? new SqliteRecorder(context) : recorder;
-        this.config = config == null ? Config.defaultConfig(context) : config;
+        this.taskConfig = config == null ? Config.defaultConfig(context) : config;
+        this.requestUrlMd5 = CommonUtils.computeTaskMd5(url, this.taskConfig.getSaveDirPath());
         this.streamReader = new HttpStreamReader();
         this.downloadListenerSet = new HashSet<>(4);
         this.fileInfo = this.recorder.get(requestUrlMd5);
+        DLogger.d("get local record:" + this.fileInfo);
     }
 
     @Override
@@ -61,10 +61,10 @@ public class DownloadTask extends ComparableTask {
         startTime = System.currentTimeMillis();
         updateStatus(DownloadStatus.PREPARE, this.fileInfo);
         if (!isStopped()) {
-            DLogger.d(TAG, "task start running");
+            DLogger.d("task start running");
             if (fileInfo != null) {
                 if (fileInfo.finished()) {
-                    boolean checkRemote = config.isCheckRemote();
+                    boolean checkRemote = taskConfig.isCheckRemote();
                     DLogger.d("file has downloaded already,need check remote?" + checkRemote);
                     if (!checkRemote) {
                         onTaskFinish(false);
@@ -75,30 +75,32 @@ public class DownloadTask extends ComparableTask {
                     boolean supportRange = fileInfo.isSupportRange();
                     DLogger.d("local save file available?" + fileAvailable + "，supportRange：" + supportRange);
                     if (!fileAvailable || !supportRange) {
-                        DLogger.d("need delete local file");
+                        DLogger.d("local file is not correct or not support range download," +
+                                "need delete local file,fileAvailable:"
+                                + fileAvailable + ",supportRange:" + supportRange);
                         resetDownloadInfo();
                     }
                 }
             }
             DLogger.d("start get file info from remote server");
-            FileInfo info = streamReader.getFileInfo(requestUrl,
-                    this.fileInfo == null
-                            || this.fileInfo.finished()
-                            || !this.fileInfo.isSupportRange() ?
-                            0 : this.fileInfo.getCurrentSize());
-            DLogger.d("get file info from remote server:" + info);
+            FileInfo remoteInfo = streamReader.getFileInfo(requestUrl,
+                    this.fileInfo == null || this.fileInfo.finished() || !this.fileInfo.isSupportRange()
+                            ? 0 : this.fileInfo.getCurrentSize());
+            DLogger.d("get file info from remote server:" + remoteInfo);
             if (!isStopped()) {
-                if (info != null && info.canDownload()) {
-                    if (!config.existSaveDir()) {
-                        fileInfo.setMessage("please ensure the save dir exist!!!");
+                if (remoteInfo != null && remoteInfo.canDownload()) {
+                    remoteInfo.setUrlMd5(requestUrlMd5);
+                    remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
+                    if (!taskConfig.tryCreateSaveDir()) {
+                        if (fileInfo != null) {
+                            fileInfo.setMessage("please ensure the save dir exist!!!");
+                        }
                         onTaskError("save dir not exist");
                         return;
                     }
-                    String savePath = config.getSaveDirPath() + File.separator + info.getFileName();
-                    info.setSavePath(savePath);
-                    if (info.changed(fileInfo)) {
+                    if (remoteInfo.changed(fileInfo)) {
                         DLogger.d("remote file has changed or local file not exist,need download file");
-                        fileInfo = info;
+                        fileInfo = remoteInfo;
                         resetDownloadInfo();
                         download();
                     } else {
@@ -111,7 +113,7 @@ public class DownloadTask extends ComparableTask {
                         }
                     }
                 } else {
-                    onTaskError("get file info error:" + (info != null ? info.getMessage() : ""));
+                    onTaskError("get file info error:" + (remoteInfo != null ? remoteInfo.getMessage() : ""));
                 }
             } else {
                 onTaskTerminal();
@@ -119,7 +121,7 @@ public class DownloadTask extends ComparableTask {
         } else {
             onTaskTerminal();
         }
-        DLogger.e(TAG, "task end running");
+        DLogger.e("task end running");
     }
 
     public String getUrlMd5() {
@@ -177,9 +179,9 @@ public class DownloadTask extends ComparableTask {
         long start = currentSize;
         long costTime;
         long nowTime;
-        DLogger.d(TAG, "start download file,start size:" + start);
+        DLogger.d("start download file,start size:" + start);
         try {
-            writer = new FileWriter(fileInfo.getSavePath(), currentSize);
+            writer = new FileWriter(fileInfo.getFileSavePath(), currentSize);
             fileInfo.setBreakpointDownload(currentSize > 0);
             updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
             while ((length = streamReader.readInputStream(buffer)) != -1) {
@@ -214,6 +216,8 @@ public class DownloadTask extends ComparableTask {
             onTaskError(e.getMessage());
         } finally {
             close();
+            stopped = true;
+            downloadListenerSet.clear();
         }
     }
 
@@ -223,19 +227,18 @@ public class DownloadTask extends ComparableTask {
         DLogger.d(info);
         fileInfo.setMessage(info);
         updateStatus(DownloadStatus.FINISH, fileInfo);
-        stopped = true;
-        downloadListenerSet.clear();
-//        recorder.shrink();
         File file = fileInfo.getLocalFile();
-        if (config.getDiskUsage() != null && file != null) {
+        if (taskConfig.getDiskUsage() != null && file != null) {
             try {
-                config.getDiskUsage().touch(file);
+                taskConfig.getDiskUsage().touch(file);
             } catch (IOException e) {
                 e.printStackTrace();
                 DLogger.e("shrink file error:" + e.getMessage());
             }
         }
-        closeRecorder();
+        close();
+        stopped = true;
+        downloadListenerSet.clear();
     }
 
     private void onTaskError(String message) {
@@ -259,10 +262,16 @@ public class DownloadTask extends ComparableTask {
     }
 
     private void resetDownloadInfo() {
-        fileInfo.setCostTime(0);
-        fileInfo.setCurrentSize(0);
-        CommonUtils.deleteFile(fileInfo.getSavePath());
-        recorder.put(requestUrlMd5, fileInfo);
+        if (fileInfo != null) {
+            fileInfo.setCostTime(0);
+            fileInfo.setCurrentSize(0);
+            try {
+                CommonUtils.deleteFile(fileInfo.getFileSavePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            recorder.put(requestUrlMd5, fileInfo);
+        }
     }
 
     private void updateStatus(int status, FileInfo info) {
