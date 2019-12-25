@@ -68,6 +68,7 @@ public class DownloadTask extends ComparableTask {
                     DLogger.d("file has downloaded already,need check remote?" + checkRemote);
                     if (!checkRemote) {
                         onTaskFinish(false);
+                        DLogger.e("task end running，file downloaded already.");
                         return;
                     }
                 } else {
@@ -96,6 +97,7 @@ public class DownloadTask extends ComparableTask {
                             fileInfo.setMessage("please ensure the save dir exist!!!");
                         }
                         onTaskError("save dir not exist");
+                        DLogger.e("task end running，save dir not exist.");
                         return;
                     }
                     if (remoteInfo.changed(fileInfo)) {
@@ -152,21 +154,24 @@ public class DownloadTask extends ComparableTask {
     }
 
     private void close() {
-        DLogger.d("task close");
         closeRecorder();
         if (writer != null) {
             writer.close();
+            writer = null;
+            DLogger.d("task close,writer");
         }
         if (streamReader != null) {
             streamReader.close();
+            streamReader = null;
+            DLogger.d("task close,streamReader");
         }
     }
 
     private void closeRecorder() {
-        DLogger.d("task close recorder");
         if (needCloseRecorder && recorder != null) {
             recorder.release();
             recorder = null;
+            DLogger.d("task close recorder");
         }
     }
 
@@ -195,8 +200,8 @@ public class DownloadTask extends ComparableTask {
                     fileInfo.setCostTime(costTime + fileInfo.getCostTime());
                     fileInfo.setSpeed(computeSpeed(length, costTime));
                     recorder.put(requestUrlMd5, fileInfo);
-                    //128k
-                    if (currentSize > ((count << 17) + start)) {
+                    //256k
+                    if (currentSize > ((count << 18) + start)) {
                         DLogger.d("file downloading,current size:" + currentSize);
                         updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
                         count++;
@@ -225,9 +230,12 @@ public class DownloadTask extends ComparableTask {
         String info = "file is finish download already,is new complete?" + newComplete
                 + ",file name:" + (fileInfo != null ? fileInfo.getFileName() : "");
         DLogger.d(info);
-        fileInfo.setMessage(info);
+        File file = null;
+        if (fileInfo != null) {
+            fileInfo.setMessage(info);
+            file = fileInfo.getLocalFile();
+        }
         updateStatus(DownloadStatus.FINISH, fileInfo);
-        File file = fileInfo.getLocalFile();
         if (taskConfig.getDiskUsage() != null && file != null) {
             try {
                 taskConfig.getDiskUsage().touch(file);

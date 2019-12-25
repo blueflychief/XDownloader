@@ -17,6 +17,16 @@ import java.util.List;
  */
 public class CommonUtils {
     private static final String FILE_NAME_JOIN = "_";
+    private static final int MAX_FILE_NAME_LENGTH = 13;
+
+    @Nullable
+    public static String compute16Md5(String string) {
+        String s = computeMd5(string);
+        if (!TextUtils.isEmpty(s)) {
+            return s.substring(8, 24);
+        }
+        return s;
+    }
 
     @Nullable
     public static String computeMd5(String string) {
@@ -40,15 +50,20 @@ public class CommonUtils {
         return "";
     }
 
-    // TODO: 12/24/2019 Android文件名长度为255个英文字符 ，有些url太长
     public static String parseFileName(String url) {
-        String urlMd5 = CommonUtils.computeMd5(url);
-        String fileName;
-        int index = url.lastIndexOf("/");
-        if (index > -1 && index < url.length() - 1) {
-            fileName = urlMd5 + FILE_NAME_JOIN + url.substring(index + 1);
-        } else {
-            fileName = urlMd5;
+        String fileName = "";
+        if (!TextUtils.isEmpty(url)) {
+            String urlMd5 = CommonUtils.compute16Md5(url);
+            int index = url.lastIndexOf("/");
+            if (index > -1 && index < url.length() - 1) {
+                fileName = url.substring(index + 1);
+                if (!TextUtils.isEmpty(fileName) && fileName.length() > MAX_FILE_NAME_LENGTH) {
+                    fileName = fileName.substring(fileName.length() - MAX_FILE_NAME_LENGTH);
+                }
+                fileName = urlMd5 + FILE_NAME_JOIN + fileName;
+            } else {
+                fileName = urlMd5;
+            }
         }
         return fileName;
     }

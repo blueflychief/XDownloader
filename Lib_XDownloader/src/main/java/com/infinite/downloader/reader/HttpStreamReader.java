@@ -120,6 +120,7 @@ public class HttpStreamReader implements StreamReader {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            inputStream = null;
         }
     }
 

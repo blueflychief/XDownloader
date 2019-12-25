@@ -194,16 +194,18 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     @Override
     public long put(String urlMd5, FileInfo fileInfo) {
         long start = System.currentTimeMillis();
-        long result;
-        boolean exist;
-        FileInfo info = get(urlMd5);
-        exist = info != null;
-        if (exist) {
-            result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
-                    COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
-        } else {
-            result = getWritableDatabase().insert(TABLE_NAME,
-                    null, convertColumns(fileInfo));
+        long result = 0;
+        boolean exist = false;
+        if (fileInfo != null) {
+            FileInfo info = get(urlMd5);
+            exist = info != null;
+            if (exist) {
+                result = getWritableDatabase().update(TABLE_NAME, convertColumns(fileInfo),
+                        COL_URL_MD5 + "=?", new String[]{info.getUrlMd5()});
+            } else {
+                result = getWritableDatabase().insert(TABLE_NAME,
+                        null, convertColumns(fileInfo));
+            }
         }
         DLogger.d((exist ? "update" : "insert") + " item finish,"
                 + (exist ? "affected rows:" : "record id") + ":" + result +
