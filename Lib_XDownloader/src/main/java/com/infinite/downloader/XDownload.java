@@ -72,7 +72,7 @@ public class XDownload {
                     });
             recorder.shrink();
             initialized = true;
-            DLogger.d("XDownload is initialized");
+            DLogger.d("XDownload is initialized，config:\n" + downloadConfig);
         } else {
             DLogger.d("XDownload has initialized already!");
         }

@@ -2,6 +2,7 @@ package com.infinite.downloader.reader;
 
 import android.text.TextUtils;
 
+import com.infinite.downloader.config.Config;
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.utils.CommonUtils;
 import com.infinite.downloader.utils.DLogger;
@@ -33,6 +34,20 @@ public class HttpStreamReader implements StreamReader {
     private static final int CONNECT_TIMEOUT = 15_000;
     private static final int READ_TIMEOUT = 15_000;
     private InputStream inputStream = null;
+    private Config taskConfig;
+    private int readTimeout = READ_TIMEOUT;
+    private int connectTimeout = CONNECT_TIMEOUT;
+
+    public HttpStreamReader() {
+    }
+
+    public HttpStreamReader(Config taskConfig) {
+        this.taskConfig = taskConfig;
+        if (taskConfig != null) {
+            readTimeout = taskConfig.getReadTimeout();
+            connectTimeout = taskConfig.getConnectTimeout();
+        }
+    }
 
     @Override
     public FileInfo getFileInfo(String url, long offset) {
@@ -56,8 +71,8 @@ public class HttpStreamReader implements StreamReader {
                         DLogger.e("=====setSSLSocketFactory exception:" + e.getMessage());
                         e.printStackTrace();
                     }
-                    connection.setConnectTimeout(CONNECT_TIMEOUT);
-                    connection.setReadTimeout(READ_TIMEOUT);
+                    connection.setConnectTimeout(connectTimeout);
+                    connection.setReadTimeout(readTimeout);
                     connection.setRequestMethod(method);
                     String range = "bytes=" + offset + "-";
                     connection.setRequestProperty("Range", range);

@@ -35,6 +35,7 @@ public class Config {
         if (cacheDir == null) {
             throw new NullPointerException("external cache dir null exist!!!");
         }
+
         String dirPath = cacheDir.getAbsolutePath() + File.separator + DEFAULT_DOWNLOAD_DIR;
         File dir = new File(dirPath);
         if (!dir.exists() || !dir.isDirectory()) {
@@ -43,8 +44,8 @@ public class Config {
                 throw new IllegalStateException("create dir fail, path:" + dirPath);
             }
         }
-        config.setDiskUsage(new TotalSizeLruDiskUsage(512 * ONE_M));
         config.setSaveDirPath(dirPath);
+        config.setDiskUsage(new TotalSizeLruDiskUsage(512 * ONE_M));
         return config;
     }
 
@@ -112,5 +113,16 @@ public class Config {
 
     public void setDiskUsage(DiskUsage diskUsage) {
         this.diskUsage = diskUsage;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "saveDirPath='" + saveDirPath + '\'' +
+                ", connectTimeout=" + connectTimeout +
+                ", readTimeout=" + readTimeout +
+                ", checkRemote=" + checkRemote +
+                ", diskUsage=" + diskUsage +
+                '}';
     }
 }

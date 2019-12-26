@@ -50,7 +50,7 @@ public class DownloadTask extends ComparableTask {
         this.recorder = recorder == null ? new SqliteRecorder(context) : recorder;
         this.taskConfig = config == null ? Config.defaultConfig(context) : config;
         this.requestUrlMd5 = CommonUtils.computeTaskMd5(url, this.taskConfig.getSaveDirPath());
-        this.streamReader = new HttpStreamReader();
+        this.streamReader = new HttpStreamReader(this.taskConfig);
         this.downloadListenerSet = new HashSet<>(4);
         this.fileInfo = this.recorder.get(requestUrlMd5);
         DLogger.d("get local record:" + this.fileInfo);

@@ -14,6 +14,7 @@ import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.task.DownloadTask;
 
+import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +35,8 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Timer timer = new Timer();
         etIndex = findViewById(R.id.etIndex);
         tvResult = findViewById(R.id.tvResult);
         findViewById(R.id.btAsyncTask).setOnClickListener(new View.OnClickListener() {
