@@ -22,6 +22,10 @@ import java.io.File;
 public class MultiDownloaderActivity extends BaseActivity {
 
 
+    private XDownload download1;
+    private XDownload download2;
+    private XDownload download3;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,9 +34,9 @@ public class MultiDownloaderActivity extends BaseActivity {
         findViewById(R.id.btDownload1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XDownload download = getDownload(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "111");
+                download1 = getDownload(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "111");
                 for (String image : Urls.IMAGES) {
-                    download.addTask(image, new DownloadListener() {
+                    download1.addTask(image, new DownloadListener() {
                         @Override
                         public void onDownloadStatus(int status, @Nullable FileInfo info) {
 
@@ -41,12 +45,23 @@ public class MultiDownloaderActivity extends BaseActivity {
                 }
             }
         });
+
+        findViewById(R.id.btDownload1Stop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (download1 != null) {
+                    download1.shutdown();
+                }
+            }
+        });
+
+
         findViewById(R.id.btDownload2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XDownload download = getDownload(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "222");
+                download2 = getDownload(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "222");
                 for (String image : Urls.IMAGES) {
-                    download.addTask(image, new DownloadListener() {
+                    download2.addTask(image, new DownloadListener() {
                         @Override
                         public void onDownloadStatus(int status, @Nullable FileInfo info) {
 
@@ -55,12 +70,23 @@ public class MultiDownloaderActivity extends BaseActivity {
                 }
             }
         });
+
+        findViewById(R.id.btDownload2Stop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (download2 != null) {
+                    download2.shutdown();
+                }
+            }
+        });
+
+
         findViewById(R.id.btDownload3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XDownload download = getDownload(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "333");
+                download3 = getDownload(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "333");
                 for (String image : Urls.IMAGES) {
-                    download.addTask(image, new DownloadListener() {
+                    download3.addTask(image, new DownloadListener() {
                         @Override
                         public void onDownloadStatus(int status, @Nullable FileInfo info) {
 
@@ -69,6 +95,16 @@ public class MultiDownloaderActivity extends BaseActivity {
                 }
             }
         });
+
+        findViewById(R.id.btDownload3Stop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (download3 != null) {
+                    download3.shutdown();
+                }
+            }
+        });
+
     }
 
 

@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
  * Email: 690797861@qq.com
  * Author: Infinite
  * Date: 2019-11-12 - 11:06
- * Description: Class description
+ * Description:
+ * 注意：务必保证各个XDownload中的Config.saveDirPath不一致！！！
  */
 public class XDownload {
     private Context appContext;
@@ -34,7 +35,7 @@ public class XDownload {
     private Config downloadConfig;
     private Recorder recorder;
     private boolean initialized;
-    private final static Map<String, DownloadTask> TASK_MAP = new HashMap<>(16);
+    private final Map<String, DownloadTask> TASK_MAP = new HashMap<>(32);
 
     private XDownload() {
         throw new IllegalStateException("XDownload not allowed invoke this constructor !!!");
