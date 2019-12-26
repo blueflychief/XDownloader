@@ -8,17 +8,36 @@ package com.infinite.downloaderapp;
  */
 public class Urls {
 
+//    private static final String FILE_10M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/26/9/110_166e872efe33833b11088c40198b2f14.apk?fname=%E7%81%AB%E5%B1%B1%E6%9E%81%E9%80%9F%E7%89%88&productid=2011&packageid=100562630&pkg=com.ss.android.ugc.livelite&vcode=660&yingid=wdj_web&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=7827184&apprd=7827184&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F12%2F12%2F4%2F106_a83086692e8ca1595078259695bdb37e_con.png&did=fe01406f901da42ce85d766390aeb043&md5=197926dc850a4e272ecedbbd0e9a9bb6";
+//    private static final String FILE_18M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/25/7/110_a8ae85326043fa36a663b6b414d7945e.apk?fname=%E8%85%BE%E8%AE%AF%E6%96%B0%E9%97%BB&productid=2011&packageid=400852610&pkg=com.tencent.news&vcode=5970&yingid=wdj_web&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=280347&apprd=280347&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F12%2F26%2F7%2F110_f7b48e24677a45e6e99d9ef70ab3e7c2_con.png&did=76ab4e1159a3a538493f770faa73ff18&md5=aaffad369e9de86ac8da00eb2f200fb3";
+//    private static final String FILE_53M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/24/8/110_d3e19c0b2fefab343cb4eccfd5f9db46.apk?fname=%E4%BC%98%E9%85%B7%E8%A7%86%E9%A2%91&productid=2011&packageid=800852109&pkg=com.youku.phone&vcode=212&yingid=wdj_web&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=2398055&apprd=2398055&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F12%2F25%2F4%2F106_ad7eb97a896d8725561cab009f4cc5b7_con.png&did=2117b778ee1da708e0e95830be6baaa6&md5=9536b0be4491f41d3d0a42115e6b24cf";
+//    private static final String FILE_80M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/19/10/110_e7ecd7e82f4de9d61daa4e5cdb3f89a5.apk?fname=%E6%8A%96%E9%9F%B3%E7%9F%AD%E8%A7%86%E9%A2%91&productid=2011&packageid=500568901&pkg=com.ss.android.ugc.aweme&vcode=920&yingid=wdj_web&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=7461948&apprd=7461948&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F12%2F24%2F2%2F110_af37c1c43572faf7a060181b88db2023_con.png&did=11b7b138aadcec856a550a0f24c25784&md5=edcb8febad0518390c5f0352f5289101";
+//    private static final String FILE_128M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/26/6/106_d12f9e86d342cfb7a8f1e0551de38a24.apk?yingid=wdj_web&fname=%E5%BE%AE%E4%BF%A1&productid=2011&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=596157&packageid=600840751&apprd=596157&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F09%2F29%2F8%2";
+//    private static final String FILE_1600M = "https://c33f0aa1ecb7e77e853ed245e88d4539.dd.cdntips.com/imtt.dd.qq.com/16891/apk/8E7CE9BCC242F472D0F4B88860851876.apk?mkey=5dca0d3e7c7fdce7&f=24c5&fsname=com.tencent.tmgp.sgame_1.51.1.5_51010502.apk&csr=1bbd&cip=124.127.250.18&proto=https";
+
+
+    private static final String FILE_10M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/26/9/110_166e872efe33833b11088c40198b2f14.apk";
+    private static final String FILE_18M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/25/7/110_a8ae85326043fa36a663b6b414d7945e.apk";
+    private static final String FILE_53M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/24/8/110_d3e19c0b2fefab343cb4eccfd5f9db46.apk";
+    private static final String FILE_80M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/19/10/110_e7ecd7e82f4de9d61daa4e5cdb3f89a5.apk";
+    private static final String FILE_128M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/26/6/106_d12f9e86d342cfb7a8f1e0551de38a24.apk";
+    private static final String FILE_1600M = "https://c33f0aa1ecb7e77e853ed245e88d4539.dd.cdntips.com/imtt.dd.qq.com/16891/apk/8E7CE9BCC242F472D0F4B88860851876.apk";
+
+
     public static final String[] IMAGES = {
-            "https://wxz.myapp.com/16891/apk/7CF7654435549592613D6910B392687B.apk?fsname =com.campmobile.snowcamera_8.12.0_1081200.apk&hsr=4d5s",
-//            "https://alissl.ucdl.pp.uc.cn/fs08/2019/08/28/1/106_5b0b4b1a62cfa814ee864ccbaff3645a.apk?yingid=wdj_web&fname=QQ%E8%BD%BB%E8%81%8A%E7%89%88&productid=2011&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=2184893&packageid=600830711&apprd=2184893&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F08%2F28%2F1%2F106_f57e3e18e0b521477cd767ca5b038141_con.png&pkg=com.tencent.qqlite&did=2d7b693ff330f1066c14801147e37e3b&vcode=5010&md5=b32c75c0777894c49f37489dad552ae7",
-//            "http://b-ssl.duitang.com/uploads/blog/201404/11/20140411165110_KLsre.jpeg",
-//            "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/26/6/106_d12f9e86d342cfb7a8f1e0551de38a24.apk?yingid=wdj_web&fname=%E5%BE%AE%E4%BF%A1&productid=2011&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=596157&packageid=600840751&apprd=596157&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F09%2F29%2F8%2",
-            "http://attach.bbs.miui.com/forum/201312/24/134923v9zpzg2i29r3k3kf.jpg",
-            "http://b-ssl.duitang.com/uploads/blog/201512/07/20151207173959_GLAxd.jpeg",
-            "http://b-ssl.duitang.com/uploads/item/201410/04/20141004082457_aayCn.jpeg",
-            "http://b-ssl.duitang.com/uploads/item/201406/12/20140612202820_cZHdd.jpeg",
-            "http://i1.17173.itc.cn/2012/lol/2012/07/20/bz4.jpg",
-            "http://b-ssl.duitang.com/uploads/blog/201512/07/20151207162134_XazsK.jpeg",
+//            FILE_10M,
+            FILE_18M,
+//            FILE_53M,
+//            FILE_80M,
+//            FILE_128M,
+//            FILE_1600M,
+//            "http://httpb-ssl.duitang.com/uploads/blog/201404/11/20140411165110_KLsre.jpeg",
+//            "http://attach.bbs.miui.com/forum/201312/24/134923v9zpzg2i29r3k3kf.jpg",
+//            "http://b-ssl.duitang.com/uploads/blog/201512/07/20151207173959_GLAxd.jpeg",
+//            "http://b-ssl.duitang.com/uploads/item/201410/04/20141004082457_aayCn.jpeg",
+//            "http://b-ssl.duitang.com/uploads/item/201406/12/20140612202820_cZHdd.jpeg",
+//            "http://i1.17173.itc.cn/2012/lol/2012/07/20/bz4.jpg",
+//            "http://b-ssl.duitang.com/uploads/blog/201512/07/20151207162134_XazsK.jpeg",
 //            "http://attach.bbs.miui.com/forum/201311/16/144855z2y2en1212th2cd6.jpg",
 //            "http://b-ssl.duitang.com/uploads/item/201604/21/20160421140554_Qiehv.jpeg",
 //            "http://clubimg.club.vmall.com/data/attachment/forum/201901/29/1720164hfdfiqntsewh9og.png",
@@ -57,14 +76,11 @@ public class Urls {
     };
 
     public static final String[] URLS = new String[]{
-            //1.6G
-            "https://c33f0aa1ecb7e77e853ed245e88d4539.dd.cdntips.com/imtt.dd.qq.com/16891/apk/8E7CE9BCC242F472D0F4B88860851876.apk?mkey=5dca0d3e7c7fdce7&f=24c5&fsname=com.tencent.tmgp.sgame_1.51.1.5_51010502.apk&csr=1bbd&cip=124.127.250.18&proto=https",
-            //128m
-            "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/26/6/106_d12f9e86d342cfb7a8f1e0551de38a24.apk?yingid=wdj_web&fname=%E5%BE%AE%E4%BF%A1&productid=2011&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=596157&packageid=600840751&apprd=596157&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F09%2F29%2F8%2",
-            //25.6M
-            "https://alissl.ucdl.pp.uc.cn/fs08/2019/08/28/1/106_5b0b4b1a62cfa814ee864ccbaff3645a.apk?yingid=wdj_web&fname=QQ%E8%BD%BB%E8%81%8A%E7%89%88&productid=2011&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=2184893&packageid=600830711&apprd=2184893&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F08%2F28%2F1%2F106_f57e3e18e0b521477cd767ca5b038141_con.png&pkg=com.tencent.qqlite&did=2d7b693ff330f1066c14801147e37e3b&vcode=5010&md5=b32c75c0777894c49f37489dad552ae7",
-            "https://alissl.ucdl.pp.uc.cn/fs08/2019/10/09/11/120_2ef8ece0307085f009c386275898b085.apk?fname=%E6%94%AF%E4%BB%98%E5%AE%9D&data=dGVzdFRhZz1uZXdgY3BUeXBlPTIxYGJpZD1udWxsYGRLZXk9ZjBhMDM4Yjg4Nzk0MjQ2NWU0YTgwMzA0OTZlZTI5ZjZgaUtleT1hZmE4ZjAyODgxMjE0YjQyZWQyMWUzMTBhOGY5MTViY2BkZktleT01MmE2MmI2M2IyMDhlZWVmZjY5ZjYxZDk0NzNkZGU5NmBhZHhDcFR5cGU9MjY&productid=2011&pkgType=1&packageid=400824290&pkg=com.eg.android.AlipayGphone&vcode=170&yingid=wdj_web&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=279979&apprd=279979&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F09%2F25%2F10%2F110_ef4df967e2c677a3b310e331c489b2b9_con.png&did=aff70a7094050361c810ffbd52f489e8&md5=6993ebf6fb9e5bccfb425c92423e9b6d",
-            "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/24/11/110_c3312564ce24c1817d6d596326d87573.apk?fname=%E4%BC%98%E9%85%B7%E8%A7%86%E9%A2%91&data=dGVzdFRhZz1uZXdgY3BUeXBlPTIxYGJpZD1udWxsYGRLZXk9NzRiNjkzMTU0N2YyZWQxMmExYjllOThmOGYzYzQ5NGNgaUtleT1lNDFlYjZjYmI0NmYxNDM4NTc3MDkzNzJjMzYxNjcyMmBkZktleT1iYzczZWVkZWY0OGIxM2FkNmJjMmM5Mjc5MGU1YWI1Y2BhZHhDcFR5cGU9MjE&productid=2011&pkgType=1&packageid=800822907&pkg=com.youku.phone&vcode=205&yingid=wdj_web&pos=wdj_web%2Fdetail_normal_dl%2F0&appid=2398055&apprd=2398055&iconUrl=http%3A%2F%2Fandroid-artworks.25pp.com%2Ffs08%2F2019%2F09%2F25%2F7%2F106_8456ba039d8dc40e87a2ef9a4604bc75_con.png&did=959003ea58bada17e620a950d7a4529b&md5=6d18940e13e6ce3bb9494a9dc08ed96b"
-
+            FILE_10M,
+            FILE_18M,
+            FILE_53M,
+            FILE_80M,
+            FILE_128M,
+            FILE_1600M
     };
 }

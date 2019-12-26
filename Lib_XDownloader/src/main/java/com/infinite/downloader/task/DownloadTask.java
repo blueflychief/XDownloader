@@ -83,28 +83,53 @@ public class DownloadTask extends ComparableTask {
                     }
                 }
             }
-            DLogger.d("start get file info from remote server");
-            FileInfo remoteInfo = streamReader.getFileInfo(requestUrl,
-                    this.fileInfo == null || this.fileInfo.finished() || !this.fileInfo.isSupportRange()
-                            ? 0 : this.fileInfo.getCurrentSize());
-            DLogger.d("get file info from remote server:" + remoteInfo);
+            if (!taskConfig.tryCreateSaveDir()) {
+                if (fileInfo != null) {
+                    fileInfo.setMessage("please ensure the save dir exist!!!");
+                }
+                onTaskError("save dir not exist");
+                DLogger.e("task end running，save dir not exist.");
+                return;
+            }
+            long rangeOffset = this.fileInfo == null
+                    || this.fileInfo.finished()
+                    || !this.fileInfo.isSupportRange() ?
+                    0 : this.fileInfo.getCurrentSize();
+            FileInfo remoteInfo = streamReader.getFileInfo(requestUrl, rangeOffset);
+            DLogger.d("received file info from remote server:" + remoteInfo);
             if (!isStopped()) {
                 if (remoteInfo != null && remoteInfo.canDownload()) {
-                    remoteInfo.setUrlMd5(requestUrlMd5);
                     remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
-                    if (!taskConfig.tryCreateSaveDir()) {
-                        if (fileInfo != null) {
-                            fileInfo.setMessage("please ensure the save dir exist!!!");
-                        }
-                        onTaskError("save dir not exist");
-                        DLogger.e("task end running，save dir not exist.");
-                        return;
-                    }
+                    //if remote file has changed and rangeOffset not zero,we need request input stream with offset 0
                     if (remoteInfo.changed(fileInfo)) {
-                        DLogger.d("remote file has changed or local file not exist,need download file");
-                        fileInfo = remoteInfo;
-                        resetDownloadInfo();
-                        download();
+                        if (rangeOffset > 0) {
+                            //Has started download before.
+                            DLogger.d("remote file has changed,need download file from offset 0");
+                            remoteInfo = streamReader.getFileInfo(requestUrl, 0);
+                            DLogger.d("received new file info from remote server:" + remoteInfo);
+                            if (!isStopped()) {
+                                if (remoteInfo != null && remoteInfo.canDownload()) {
+                                    remoteInfo.setUrlMd5(requestUrlMd5);
+                                    remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
+                                    fileInfo = remoteInfo;
+                                    resetDownloadInfo();
+                                    download();
+                                } else {
+                                    onTaskError("get file info error:" + (remoteInfo != null ? remoteInfo.getMessage() : ""));
+                                }
+                            } else {
+                                onTaskTerminal();
+                            }
+                        } else {
+                            //Not started download before,or file changed after download finished,or not support range download.
+                            DLogger.d("local file not start download or file changed after download finished," +
+                                    "or not support range download,so start download with offset 0");
+                            remoteInfo.setUrlMd5(requestUrlMd5);
+                            remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
+                            fileInfo = remoteInfo;
+                            resetDownloadInfo();
+                            download();
+                        }
                     } else {
                         DLogger.d("remote file not change,continue download");
                         if (fileInfo.finished()) {

@@ -33,6 +33,7 @@ import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
 public class HttpStreamReader implements StreamReader {
     private static final int CONNECT_TIMEOUT = 15_000;
     private static final int READ_TIMEOUT = 15_000;
+    private static final int MAX_REDIRECT_COUNT = 5;
     private InputStream inputStream = null;
     private Config taskConfig;
     private int readTimeout = READ_TIMEOUT;
@@ -51,6 +52,7 @@ public class HttpStreamReader implements StreamReader {
 
     @Override
     public FileInfo getFileInfo(String url, long offset) {
+        DLogger.d("start get file info from remote server,offset:" + offset);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setRequestUrl(url);
         fileInfo.setDownloadUrl(url);
@@ -65,10 +67,10 @@ public class HttpStreamReader implements StreamReader {
                     try {
                         if (connection instanceof HttpsURLConnection) {
                             ((HttpsURLConnection) connection).setSSLSocketFactory(createSSLSocketFactory());
-                            DLogger.d("=====setSSLSocketFactory");
+                            DLogger.d("setSSLSocketFactory");
                         }
                     } catch (Exception e) {
-                        DLogger.e("=====setSSLSocketFactory exception:" + e.getMessage());
+                        DLogger.e("setSSLSocketFactory exception:" + e.getMessage());
                         e.printStackTrace();
                     }
                     connection.setConnectTimeout(connectTimeout);
@@ -90,11 +92,16 @@ public class HttpStreamReader implements StreamReader {
                             || responseCode == HttpURLConnection.HTTP_PARTIAL) {
                         redirected = false;
                         inputStream = connection.getInputStream();
+                        String contentRange = connection.getHeaderField("Content-Range");
+                        DLogger.d("contentRange is " + contentRange);
+                        boolean supportRange = !TextUtils.isDigitsOnly(contentRange);
                         fileInfo.setFileName(CommonUtils.parseFileName(fileInfo.getRequestUrl()));
                         fileInfo.setFileSize(connection.getContentLength() + offset);
                         fileInfo.setContentType(connection.getContentType());
+                        fileInfo.setCurrentSize(offset);
                         fileInfo.setDownloadUrl(url);
-                        fileInfo.setSupportRange(!TextUtils.isEmpty(connection.getHeaderField("Content-Range")));
+                        fileInfo.setBreakpointDownload(offset > 0 && supportRange);
+                        fileInfo.setSupportRange(supportRange);
                         fileInfo.setFileMd5(connection.getHeaderField("Content-MD5"));
                         fileInfo.setMessage("get remote file ok");
                     }
@@ -104,7 +111,7 @@ public class HttpStreamReader implements StreamReader {
                         redirectCount++;
                         closeConnection(connection);
                         //允许5次重定位
-                        if (redirectCount > 5) {
+                        if (redirectCount > MAX_REDIRECT_COUNT) {
                             fileInfo.setMessage("error,get remote file with too much redirect");
                             break;
                         }
@@ -136,6 +143,7 @@ public class HttpStreamReader implements StreamReader {
                 e.printStackTrace();
             }
             inputStream = null;
+            DLogger.d("HttpStreamReader close");
         }
     }
 

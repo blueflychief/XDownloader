@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import com.infinite.downloader.utils.DLogger;
+
 import java.io.File;
 import java.io.Serializable;
 
@@ -118,13 +120,44 @@ public class FileInfo implements Serializable {
         return saveDirPath + File.separator + fileName;
     }
 
-    public boolean changed(FileInfo info) {
-        return info == null
-                || fileSize != info.getFileSize()
-                || !TextUtils.equals(fileName, info.getFileName())
-                || !TextUtils.equals(fileMd5, info.getFileMd5())
-                || !TextUtils.equals(downloadUrl, info.getDownloadUrl())
-                || !TextUtils.equals(saveDirPath, info.getSaveDirPath());
+    public boolean changed(FileInfo localInfo) {
+//        return true;  //for test
+
+        if (localInfo == null) {
+            DLogger.d("is first time download,localInfo is null");
+            return true;
+        }
+
+        if (fileSize != localInfo.getFileSize()) {
+            DLogger.d("file size changed,old size:" + localInfo.getFileSize()
+                    + ",new size:" + fileSize);
+            return true;
+        }
+
+        if (!TextUtils.equals(fileName, localInfo.getFileName())) {
+            DLogger.d("file name changed,old file name:" + localInfo.getFileName()
+                    + ",new file name:" + fileName);
+            return true;
+        }
+
+        if (!TextUtils.equals(fileMd5, localInfo.getFileMd5())) {
+            DLogger.d("file md5 changed,old file md5:" + localInfo.getFileMd5()
+                    + ",new file md5:" + fileMd5);
+            return true;
+        }
+
+        if (!TextUtils.equals(downloadUrl, localInfo.getDownloadUrl())) {
+            DLogger.d("file downloadUrl changed,old file downloadUrl:" + localInfo.getDownloadUrl()
+                    + ",new file downloadUrl:" + downloadUrl);
+            return true;
+        }
+
+        if (!TextUtils.equals(saveDirPath, localInfo.getSaveDirPath())) {
+            DLogger.d("file saveDirPath changed,old file saveDirPath:" + localInfo.getSaveDirPath()
+                    + ",new file saveDirPath:" + saveDirPath);
+            return true;
+        }
+        return false;
     }
 
     public boolean finished() {
