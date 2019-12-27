@@ -34,6 +34,8 @@ public class HttpStreamReader implements StreamReader {
     private static final int CONNECT_TIMEOUT = 15_000;
     private static final int READ_TIMEOUT = 15_000;
     private static final int MAX_REDIRECT_COUNT = 5;
+    private static final String HEADER_CONTENT_RANGE = "Content-Range";
+    private static final String HEADER_CONTENT_MD5 = "Content-MD5";
     private InputStream inputStream = null;
     private Config taskConfig;
     private int readTimeout = READ_TIMEOUT;
@@ -52,6 +54,7 @@ public class HttpStreamReader implements StreamReader {
 
     @Override
     public FileInfo getFileInfo(String url, long offset) {
+        close();
         DLogger.d("start get file info from remote server,offset:" + offset);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setRequestUrl(url);
@@ -80,11 +83,8 @@ public class HttpStreamReader implements StreamReader {
                     connection.setRequestProperty("Range", range);
                     connection.setRequestProperty("Content-Type", "");
                     int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_BAD_METHOD) {
-                        closeConnection(connection);
-                        fileInfo.setMessage("error,get remote file with too much redirect");
-                        break;
-                    } else if (responseCode == HTTP_MOVED_PERM
+                    DLogger.d("responseCode is " + responseCode);
+                    if (responseCode == HTTP_MOVED_PERM
                             || responseCode == HTTP_MOVED_TEMP
                             || responseCode == HTTP_SEE_OTHER) {  //重定向
                         redirected = true;
@@ -92,18 +92,27 @@ public class HttpStreamReader implements StreamReader {
                             || responseCode == HttpURLConnection.HTTP_PARTIAL) {
                         redirected = false;
                         inputStream = connection.getInputStream();
-                        String contentRange = connection.getHeaderField("Content-Range");
-                        DLogger.d("contentRange is " + contentRange);
-                        boolean supportRange = !TextUtils.isDigitsOnly(contentRange);
+                        String contentRange = connection.getHeaderField(HEADER_CONTENT_RANGE);
+                        long contentLength = connection.getContentLength();
+                        boolean supportRange =
+                                (responseCode == HttpURLConnection.HTTP_PARTIAL)
+                                        && !TextUtils.isEmpty(contentRange);
+                        DLogger.d("contentRange is " + contentRange
+                                + ",connection length:" + contentLength
+                                + ",supportRange:" + supportRange + ",download url:" + url);
                         fileInfo.setFileName(CommonUtils.parseFileName(fileInfo.getRequestUrl()));
-                        fileInfo.setFileSize(connection.getContentLength() + offset);
+                        fileInfo.setFileSize(supportRange && contentLength > 0 ? (contentLength + offset) : contentLength);
                         fileInfo.setContentType(connection.getContentType());
-                        fileInfo.setCurrentSize(offset);
+                        fileInfo.setCurrentSize(supportRange ? offset : 0);
                         fileInfo.setDownloadUrl(url);
                         fileInfo.setBreakpointDownload(offset > 0 && supportRange);
                         fileInfo.setSupportRange(supportRange);
-                        fileInfo.setFileMd5(connection.getHeaderField("Content-MD5"));
-                        fileInfo.setMessage("get remote file ok");
+                        fileInfo.setFileMd5(connection.getHeaderField(HEADER_CONTENT_MD5));
+                        fileInfo.setMessage("get remote file ok,content length:" + contentLength);
+                    } else {
+                        closeConnection(connection);
+                        fileInfo.setMessage("error,get remote file with response code:" + responseCode);
+                        break;
                     }
                     //如果是重定向
                     if (redirected) {
@@ -117,7 +126,7 @@ public class HttpStreamReader implements StreamReader {
                         }
                     }
                 } while (redirected);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 closeConnection(connection);
                 fileInfo.setMessage("error,get remote file with io exception");

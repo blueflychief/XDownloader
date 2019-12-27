@@ -58,6 +58,7 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finishCount = 0;
+                sbMessage.setLength(0);
                 for (String image : Urls.IMAGES) {
                     DownloadApp.getDownload().addTask(image, allDownloadListener);
                 }
@@ -129,20 +130,56 @@ public class DownloadActivity extends AppCompatActivity {
         }
     }
 
-    private int finishCount;
+    StringBuilder sbMessage = new StringBuilder();
+    private volatile int finishCount;
+    private boolean downloading = false;
     private DownloadListener allDownloadListener = new DownloadListener() {
         @Override
         public void onDownloadStatus(final int status, @Nullable final FileInfo info) {
-            if (status == DownloadStatus.FINISH) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishCount++;
-                        tvResult.setText("Finish count:" + finishCount);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (Urls.IMAGES.length == 1) {
+                        switch (status) {
+                            case DownloadStatus.STARTED:
+                                downloading = false;
+                                sbMessage.setLength(0);
+                                sbMessage.append("task started\n");
+                                break;
+                            case DownloadStatus.PREPARE:
+                                sbMessage.append("task prepare\n");
+                                break;
+                            case DownloadStatus.PREPARED:
+                                sbMessage.append("task prepared\n");
+                                break;
+                            case DownloadStatus.DOWNLOADING:
+                                if (!downloading) {
+                                    downloading = true;
+                                    sbMessage.append("task downloading\n");
+                                }
+                                break;
+                            case DownloadStatus.STOP:
+                                sbMessage.append("task stop\n");
+                                break;
+                            case DownloadStatus.ERROR:
+                                sbMessage.append("task error\n");
+                                break;
+                            case DownloadStatus.FINISH:
+                                finishCount++;
+                                sbMessage.append("task finish, count:").append(finishCount).append("\n");
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        if (status == DownloadStatus.FINISH) {
+                            finishCount++;
+                            sbMessage.append("task finish, count:").append(finishCount).append("\n");
+                        }
                     }
-                });
-
-            }
+                    tvResult.setText(sbMessage.toString());
+                }
+            });
         }
     };
 

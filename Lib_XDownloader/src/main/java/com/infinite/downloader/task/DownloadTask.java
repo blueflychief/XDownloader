@@ -2,6 +2,8 @@ package com.infinite.downloader.task;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.Config;
 import com.infinite.downloader.config.DownloadStatus;
@@ -52,13 +54,14 @@ public class DownloadTask extends ComparableTask {
         this.requestUrlMd5 = CommonUtils.computeTaskMd5(url, this.taskConfig.getSaveDirPath());
         this.streamReader = new HttpStreamReader(this.taskConfig);
         this.downloadListenerSet = new HashSet<>(4);
-        this.fileInfo = this.recorder.get(requestUrlMd5);
-        DLogger.d("get local record:" + this.fileInfo);
     }
 
     @Override
     public void run() {
         startTime = System.currentTimeMillis();
+        updateStatus(DownloadStatus.STARTED, this.fileInfo);
+        this.fileInfo = this.recorder.get(requestUrlMd5);
+        DLogger.d("get local record:" + this.fileInfo);
         updateStatus(DownloadStatus.PREPARE, this.fileInfo);
         if (!isStopped()) {
             DLogger.d("task start running");
@@ -102,6 +105,7 @@ public class DownloadTask extends ComparableTask {
                     remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
                     //if remote file has changed and rangeOffset not zero,we need request input stream with offset 0
                     if (remoteInfo.changed(fileInfo)) {
+                        resetDownloadInfo();
                         if (rangeOffset > 0) {
                             //Has started download before.
                             DLogger.d("remote file has changed,need download file from offset 0");
@@ -112,7 +116,7 @@ public class DownloadTask extends ComparableTask {
                                     remoteInfo.setUrlMd5(requestUrlMd5);
                                     remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
                                     fileInfo = remoteInfo;
-                                    resetDownloadInfo();
+                                    DLogger.d("download with new file info");
                                     download();
                                 } else {
                                     onTaskError("get file info error:" + (remoteInfo != null ? remoteInfo.getMessage() : ""));
@@ -127,7 +131,6 @@ public class DownloadTask extends ComparableTask {
                             remoteInfo.setUrlMd5(requestUrlMd5);
                             remoteInfo.setSaveDirPath(taskConfig.getSaveDirPath());
                             fileInfo = remoteInfo;
-                            resetDownloadInfo();
                             download();
                         }
                     } else {
@@ -170,7 +173,10 @@ public class DownloadTask extends ComparableTask {
     }
 
     public void removeAllDownloadListener() {
-        downloadListenerSet.clear();
+        if (downloadListenerSet.size() > 0) {
+            DLogger.d("removeAllDownloadListener,url:" + requestUrl);
+            downloadListenerSet.clear();
+        }
     }
 
     @Override
@@ -179,7 +185,11 @@ public class DownloadTask extends ComparableTask {
     }
 
     private void close() {
-        closeRecorder();
+        if (needCloseRecorder && recorder != null) {
+            recorder.release();
+            recorder = null;
+            DLogger.d("task close recorder");
+        }
         if (writer != null) {
             writer.close();
             writer = null;
@@ -189,14 +199,6 @@ public class DownloadTask extends ComparableTask {
             streamReader.close();
             streamReader = null;
             DLogger.d("task close,streamReader");
-        }
-    }
-
-    private void closeRecorder() {
-        if (needCloseRecorder && recorder != null) {
-            recorder.release();
-            recorder = null;
-            DLogger.d("task close recorder");
         }
     }
 
@@ -232,27 +234,27 @@ public class DownloadTask extends ComparableTask {
                         count++;
                     }
                 } else {
-                    DLogger.d("file download stop,current size:" + currentSize);
                     onTaskTerminal();
+                    DLogger.d("task end running,file download stop,current size:" + currentSize);
+                    return;
                 }
             }
             DLogger.d("file download finish,current size:" + currentSize);
             recorder.put(requestUrlMd5, fileInfo);
             onTaskFinish(true);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fileInfo.setMessage(e.getMessage());
             recorder.put(requestUrlMd5, fileInfo);
             onTaskError(e.getMessage());
         } finally {
-            close();
-            stopped = true;
-            downloadListenerSet.clear();
+            DLogger.d("on download completed");
+            reset();
         }
     }
 
     private void onTaskFinish(boolean newComplete) {
-        String info = "file is finish download already,is new complete?" + newComplete
+        String info = "onTaskFinish,file is finish download already,is new complete?" + newComplete
                 + ",file name:" + (fileInfo != null ? fileInfo.getFileName() : "");
         DLogger.d(info);
         File file = null;
@@ -261,7 +263,8 @@ public class DownloadTask extends ComparableTask {
             file = fileInfo.getLocalFile();
         }
         updateStatus(DownloadStatus.FINISH, fileInfo);
-        if (taskConfig.getDiskUsage() != null && file != null) {
+        reset();
+        if (file != null && taskConfig != null && taskConfig.getDiskUsage() != null) {
             try {
                 taskConfig.getDiskUsage().touch(file);
             } catch (IOException e) {
@@ -269,16 +272,15 @@ public class DownloadTask extends ComparableTask {
                 DLogger.e("shrink file error:" + e.getMessage());
             }
         }
-        close();
-        stopped = true;
-        downloadListenerSet.clear();
     }
 
     private void onTaskError(String message) {
-        DLogger.e("download file exception:" + message);
+        if (fileInfo != null) {
+            fileInfo.setMessage(message);
+        }
         updateStatus(DownloadStatus.ERROR, fileInfo);
-        stopped = true;
-        downloadListenerSet.clear();
+        DLogger.e("onTaskError,download file exception:" + message);
+        reset();
     }
 
     private void onTaskTerminal() {
@@ -289,9 +291,8 @@ public class DownloadTask extends ComparableTask {
             recorder.put(requestUrlMd5, fileInfo);
         }
         updateStatus(DownloadStatus.STOP, fileInfo);
-        close();
-        stopped = true;
-        downloadListenerSet.clear();
+        DLogger.d("onTaskTerminal");
+        reset();
     }
 
     private void resetDownloadInfo() {
@@ -307,14 +308,25 @@ public class DownloadTask extends ComparableTask {
         }
     }
 
-    private void updateStatus(int status, FileInfo info) {
-        if (downloadListenerSet != null && !downloadListenerSet.isEmpty()) {
+    private void updateStatus(int status, @Nullable FileInfo info) {
+        int size = downloadListenerSet != null ? downloadListenerSet.size() : 0;
+        if (status != DownloadStatus.DOWNLOADING) {
+            DLogger.d("updateStatus listener,status:" + status + ",listener size:"
+                    + size + ",is stopped:" + stopped + ",url:" + requestUrl);
+        }
+        if (size > 0) {
             for (DownloadListener listener : downloadListenerSet) {
                 if (listener != null) {
                     listener.onDownloadStatus(status, info);
                 }
             }
         }
+    }
+
+    private void reset() {
+        close();
+        stopped = true;
+        removeAllDownloadListener();
     }
 
     private float computeSpeed(long length, long time) {

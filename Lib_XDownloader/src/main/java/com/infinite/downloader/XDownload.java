@@ -78,11 +78,26 @@ public class XDownload {
         }
     }
 
+    /**
+     * add a download task with url.
+     *
+     * @param url download url
+     * @return DownloadTask
+     */
     public DownloadTask addTask(String url) {
         return addTask(url, null);
     }
 
+    /**
+     * add a download task with url and listener
+     *
+     * @param url      url
+     * @param listener listener
+     * @return DownloadTask, is url is invalid,return null.
+     */
+    @Nullable
     public DownloadTask addTask(String url, DownloadListener listener) {
+        shrink();
         DownloadTask task = null;
         String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
         if (!TextUtils.isEmpty(md5)) {
@@ -91,44 +106,59 @@ public class XDownload {
                 if (t == null || t.dead()) {
                     task = new DownloadTask(appContext, url, recorder, downloadConfig);
                     TASK_MAP.put(md5, task);
+                    if (listener != null) {
+                        task.addDownloadListener(listener);
+                    }
                     threadPoolExecutor.submit(task);
                     DLogger.d("add a new task:" + task.getUrlMd5());
                 } else {
                     task = t;
+                    if (listener != null) {
+                        task.addDownloadListener(listener);
+                    }
                     DLogger.d("task:" + task.getUrlMd5() + " has exist already");
                 }
-            }
-            if (listener != null) {
-                task.addDownloadListener(listener);
             }
         } else {
             DLogger.e("add task fail,md5 is " + md5);
         }
-        shrink();
         return task;
     }
 
+    /**
+     * get a download task with url,maybe the task is dead.
+     *
+     * @param url url
+     * @return DownloadTask
+     */
     @Nullable
     public DownloadTask getTask(String url) {
         if (!TextUtils.isEmpty(url)) {
             String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
             synchronized (TASK_MAP) {
-                DownloadTask task = TASK_MAP.get(md5);
-                return task != null && !task.dead() ? task : null;
+                return TASK_MAP.get(md5);
             }
         }
         return null;
     }
 
+    /**
+     * remove a download task with url
+     *
+     * @param url download url
+     * @return task removed
+     */
     public boolean removeTask(String url) {
         DownloadTask task = getTask(url);
         boolean r = false;
         if (task != null) {
-            task.stop();
-            task.removeAllDownloadListener();
+            if (!task.dead()) {
+                task.stop();
+            } else {
+                task.removeAllDownloadListener();
+            }
             r = true;
         }
-        shrink();
         return r;
     }
 
@@ -143,6 +173,12 @@ public class XDownload {
         return recorder;
     }
 
+    /**
+     * get local file with url.
+     *
+     * @param url url
+     * @return if the file download completed,return local file,otherwise null.
+     */
     @Nullable
     public File getFile(String url) {
         String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());

@@ -122,7 +122,7 @@ public class FileInfo implements Serializable {
 
     public boolean changed(FileInfo localInfo) {
 //        return true;  //for test
-
+//
         if (localInfo == null) {
             DLogger.d("is first time download,localInfo is null");
             return true;
@@ -236,8 +236,8 @@ public class FileInfo implements Serializable {
     public String toString() {
         return "FileInfo{" +
                 "id=" + id +
-//                ", requestUrl='" + requestUrl + '\'' +
-//                ", downloadUrl='" + downloadUrl + '\'' +
+                ", requestUrl='" + requestUrl + '\'' +
+                ", downloadUrl='" + downloadUrl + '\'' +
                 ", fileSize=" + fileSize +
                 ", urlMd5='" + urlMd5 + '\'' +
                 ", fileMd5='" + fileMd5 + '\'' +
