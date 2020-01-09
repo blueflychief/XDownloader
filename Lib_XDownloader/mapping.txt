@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 4e51dcb
+# pg_map_id: 8c7d0fa
 com.infinite.downloader.BuildConfig -> a.a.a.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -251,9 +251,9 @@ com.infinite.downloader.task.DownloadTask -> com.infinite.downloader.task.Downlo
     1:1:void <init>(android.content.Context,java.lang.String):45:45 -> <init>
     2:9:void <init>(android.content.Context,java.lang.String,com.infinite.downloader.recorder.Recorder,com.infinite.downloader.config.Config):49:56 -> <init>
     float computeSpeed(long,long) -> a
-    1:16:void onTaskFinish(boolean):257:272 -> a
-    17:22:void onTaskError(java.lang.String):278:283 -> a
-    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):312:320 -> a
+    1:10:void onTaskFinish(boolean):257:266 -> a
+    11:16:void onTaskError(java.lang.String):278:283 -> a
+    17:25:void updateStatus(int,com.infinite.downloader.config.FileInfo):312:320 -> a
     1:2:void addDownloadListener(com.infinite.downloader.DownloadListener):166:167 -> addDownloadListener
     1:14:void close():188:201 -> b
     1:47:void download():206:252 -> c

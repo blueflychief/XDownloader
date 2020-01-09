@@ -25,7 +25,7 @@ public class Urls {
 
 
     public static final String[] IMAGES = {
-//            FILE_10M,
+            FILE_10M,
 //            FILE_18M,
 //            FILE_53M,
 //            FILE_80M,

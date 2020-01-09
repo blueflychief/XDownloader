@@ -18,7 +18,6 @@ import com.infinite.downloader.writer.FileWriter;
 import com.infinite.downloader.writer.Writer;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -264,14 +263,14 @@ public class DownloadTask extends ComparableTask {
         }
         updateStatus(DownloadStatus.FINISH, fileInfo);
         reset();
-        if (file != null && taskConfig != null && taskConfig.getDiskUsage() != null) {
-            try {
-                taskConfig.getDiskUsage().touch(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-                DLogger.e("shrink file error:" + e.getMessage());
-            }
-        }
+//        if (file != null && taskConfig != null && taskConfig.getDiskUsage() != null) {
+//            try {
+//                taskConfig.getDiskUsage().touch(file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                DLogger.e("shrink file error:" + e.getMessage());
+//            }
+//        }
     }
 
     private void onTaskError(String message) {

@@ -70,7 +70,7 @@ public class XDownload {
                             return thread;
                         }
                     });
-            recorder.shrink();
+//            recorder.shrink();
             initialized = true;
             DLogger.d("XDownload is initialized，config:\n" + downloadConfig);
         } else {
