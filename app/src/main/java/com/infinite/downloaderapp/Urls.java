@@ -31,6 +31,7 @@ public class Urls {
 //            FILE_80M,
 //            FILE_128M,
 //            FILE_1600M,
+            "http://kaji.i.cdn.zxrtb.com/img/myad/a7abe096e5ba9f78f6d9982ccc91b7d5.jpg",//下载超时图片
             "http://b-ssl.duitang.com/uploads/blog/201404/11/20140411165110_KLsre.jpeg",
             "http://attach.bbs.miui.com/forum/201312/24/134923v9zpzg2i29r3k3kf.jpg",
             "http://a.hiphotos.baidu.com/image/pic/item/838ba61ea8d3fd1fc9c7b6853a4e251f94ca5f46.jpg",
