@@ -10,53 +10,6 @@
 DLogger.enable()
 ```
 
-### 一般使用方法
-
-* 启动单任务下载
-```
-                DownloadTask downloadTask = new DownloadTask(MainActivity.this, Urls.URLS[0]);
-                downloadThread = new Thread(downloadTask);
-                downloadTask.addDownloadListener(downloadListener);
-                downloadThread.start();
-```
-
-* 停止单任务下载
-```
-                downloadThread.interrupt();
-```
-
-* 启动多任务下载
-```
-                executorService = Executors.newFixedThreadPool(10);
-                DownloadTask downloadTask;
-                for (String url : Urls.URLS) {
-                    downloadTask = new DownloadTask(MainActivity.this, url);
-                    downloadTask.addDownloadListener(downloadListener);
-                    executorService.submit(downloadTask);
-                }
-```
-
-* 停止多任务下载
-```
-                executorService.shutdownNow();
-```
-
-* 下载回调处理，（下载状态参考类DownloadStatus.class）
-```
-    private DownloadListener downloadListener = new DownloadListener() {
-        @Override
-        public void onDownloadStatus(int status, @Nullable FileInfo info) {
-            if (info != null) {
-                tvResult.setText("status:" + status + ",message:" + info.getMessage()
-                        + "\nspeed:" + String.format("%.2f", info.getSpeed())
-                        + "\ncurrent:" + info.getCurrentSize()
-                        + "\ncost time:" + info.getCostTime()
-                        + "\nbreakpoint download:" + info.isBreakpointDownload());
-            }
-        }
-    };
-```
-
 ## 使用XDownload下载文件
 XDownload对象可以统一管理多个下载任务，请根据自己的需要传入Config，Config为空则使用默认的配置
 建议创建一个单例类管理XDownload对象。
@@ -101,6 +54,25 @@ xDownload.getTask(String url)
 ```
 xDownload.removeTask(String url)
 ```
+
+* 判断文件是否已下载完成
+
+```
+xDownload.getFile  //返回为空则文件未下载完成
+```
+
+* 下载状态监听DownloadListener#onDownloadStatus
+```
+public class DownloadStatus {
+    public static final int ERROR = 0;  //下载出错
+    public static final int PREPARE = 1; //下载准备中
+    public static final int PREPARED = 2;//下载已准备好
+    public static final int STARTED = 3;//已经开始下载
+    public static final int DOWNLOADING = 4;//正在下载
+    public static final int FINISH = 5;//下载完成
+    public static final int STOP = 6;//下载停止
+```
+
 * 关闭XDownload，会停止所有下载任务
 ```
 xDownload.shutdown()
