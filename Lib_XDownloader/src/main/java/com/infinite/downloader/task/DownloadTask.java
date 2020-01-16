@@ -58,15 +58,15 @@ public class DownloadTask extends ComparableTask {
 
     @Override
     public void run() {
+        updateStatus(DownloadStatus.PREPARE, this.fileInfo);
         startTime = System.currentTimeMillis();
-        updateStatus(DownloadStatus.STARTED, this.fileInfo);
         this.fileInfo = this.recorder.get(requestUrlMd5);
         DLogger.d("get local record:" + this.fileInfo);
-        updateStatus(DownloadStatus.PREPARE, this.fileInfo);
         if (!isStopped()) {
             DLogger.d("task start running");
             if (fileInfo != null) {
                 if (fileInfo.finished()) {
+                    updateStatus(DownloadStatus.STARTED, this.fileInfo);
                     boolean checkRemote = taskConfig.isCheckRemote();
                     DLogger.d("file has downloaded already,need check remote?" + checkRemote);
                     if (!checkRemote) {
@@ -136,6 +136,7 @@ public class DownloadTask extends ComparableTask {
                     } else {
                         DLogger.d("remote file not change,continue download");
                         if (fileInfo.finished()) {
+                            updateStatus(DownloadStatus.STARTED, this.fileInfo);
                             onTaskFinish(false);
                         } else {
                             DLogger.d("file download incomplete,continue download");
@@ -203,7 +204,7 @@ public class DownloadTask extends ComparableTask {
     }
 
     private void download() {
-        updateStatus(DownloadStatus.PREPARED, fileInfo);
+        updateStatus(DownloadStatus.STARTED, fileInfo);
         byte[] buffer = new byte[BUFFER_SIZE];
         int length;
         long count = 1;

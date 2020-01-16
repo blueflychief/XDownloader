@@ -39,6 +39,7 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btStart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sbMessage.setLength(0);
                 DownloadApp.getDownload().addTask(Urls.IMAGES[index % (Urls.IMAGES.length - 1)], downloadListener);
                 index++;
             }
@@ -143,14 +144,10 @@ public class DownloadActivity extends AppCompatActivity {
                         switch (status) {
                             case DownloadStatus.STARTED:
                                 downloading = false;
-                                sbMessage.setLength(0);
                                 sbMessage.append("task started\n");
                                 break;
                             case DownloadStatus.PREPARE:
                                 sbMessage.append("task prepare\n");
-                                break;
-                            case DownloadStatus.PREPARED:
-                                sbMessage.append("task prepared\n");
                                 break;
                             case DownloadStatus.DOWNLOADING:
                                 if (!downloading) {

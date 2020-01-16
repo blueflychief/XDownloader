@@ -14,14 +14,13 @@ import java.lang.annotation.RetentionPolicy;
 public class DownloadStatus {
     public static final int ERROR = 0;
     public static final int PREPARE = 1;
-    public static final int PREPARED = 2;
     public static final int STARTED = 3;
     public static final int DOWNLOADING = 4;
     public static final int FINISH = 5;
     public static final int STOP = 6;
 
     @IntDef({
-            ERROR, PREPARE, PREPARED, STARTED, DOWNLOADING, FINISH, STOP
+            ERROR, PREPARE, STARTED, DOWNLOADING, FINISH, STOP
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {
