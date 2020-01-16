@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 4e51dcb
+# pg_map_id: d7e7a3b
 com.infinite.downloader.BuildConfig -> a.a.a.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -251,23 +251,23 @@ com.infinite.downloader.task.DownloadTask -> com.infinite.downloader.task.Downlo
     1:1:void <init>(android.content.Context,java.lang.String):45:45 -> <init>
     2:9:void <init>(android.content.Context,java.lang.String,com.infinite.downloader.recorder.Recorder,com.infinite.downloader.config.Config):49:56 -> <init>
     float computeSpeed(long,long) -> a
-    1:16:void onTaskFinish(boolean):257:272 -> a
-    17:22:void onTaskError(java.lang.String):278:283 -> a
-    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):312:320 -> a
-    1:2:void addDownloadListener(com.infinite.downloader.DownloadListener):166:167 -> addDownloadListener
-    1:14:void close():188:201 -> b
-    1:47:void download():206:252 -> c
-    48:58:void download():242:252 -> c
-    59:61:void download():251:253 -> c
-    1:9:void onTaskTerminal():287:295 -> d
-    1:3:void reset():327:329 -> e
-    1:9:void resetDownloadInfo():299:307 -> f
-    1:1:java.lang.String getUrl():162:162 -> getUrl
-    1:1:java.lang.String getUrlMd5():158:158 -> getUrlMd5
-    1:3:void removeAllDownloadListener():176:178 -> removeAllDownloadListener
-    1:1:void removeDownloadListener(com.infinite.downloader.DownloadListener):172:172 -> removeDownloadListener
-    1:94:void run():61:154 -> run
-    1:1:void stop():184:184 -> stop
+    1:16:void onTaskFinish(boolean):258:273 -> a
+    17:22:void onTaskError(java.lang.String):279:284 -> a
+    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):313:321 -> a
+    1:2:void addDownloadListener(com.infinite.downloader.DownloadListener):167:168 -> addDownloadListener
+    1:14:void close():189:202 -> b
+    1:47:void download():207:253 -> c
+    48:58:void download():243:253 -> c
+    59:61:void download():252:254 -> c
+    1:9:void onTaskTerminal():288:296 -> d
+    1:3:void reset():328:330 -> e
+    1:9:void resetDownloadInfo():300:308 -> f
+    1:1:java.lang.String getUrl():163:163 -> getUrl
+    1:1:java.lang.String getUrlMd5():159:159 -> getUrlMd5
+    1:3:void removeAllDownloadListener():177:179 -> removeAllDownloadListener
+    1:1:void removeDownloadListener(com.infinite.downloader.DownloadListener):173:173 -> removeDownloadListener
+    1:95:void run():61:155 -> run
+    1:1:void stop():185:185 -> stop
 com.infinite.downloader.utils.CommonUtils -> a.a.a.f.a:
     java.lang.String FILE_NAME_JOIN -> a
     int MAX_FILE_NAME_LENGTH -> b
