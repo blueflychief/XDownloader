@@ -28,7 +28,7 @@ public class DownloadApp extends Application {
             saveDir.mkdir();
         }
         config.setSaveDirPath(saveDir.getAbsolutePath());
-        config.setDiskUsage(new TotalSizeLruDiskUsage(10 * 1024 * 1024));
+        config.setDiskUsage(new TotalSizeLruDiskUsage(200 * 1024 * 1024));
         DLogger.enable();
         xDownload = new XDownload(this, config);
     }

@@ -18,23 +18,43 @@
         android:text="停止下载" />
 
 
-    <Button
-        android:id="@+id/btAllStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始批量下载" />
-
-    <Button
-        android:id="@+id/btAllEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="停止批量下载" />
-
-
-    <TextView
-        android:id="@+id/tvResult"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="wrap_content"
+        android:background="#00FF00"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btAllStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始批量下载" />
+
+        <Button
+            android:id="@+id/btAllEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止批量下载" />
+
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvResult"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </ScrollView>
 
 
     <Button

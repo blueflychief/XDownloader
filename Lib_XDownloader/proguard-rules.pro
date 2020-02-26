@@ -176,6 +176,7 @@ public *; #类的所有public方法和字段不混淆
 
 # 指定混淆是采用的算法，后面的参数是一个过滤器， 这个过滤器是谷歌推荐的算法，一般不做更改
 -optimizations !code/simplification/cast,!field/*,!class/merging/*
+-repackageclasses com.infinite.downloader.keepsafe
 
 ###########################混淆日志###########################
 -dump class_files.txt        #apk所有class的内部结构

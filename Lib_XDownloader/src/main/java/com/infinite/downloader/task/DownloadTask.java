@@ -60,10 +60,10 @@ public class DownloadTask extends ComparableTask {
     public void run() {
         updateStatus(DownloadStatus.PREPARE, this.fileInfo);
         startTime = System.currentTimeMillis();
-        this.fileInfo = this.recorder.get(requestUrlMd5);
-        DLogger.d("get local record:" + this.fileInfo);
         if (!isStopped()) {
             DLogger.d("task start running");
+            this.fileInfo = this.recorder.get(requestUrlMd5);
+            DLogger.d("get local record:" + this.fileInfo);
             if (fileInfo != null) {
                 if (fileInfo.finished()) {
                     updateStatus(DownloadStatus.STARTED, this.fileInfo);

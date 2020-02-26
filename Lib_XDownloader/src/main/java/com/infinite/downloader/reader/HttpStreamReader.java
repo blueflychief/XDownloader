@@ -82,6 +82,7 @@ public class HttpStreamReader implements StreamReader {
                     String range = "bytes=" + offset + "-";
                     connection.setRequestProperty("Range", range);
                     connection.setRequestProperty("Content-Type", "");
+                    connection.setRequestProperty("Accept-Encoding", "identity");
                     int responseCode = connection.getResponseCode();
                     DLogger.d("responseCode is " + responseCode);
                     if (responseCode == HTTP_MOVED_PERM

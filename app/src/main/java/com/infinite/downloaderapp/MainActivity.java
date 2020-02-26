@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btStartDownload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DownloadTask downloadTask = new DownloadTask(MainActivity.this, Urls.URLS[1]);
+                DownloadTask downloadTask = new DownloadTask(MainActivity.this, Urls.IMAGES[2]);
                 downloadThread = new Thread(downloadTask);
                 downloadTask.addDownloadListener(downloadListener);
                 downloadThread.start();
