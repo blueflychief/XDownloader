@@ -31,6 +31,24 @@ public class FileInfo implements Serializable {
     private String fileName;
     private float speed;
     private boolean breakpointDownload;
+    private long startTime;
+    private long finishTime;
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(long finishTime) {
+        this.finishTime = finishTime;
+    }
 
     public long getId() {
         return id;
@@ -160,10 +178,19 @@ public class FileInfo implements Serializable {
         return false;
     }
 
-    public boolean finished() {
-        return fileSize > 0
-                && fileSize == currentSize
-                && fileSize == getLocalFileSize();
+    /**
+     * Whether file downloaded or not
+     *
+     * @return If file is downloaded return file,otherwise return null.
+     */
+    public File finished() {
+        if (fileSize > 0 && fileSize == currentSize) {
+            File file = getLocalFile();
+            if (file != null && file.length() == fileSize) {
+                return file;
+            }
+        }
+        return null;
     }
 
     public boolean recordInvalid() {
@@ -250,6 +277,8 @@ public class FileInfo implements Serializable {
                 ", fileName='" + fileName + '\'' +
                 ", speed='" + speed + '\'' +
                 ", breakpointDownload='" + breakpointDownload + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", finishTime='" + finishTime + '\'' +
                 '}';
     }
 }

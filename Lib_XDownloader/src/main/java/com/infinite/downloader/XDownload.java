@@ -189,7 +189,7 @@ public class XDownload {
             r.release();
         }
         DLogger.e("getFile info:" + fileInfo);
-        return fileInfo != null && fileInfo.finished() ? fileInfo.getLocalFile() : null;
+        return fileInfo != null ? fileInfo.finished() : null;
     }
 
     @Nullable

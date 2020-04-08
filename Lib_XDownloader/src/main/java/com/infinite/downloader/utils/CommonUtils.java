@@ -16,6 +16,11 @@ import java.util.List;
  * Description: Class description
  */
 public class CommonUtils {
+    private static final long GRADE_128K = 131_072L;
+    private static final long GRADE_1MB = 1_048_576L;
+    private static final long GRADE_10MB = 10_485_760L;
+    private static final long GRADE_100MB = 104_857_600L;
+
     private static final String FILE_NAME_JOIN = "_";
     private static final int MAX_FILE_NAME_LENGTH = 13;
 
@@ -106,5 +111,31 @@ public class CommonUtils {
             return true;
         }
         return true;
+    }
+
+    public static float computeSpeed(long length, long time) {
+        //KB/s
+        return length / 1024f / (time / 1000f);
+    }
+
+    public static int notifyGrade(long fileLength) {
+        if (fileLength > GRADE_100MB) {
+            //2M
+            return 21;
+        }
+        if (fileLength > GRADE_10MB) {
+            //1MB
+            return 20;
+        }
+        if (fileLength > GRADE_1MB) {
+            //256KB
+            return 18;
+        }
+        if (fileLength > GRADE_128K) {
+            //32KB
+            return 15;
+        }
+        //8KB
+        return 13;
     }
 }

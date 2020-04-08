@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import com.infinite.downloader.config.FileInfo;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
 
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String DB_NAME = "infinite_xdownload_record.db";
     private static final String TABLE_NAME = "tb_record";
     private static final String URL_MD5_INDEX_NAME = "idx_url_md5";
@@ -41,6 +42,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     private static final String COL_SUPPORT_RANGE = "support_range";
     private static final String COL_COST_TIME = "cost_time";
     private static final String COL_FILE_NAME = "file_name";
+    private static final String COL_START_TIME = "start_time";
+    private static final String COL_FINISH_TIME = "finish_time";
 
     private static final String[] ALL_COLUMNS = new String[]{
             COL_ID,
@@ -55,6 +58,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             COL_SUPPORT_RANGE,
             COL_COST_TIME,
             COL_FILE_NAME,
+            COL_START_TIME,
+            COL_FINISH_TIME,
     };
 
     private static final String SQL_CREATE_RECORD_TABLE =
@@ -70,12 +75,33 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
                     COL_COMPLETED_LENGTH + " INTEGER," +
                     COL_SUPPORT_RANGE + " INTEGER," +
                     COL_COST_TIME + " INTEGER," +
-                    COL_FILE_NAME + " TEXT" +
+                    COL_FILE_NAME + " TEXT," +
+                    COL_START_TIME + " INTEGER," +
+                    COL_FINISH_TIME + " INTEGER" +
                     ");";
 
     private static final String SQL_CREATE_URL_MD5_INDEX =
             "CREATE UNIQUE INDEX IF NOT EXISTS " + URL_MD5_INDEX_NAME
                     + " ON " + TABLE_NAME + " (" + COL_URL_MD5 + ")";
+
+    private static final String SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME =
+            "ALTER TABLE " + TABLE_NAME
+                    + " ADD COLUMN " + COL_START_TIME + " INTEGER";
+
+    private static final String SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME =
+            "ALTER TABLE " + TABLE_NAME
+                    + " ADD COLUMN " + COL_FINISH_TIME + " INTEGER";
+
+    private static final String SQL_VERSION2_UPGRADE_SET_START_TIME =
+            "UPDATE " + TABLE_NAME
+                    + " SET " + COL_START_TIME + " = " + System.currentTimeMillis()
+                    + " WHERE " + COL_FILE_LENGTH + " = " + COL_COMPLETED_LENGTH;
+
+    private static final String SQL_VERSION2_UPGRADE_SET_FINISH_TIME =
+            "UPDATE " + TABLE_NAME
+                    + " SET " + COL_FINISH_TIME + " = " + System.currentTimeMillis()
+                    + " WHERE " + COL_FILE_LENGTH + " = " + COL_COMPLETED_LENGTH;
+
 
     private Context context;
 
@@ -111,12 +137,29 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        DLogger.d("SQLiteDataSaver onUpgrade");
+        DLogger.d("SQLiteDataSaver onUpgrade,oldVersion:" + oldVersion + ",newVersion:" + newVersion);
+        long startTIme = SystemClock.elapsedRealtime();
+        switch (oldVersion) {
+            case 1:
+                DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME);
+                db.execSQL(SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME);
+                DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME);
+                db.execSQL(SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME);
+                DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_SET_START_TIME);
+                db.execSQL(SQL_VERSION2_UPGRADE_SET_START_TIME);
+                DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_SET_FINISH_TIME);
+                db.execSQL(SQL_VERSION2_UPGRADE_SET_FINISH_TIME);
+                break;
+            default:
+                break;
+        }
+        DLogger.d("SQLiteDataSaver onUpgrade finish,cost time:" + (SystemClock.elapsedRealtime() - startTIme));
+
     }
 
     @Override
     public FileInfo get(String urlMd5) {
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         FileInfo fileInfo = null;
         if (!TextUtils.isEmpty(urlMd5)) {
             Cursor cursor = getReadableDatabase().query(TABLE_NAME, ALL_COLUMNS,
@@ -129,8 +172,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
                 cursor.close();
             }
         }
-        DLogger.d("query item finish，result exist?" + (fileInfo != null)
-                + ",cost time：" + (System.currentTimeMillis() - start));
+//        DLogger.d("query item finish，result exist?" + (fileInfo != null)
+//                + ",cost time：" + (System.currentTimeMillis() - start));
         return fileInfo;
     }
 
@@ -193,7 +236,7 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
 
     @Override
     public long put(String urlMd5, FileInfo fileInfo) {
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         long result = 0;
         boolean exist = false;
         if (fileInfo != null) {
@@ -207,9 +250,9 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
                         null, convertColumns(fileInfo));
             }
         }
-        DLogger.d((exist ? "update" : "insert") + " item finish,"
-                + (exist ? "affected rows:" : "record id") + ":" + result +
-                ",cost time：" + (System.currentTimeMillis() - start));
+//        DLogger.d((exist ? "update" : "insert") + " item finish,"
+//                + (exist ? "affected rows:" : "record id") + ":" + result +
+//                ",cost time：" + (System.currentTimeMillis() - start));
         return result;
     }
 
@@ -245,6 +288,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         values.put(COL_SUPPORT_RANGE, fileInfo.isSupportRange() ? 1 : 0);
         values.put(COL_COST_TIME, fileInfo.getCostTime());
         values.put(COL_FILE_NAME, fileInfo.getFileName());
+        values.put(COL_START_TIME, fileInfo.getStartTime());
+        values.put(COL_FINISH_TIME, fileInfo.getFinishTime());
         return values;
     }
 
@@ -267,6 +312,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         int supportRange = cursor.getInt(9);
         long costTime = cursor.getLong(10);
         String fileName = cursor.getString(11);
+        long startTime = cursor.getLong(12);
+        long finishTime = cursor.getLong(13);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setId(id);
         fileInfo.setUrlMd5(urlMd5);
@@ -280,6 +327,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         fileInfo.setSupportRange(supportRange == 1);
         fileInfo.setCostTime(costTime);
         fileInfo.setFileName(fileName);
+        fileInfo.setStartTime(startTime);
+        fileInfo.setFinishTime(finishTime);
         return fileInfo;
     }
 }

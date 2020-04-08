@@ -1,6 +1,7 @@
 package com.infinite.downloader.task;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 
@@ -59,13 +60,13 @@ public class DownloadTask extends ComparableTask {
     @Override
     public void run() {
         updateStatus(DownloadStatus.PREPARE, this.fileInfo);
-        startTime = System.currentTimeMillis();
+        startTime = SystemClock.elapsedRealtime();
         if (!isStopped()) {
             DLogger.d("task start running");
             this.fileInfo = this.recorder.get(requestUrlMd5);
             DLogger.d("get local record:" + this.fileInfo);
             if (fileInfo != null) {
-                if (fileInfo.finished()) {
+                if (fileInfo.finished() != null) {
                     updateStatus(DownloadStatus.STARTED, this.fileInfo);
                     boolean checkRemote = taskConfig.isCheckRemote();
                     DLogger.d("file has downloaded already,need check remote?" + checkRemote);
@@ -95,7 +96,7 @@ public class DownloadTask extends ComparableTask {
                 return;
             }
             long rangeOffset = this.fileInfo == null
-                    || this.fileInfo.finished()
+                    || this.fileInfo.finished() != null
                     || !this.fileInfo.isSupportRange() ?
                     0 : this.fileInfo.getCurrentSize();
             FileInfo remoteInfo = streamReader.getFileInfo(requestUrl, rangeOffset);
@@ -135,7 +136,7 @@ public class DownloadTask extends ComparableTask {
                         }
                     } else {
                         DLogger.d("remote file not change,continue download");
-                        if (fileInfo.finished()) {
+                        if (fileInfo.finished() != null) {
                             updateStatus(DownloadStatus.STARTED, this.fileInfo);
                             onTaskFinish(false);
                         } else {
@@ -212,24 +213,27 @@ public class DownloadTask extends ComparableTask {
         long start = currentSize;
         long costTime;
         long nowTime;
-        DLogger.d("start download file,start size:" + start);
+        long notifyGrade = CommonUtils.notifyGrade(fileInfo.getFileSize());
+        DLogger.d("start download file,start size:" + start + ",notify grade:" + notifyGrade);
         try {
             writer = new FileWriter(fileInfo.getFileSavePath(), currentSize);
             fileInfo.setBreakpointDownload(currentSize > 0);
+            fileInfo.setStartTime(System.currentTimeMillis());
             updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
+            recorder.put(requestUrlMd5, fileInfo);
             while ((length = streamReader.readInputStream(buffer)) != -1) {
                 if (!isStopped()) {
                     currentSize = writer.saveFile(buffer, length);
-                    nowTime = System.currentTimeMillis();
+                    nowTime = SystemClock.elapsedRealtime();
                     costTime = nowTime - startTime;
                     startTime = nowTime;
                     fileInfo.setCurrentSize(currentSize);
                     fileInfo.setMessage("file is downloading");
                     fileInfo.setCostTime(costTime + fileInfo.getCostTime());
-                    fileInfo.setSpeed(computeSpeed(length, costTime));
+                    fileInfo.setSpeed(CommonUtils.computeSpeed(length, costTime));
                     recorder.put(requestUrlMd5, fileInfo);
                     //256k
-                    if (currentSize > ((count << 18) + start)) {
+                    if (currentSize > ((count << notifyGrade) + start)) {
                         DLogger.d("file downloading,current size:" + currentSize);
                         updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
                         count++;
@@ -241,6 +245,7 @@ public class DownloadTask extends ComparableTask {
                 }
             }
             DLogger.d("file download finish,current size:" + currentSize);
+            fileInfo.setFinishTime(System.currentTimeMillis());
             recorder.put(requestUrlMd5, fileInfo);
             onTaskFinish(true);
         } catch (Exception e) {
@@ -286,7 +291,7 @@ public class DownloadTask extends ComparableTask {
 
     private void onTaskTerminal() {
         if (fileInfo != null) {
-            long costTime = System.currentTimeMillis() - startTime;
+            long costTime = SystemClock.elapsedRealtime() - startTime;
             fileInfo.setCostTime(fileInfo.getCostTime() + costTime);
             fileInfo.setMessage("task is terminal,stop download file");
             recorder.put(requestUrlMd5, fileInfo);
@@ -330,8 +335,4 @@ public class DownloadTask extends ComparableTask {
         removeAllDownloadListener();
     }
 
-    private float computeSpeed(long length, long time) {
-        //KB/s
-        return length / 1024f / (time / 1000f);
-    }
 }

@@ -140,7 +140,7 @@ public class HttpStreamReader implements StreamReader {
     @Override
     public int readInputStream(byte[] buffer) throws IOException {
         int total = inputStream.read(buffer);
-        DLogger.d("Http StreamReader readInputStream total:" + total);
+//        DLogger.d("Http StreamReader readInputStream total:" + total);
         return total;
     }
 
