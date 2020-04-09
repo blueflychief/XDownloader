@@ -18,6 +18,10 @@ public interface Recorder {
 
     int delete(String urlMd5);
 
+    int deleteList(List<FileInfo> fileInfoList);
+
+    List<FileInfo> queryByFinishTime(long timestamp);
+
     List<FileInfo> query(int count);
 
     void shrink();

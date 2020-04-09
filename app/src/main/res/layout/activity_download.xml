@@ -1,83 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-
-    <Button
-        android:id="@+id/btStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始下载(测试删除最老的文件)" />
-
-    <Button
-        android:id="@+id/btEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="停止下载" />
-
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#00FF00"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
 
         <Button
-            android:id="@+id/btAllStart"
+            android:id="@+id/btStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="开始批量下载" />
+            android:text="开始下载(测试删除最老的文件)" />
 
         <Button
-            android:id="@+id/btAllEnd"
+            android:id="@+id/btEnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="停止批量下载" />
+            android:text="停止下载" />
 
-    </LinearLayout>
-
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="200dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="#00FF00"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvResult"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            <Button
+                android:id="@+id/btAllStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开始批量下载" />
+
+            <Button
+                android:id="@+id/btAllEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="停止批量下载" />
 
         </LinearLayout>
-    </ScrollView>
 
 
-    <Button
-        android:id="@+id/btGetFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="获取文件信息" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="160dp">
 
-    <Button
-        android:id="@+id/btAddRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加记录(索引测试)" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/etId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="输入需要查询的id" />
+                <TextView
+                    android:id="@+id/tvResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/btQueryRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="查询记录(索引测试)" />
-</LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+
+        <Button
+            android:id="@+id/btGetFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取文件信息" />
+
+        <Button
+            android:id="@+id/btAddRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加记录(索引测试)" />
+
+        <EditText
+            android:id="@+id/etId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入需要查询的id" />
+
+        <Button
+            android:id="@+id/btQueryRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="查询记录(索引测试)" />
+
+        <EditText
+            android:id="@+id/etFinishTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入 FinishTime 时间戳"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btDeleteByFinishTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="根据FinishTime删除文件和记录"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</ScrollView>

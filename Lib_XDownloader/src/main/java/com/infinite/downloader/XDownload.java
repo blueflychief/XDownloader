@@ -16,6 +16,7 @@ import com.infinite.downloader.utils.DLogger;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -140,6 +141,33 @@ public class XDownload {
             }
         }
         return null;
+    }
+
+    /**
+     * Delete download record by finish time
+     *
+     * @param timestamp
+     * @return
+     */
+    public int deleteByFinishTime(long timestamp, boolean deleteFile) {
+        boolean tempRecorder = recorder == null;
+        Recorder r = recorder != null ? recorder : new SqliteRecorder(appContext);
+        List<FileInfo> fileInfoList = r.queryByFinishTime(timestamp);
+        int count = fileInfoList != null ? fileInfoList.size() : 0;
+        if (count > 0) {
+            if (deleteFile) {
+                for (FileInfo fileInfo : fileInfoList) {
+                    if (fileInfo != null) {
+                        fileInfo.deleteFile();
+                    }
+                }
+            }
+            r.deleteList(fileInfoList);
+        }
+        if (tempRecorder) {
+            r.release();
+        }
+        return count;
     }
 
     /**

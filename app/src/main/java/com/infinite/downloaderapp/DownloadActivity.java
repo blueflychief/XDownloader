@@ -1,6 +1,7 @@
 package com.infinite.downloaderapp;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import java.io.File;
 public class DownloadActivity extends AppCompatActivity {
     private TextView tvResult;
     private EditText etId;
+    private EditText etFinishTime;
     private int index;
 
     @Override
@@ -36,6 +38,7 @@ public class DownloadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_download);
         tvResult = findViewById(R.id.tvResult);
         etId = findViewById(R.id.etId);
+        etFinishTime = findViewById(R.id.etFinishTime);
         findViewById(R.id.btStart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,9 +63,21 @@ public class DownloadActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finishCount = 0;
                 sbMessage.setLength(0);
-                for (String image : Urls.IMAGES) {
-                    DownloadApp.getDownload().addTask(image, allDownloadListener);
-                }
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        for (String image : Urls.IMAGES) {
+                            DownloadApp.getDownload().addTask(image, allDownloadListener);
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }.start();
+
             }
         });
         findViewById(R.id.btAllEnd).setOnClickListener(new View.OnClickListener() {
@@ -119,8 +134,28 @@ public class DownloadActivity extends AppCompatActivity {
 //                DLogger.d("query result:" + fileInfo);
             }
         });
+
+
+        findViewById(R.id.btDeleteByFinishTime).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String timestamp = etFinishTime.getEditableText().toString();
+                if (!TextUtils.isEmpty(timestamp)) {
+                    DownloadApp.getDownload().deleteByFinishTime(parseLong(timestamp), true);
+                }
+            }
+        });
+        etFinishTime.setText(String.valueOf(System.currentTimeMillis()));
     }
 
+    private static long parseLong(String time) {
+        try {
+            return Long.parseLong(time);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     @Override
     protected void onDestroy() {
@@ -174,7 +209,8 @@ public class DownloadActivity extends AppCompatActivity {
                             sbMessage.append("task finish, count:").append(finishCount).append("\n");
                         }
                     }
-                    tvResult.setText(sbMessage.toString());
+//                    tvResult.setText(sbMessage.toString());
+                    tvResult.setText("task finish, count:" + finishCount);
                 }
             });
         }

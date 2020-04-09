@@ -259,6 +259,14 @@ public class FileInfo implements Serializable {
         this.breakpointDownload = breakpointDownload;
     }
 
+    public boolean deleteFile() {
+        File localFile = getLocalFile();
+        if (localFile != null) {
+            return localFile.delete();
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return "FileInfo{" +

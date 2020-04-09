@@ -234,7 +234,7 @@ public class DownloadTask extends ComparableTask {
                     recorder.put(requestUrlMd5, fileInfo);
                     //256k
                     if (currentSize > ((count << notifyGrade) + start)) {
-                        DLogger.d("file downloading,current size:" + currentSize);
+                        DLogger.d("file " + fileInfo.getFileName() + " is downloading,current size:" + currentSize);
                         updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
                         count++;
                     }

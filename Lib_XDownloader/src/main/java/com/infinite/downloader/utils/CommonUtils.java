@@ -124,16 +124,16 @@ public class CommonUtils {
             return 21;
         }
         if (fileLength > GRADE_10MB) {
-            //1MB
-            return 20;
+            //512KB
+            return 19;
         }
         if (fileLength > GRADE_1MB) {
-            //256KB
-            return 18;
+            //128KB
+            return 17;
         }
         if (fileLength > GRADE_128K) {
-            //32KB
-            return 15;
+            //16KB
+            return 14;
         }
         //8KB
         return 13;
