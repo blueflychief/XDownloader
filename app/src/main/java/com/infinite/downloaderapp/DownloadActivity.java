@@ -1,6 +1,7 @@
 package com.infinite.downloaderapp;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.infinite.downloader.DownloadListener;
 import com.infinite.downloader.config.DownloadStatus;
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.task.DownloadTask;
+import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
 
@@ -69,11 +71,11 @@ public class DownloadActivity extends AppCompatActivity {
                         super.run();
                         for (String image : Urls.IMAGES) {
                             DownloadApp.getDownload().addTask(image, allDownloadListener);
-                            try {
-                                Thread.sleep(200);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+//                            try {
+//                                Thread.sleep(200);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
                         }
                     }
                 }.start();
@@ -141,7 +143,9 @@ public class DownloadActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String timestamp = etFinishTime.getEditableText().toString();
                 if (!TextUtils.isEmpty(timestamp)) {
+                    long startTime = SystemClock.elapsedRealtime();
                     DownloadApp.getDownload().deleteByFinishTime(parseLong(timestamp), true);
+                    DLogger.d("delete file finish,cost time " + (SystemClock.elapsedRealtime() - startTime));
                 }
             }
         });

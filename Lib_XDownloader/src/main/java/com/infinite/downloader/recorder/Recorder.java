@@ -24,7 +24,7 @@ public interface Recorder {
 
     List<FileInfo> query(int count);
 
-    void shrink();
+    int shrink();
 
     void release();
 }

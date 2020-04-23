@@ -22,10 +22,10 @@ public class Urls {
 
 
     public static final String[] TEST_IMAGE = {
-//            FILE_10M,
+            FILE_10M,
 //            FILE_18M,
 //            FILE_53M,
-            FILE_1800M,
+//            FILE_1800M,
 //            "http://img3.imgtn.bdimg.com/it/u=4108163308,3835729763&fm=214&gp=0.jpg",
 //            "http://bbsimg.res.flyme.cn/forum/201509/09/110205z6gglvhp0l6q0yp2.jpg",
 //            "http://img4.imgtn.bdimg.com/it/u=3665721219,1046518842&fm=214&gp=0.jpg",

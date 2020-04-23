@@ -29,6 +29,8 @@ public class DownloadApp extends Application {
         }
         config.setSaveDirPath(saveDir.getAbsolutePath());
         config.setDiskUsage(new TotalSizeLruDiskUsage(400 * 1024 * 1024));
+//        config.addHeader("xtoken", "121313");
+//        config.addHeader("newd", "new231");
         DLogger.enable();
         xDownload = new XDownload(this, config);
     }

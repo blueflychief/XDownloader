@@ -16,6 +16,10 @@ public class DLogger {
         debugEnable = true;
     }
 
+    public static boolean isDebugEnable() {
+        return debugEnable;
+    }
+
     public static void d(String message) {
         if (debugEnable) {
             Log.d(DEBUG_TAG, message);

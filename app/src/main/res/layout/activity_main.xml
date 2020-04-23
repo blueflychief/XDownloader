@@ -14,6 +14,12 @@
         tools:context=".MainActivity">
 
         <Button
+            android:id="@+id/btHttp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Http测试" />
+
+        <Button
             android:id="@+id/btAsyncTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

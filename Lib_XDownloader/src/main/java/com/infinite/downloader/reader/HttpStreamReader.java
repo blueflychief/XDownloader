@@ -13,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -31,6 +33,10 @@ import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
  * Description: class description
  */
 public class HttpStreamReader implements StreamReader {
+
+    private static final int HTTP_TEMPORARY_REDIRECT = 307;
+    private static final int HTTP_PERMANENT_REDIRECT = 308;
+
     private static final int CONNECT_TIMEOUT = 15_000;
     private static final int READ_TIMEOUT = 15_000;
     private static final int MAX_REDIRECT_COUNT = 5;
@@ -56,6 +62,7 @@ public class HttpStreamReader implements StreamReader {
     public FileInfo getFileInfo(String url, long offset) {
         close();
         DLogger.d("start get file info from remote server,offset:" + offset);
+        String sourceUrl = url;
         FileInfo fileInfo = new FileInfo();
         fileInfo.setRequestUrl(url);
         fileInfo.setDownloadUrl(url);
@@ -83,11 +90,10 @@ public class HttpStreamReader implements StreamReader {
                     connection.setRequestProperty("Range", range);
                     connection.setRequestProperty("Content-Type", "");
                     connection.setRequestProperty("Accept-Encoding", "identity");
+                    addHeaders(connection);
                     int responseCode = connection.getResponseCode();
                     DLogger.d("responseCode is " + responseCode);
-                    if (responseCode == HTTP_MOVED_PERM
-                            || responseCode == HTTP_MOVED_TEMP
-                            || responseCode == HTTP_SEE_OTHER) {  //重定向
+                    if (isRedirect(responseCode)) {
                         redirected = true;
                     } else if (responseCode == HttpURLConnection.HTTP_OK
                             || responseCode == HttpURLConnection.HTTP_PARTIAL) {
@@ -118,6 +124,10 @@ public class HttpStreamReader implements StreamReader {
                     //如果是重定向
                     if (redirected) {
                         url = connection.getHeaderField("Location");
+                        if (DLogger.isDebugEnable()) {
+                            DLogger.e("url redirected:" + sourceUrl);
+                            DLogger.e("url to:" + url);
+                        }
                         redirectCount++;
                         closeConnection(connection);
                         //允许5次重定位
@@ -134,6 +144,33 @@ public class HttpStreamReader implements StreamReader {
             }
         }
         return fileInfo;
+    }
+
+    private boolean isRedirect(int responseCode) {
+        return responseCode == HTTP_MOVED_PERM
+                || responseCode == HTTP_MOVED_TEMP
+                || responseCode == HTTP_SEE_OTHER
+                || responseCode == HTTP_TEMPORARY_REDIRECT
+                || responseCode == HTTP_PERMANENT_REDIRECT;
+    }
+
+    private void addHeaders(HttpURLConnection connection) {
+        if (taskConfig != null && taskConfig.getHeaders() != null) {
+            Map<String, String> headers = taskConfig.getHeaders();
+            if (headers.size() > 0) {
+                Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
+                Map.Entry<String, String> header;
+                while (iterator.hasNext()) {
+                    header = iterator.next();
+                    if (header != null) {
+                        if (DLogger.isDebugEnable()) {
+                            DLogger.d("add request header " + header.getKey() + "--" + header.getValue());
+                        }
+                        connection.setRequestProperty(header.getKey(), header.getValue());
+                    }
+                }
+            }
+        }
     }
 
 

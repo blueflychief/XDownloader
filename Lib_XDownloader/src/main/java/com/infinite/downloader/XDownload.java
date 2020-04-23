@@ -159,11 +159,27 @@ public class XDownload {
                 for (FileInfo fileInfo : fileInfoList) {
                     if (fileInfo != null) {
                         fileInfo.deleteFile();
+                        DLogger.d("delete record file " + fileInfo.getFileName());
                     }
                 }
             }
             r.deleteList(fileInfoList);
         }
+        if (tempRecorder) {
+            r.release();
+        }
+        return count;
+    }
+
+    /**
+     * delete record that hos no local download file
+     *
+     * @return
+     */
+    public int deleteInvalidRecord() {
+        boolean tempRecorder = recorder == null;
+        Recorder r = recorder != null ? recorder : new SqliteRecorder(appContext);
+        int count = r.shrink();
         if (tempRecorder) {
             r.release();
         }

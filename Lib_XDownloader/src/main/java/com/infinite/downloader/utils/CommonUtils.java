@@ -114,28 +114,31 @@ public class CommonUtils {
     }
 
     public static float computeSpeed(long length, long time) {
-        //KB/s
-        return length / 1024f / (time / 1000f);
+        //unit:KB/s
+        if (length > 0 && time > 0) {
+            return length / 1024f / (time / 1000f);
+        }
+        return 0;
     }
 
     public static int notifyGrade(long fileLength) {
         if (fileLength > GRADE_100MB) {
-            //2M
+            //2M一次,100MB以上
             return 21;
         }
         if (fileLength > GRADE_10MB) {
-            //512KB
-            return 19;
+            //256KB一次,10MB-100MB
+            return 18;
         }
         if (fileLength > GRADE_1MB) {
-            //128KB
+            //128KB一次,1MB-10MB
             return 17;
         }
         if (fileLength > GRADE_128K) {
-            //16KB
+            //16KB一次,128K-1MB
             return 14;
         }
-        //8KB
+        //8KB一次，128KB以下
         return 13;
     }
 }

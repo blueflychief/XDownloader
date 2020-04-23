@@ -192,10 +192,11 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
-    public void shrink() {
+    public int shrink() {
         List<FileInfo> infoList = query(0);
-        DLogger.d("shrink download record,all size is:" + (infoList != null ? infoList.size() : 0));
-        if (infoList != null && infoList.size() > 0) {
+        int count = infoList != null ? infoList.size() : 0;
+        DLogger.d("shrink download record,all size is:" + count);
+        if (count > 0) {
             List<FileInfo> deleteList = new ArrayList<>(16);
             for (FileInfo info : infoList) {
                 if (info != null && info.recordInvalid()) {
@@ -204,9 +205,10 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             }
             DLogger.d("need shrink size is:" + deleteList.size());
             if (deleteList.size() > 0) {
-                deleteByList(deleteList);
+                return deleteByList(deleteList);
             }
         }
+        return 0;
     }
 
     private int deleteByList(List<FileInfo> deleteList) {

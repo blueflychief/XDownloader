@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 7e86300
+# pg_map_id: 5b3878d
 com.infinite.downloader.BuildConfig -> com.infinite.downloader.keepsafe.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -24,41 +24,44 @@ com.infinite.downloader.XDownload -> com.infinite.downloader.XDownload:
     15:15:void <init>(android.content.Context,com.infinite.downloader.config.Config):49:49 -> <init>
     16:27:void <init>(android.content.Context,com.infinite.downloader.config.Config):39:50 -> <init>
     1:25:void init(android.content.Context,com.infinite.downloader.config.Config):54:78 -> a
-    26:43:void shrink():256:273 -> a
+    26:43:void shrink():272:289 -> a
     1:1:com.infinite.downloader.task.DownloadTask addTask(java.lang.String):89:89 -> addTask
     2:21:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):101:120 -> addTask
     22:38:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):108:124 -> addTask
-    1:16:int deleteByFinishTime(long,boolean):153:168 -> deleteByFinishTime
-    1:9:java.io.File getFile(java.lang.String):212:220 -> getFile
-    1:1:com.infinite.downloader.recorder.Recorder getRecorder():201:201 -> getRecorder
-    1:1:java.lang.String getSaveDirPath():225:225 -> getSaveDirPath
+    1:17:int deleteByFinishTime(long,boolean):153:169 -> deleteByFinishTime
+    1:5:int deleteInvalidRecord():180:184 -> deleteInvalidRecord
+    1:9:java.io.File getFile(java.lang.String):228:236 -> getFile
+    1:1:com.infinite.downloader.recorder.Recorder getRecorder():217:217 -> getRecorder
+    1:1:java.lang.String getSaveDirPath():241:241 -> getSaveDirPath
     1:5:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):137:141 -> getTask
-    1:7:boolean removeTask(java.lang.String):180:186 -> removeTask
-    1:20:void shutdown():233:252 -> shutdown
-    21:21:void shutdown():246:246 -> shutdown
+    1:7:boolean removeTask(java.lang.String):196:202 -> removeTask
+    1:20:void shutdown():249:268 -> shutdown
+    21:21:void shutdown():262:262 -> shutdown
 com.infinite.downloader.XDownload$1 -> com.infinite.downloader.XDownload$a:
     com.infinite.downloader.XDownload this$0 -> b
     int index -> a
     1:1:void <init>(com.infinite.downloader.XDownload):64:64 -> <init>
     1:2:java.lang.Thread newThread(java.lang.Runnable):69:70 -> newThread
 com.infinite.downloader.config.Config -> com.infinite.downloader.config.Config:
-    1:9:void <init>():18:26 -> <init>
-    1:19:com.infinite.downloader.config.Config defaultConfig(android.content.Context):30:48 -> defaultConfig
-    20:20:com.infinite.downloader.config.Config defaultConfig(android.content.Context):44:44 -> defaultConfig
-    21:21:com.infinite.downloader.config.Config defaultConfig(android.content.Context):36:36 -> defaultConfig
-    1:5:boolean existSaveDir():53:57 -> existSaveDir
-    1:1:int getConnectTimeout():87:87 -> getConnectTimeout
-    1:1:com.infinite.downloader.lru.DiskUsage getDiskUsage():111:111 -> getDiskUsage
-    1:1:int getReadTimeout():95:95 -> getReadTimeout
-    1:1:java.lang.String getSaveDirPath():79:79 -> getSaveDirPath
-    1:1:boolean isCheckRemote():103:103 -> isCheckRemote
-    1:1:void setCheckRemote(boolean):107:107 -> setCheckRemote
-    1:1:void setConnectTimeout(int):91:91 -> setConnectTimeout
-    1:1:void setDiskUsage(com.infinite.downloader.lru.DiskUsage):115:115 -> setDiskUsage
-    1:1:void setReadTimeout(int):99:99 -> setReadTimeout
-    1:1:void setSaveDirPath(java.lang.String):83:83 -> setSaveDirPath
-    1:1:java.lang.String toString():120:120 -> toString
-    1:13:boolean tryCreateSaveDir():61:73 -> tryCreateSaveDir
+    1:11:void <init>():20:30 -> <init>
+    1:1:void addHeader(java.lang.String,java.lang.String):122:122 -> addHeader
+    1:19:com.infinite.downloader.config.Config defaultConfig(android.content.Context):33:51 -> defaultConfig
+    20:20:com.infinite.downloader.config.Config defaultConfig(android.content.Context):47:47 -> defaultConfig
+    21:21:com.infinite.downloader.config.Config defaultConfig(android.content.Context):39:39 -> defaultConfig
+    1:5:boolean existSaveDir():56:60 -> existSaveDir
+    1:1:int getConnectTimeout():90:90 -> getConnectTimeout
+    1:1:com.infinite.downloader.lru.DiskUsage getDiskUsage():114:114 -> getDiskUsage
+    1:1:java.util.Map getHeaders():126:126 -> getHeaders
+    1:1:int getReadTimeout():98:98 -> getReadTimeout
+    1:1:java.lang.String getSaveDirPath():82:82 -> getSaveDirPath
+    1:1:boolean isCheckRemote():106:106 -> isCheckRemote
+    1:1:void setCheckRemote(boolean):110:110 -> setCheckRemote
+    1:1:void setConnectTimeout(int):94:94 -> setConnectTimeout
+    1:1:void setDiskUsage(com.infinite.downloader.lru.DiskUsage):118:118 -> setDiskUsage
+    1:1:void setReadTimeout(int):102:102 -> setReadTimeout
+    1:1:void setSaveDirPath(java.lang.String):86:86 -> setSaveDirPath
+    1:1:java.lang.String toString():131:131 -> toString
+    1:13:boolean tryCreateSaveDir():64:76 -> tryCreateSaveDir
 com.infinite.downloader.config.DownloadStatus -> com.infinite.downloader.config.DownloadStatus:
     1:1:void <init>():14:14 -> <init>
 com.infinite.downloader.config.FileInfo -> com.infinite.downloader.config.FileInfo:
@@ -154,28 +157,32 @@ com.infinite.downloader.lru.UnlimitedDiskUsage -> com.infinite.downloader.lru.Un
     1:1:void <init>():12:12 -> <init>
     void touch(java.io.File) -> a
 com.infinite.downloader.reader.HttpStreamReader -> com.infinite.downloader.keepsafe.d:
-    java.lang.String HEADER_CONTENT_MD5 -> i
-    java.lang.String HEADER_CONTENT_RANGE -> h
-    int READ_TIMEOUT -> f
-    int MAX_REDIRECT_COUNT -> g
+    java.lang.String HEADER_CONTENT_MD5 -> k
+    java.lang.String HEADER_CONTENT_RANGE -> j
+    int READ_TIMEOUT -> h
+    int MAX_REDIRECT_COUNT -> i
+    int HTTP_PERMANENT_REDIRECT -> f
+    int CONNECT_TIMEOUT -> g
     int connectTimeout -> d
-    int CONNECT_TIMEOUT -> e
+    int HTTP_TEMPORARY_REDIRECT -> e
     java.io.InputStream inputStream -> a
     com.infinite.downloader.config.Config taskConfig -> b
     int readTimeout -> c
-    1:1:void <init>():44:44 -> <init>
-    2:5:void <init>():39:42 -> <init>
-    6:6:void <init>(com.infinite.downloader.config.Config):47:47 -> <init>
-    7:19:void <init>(com.infinite.downloader.config.Config):39:51 -> <init>
-    1:59:com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long):57:115 -> a
-    60:98:com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long):95:133 -> a
-    99:99:int readInputStream(byte[]):142:142 -> a
-    100:102:javax.net.ssl.SSLSocketFactory createSSLSocketFactory():163:165 -> a
-    103:103:void closeConnection(java.net.HttpURLConnection):190:190 -> a
-    1:8:void close():149:156 -> close
+    1:1:void <init>():50:50 -> <init>
+    2:5:void <init>():45:48 -> <init>
+    6:6:void <init>(com.infinite.downloader.config.Config):53:53 -> <init>
+    7:19:void <init>(com.infinite.downloader.config.Config):45:57 -> <init>
+    boolean isRedirect(int) -> a
+    1:59:com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long):63:121 -> a
+    60:102:com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long):101:143 -> a
+    103:114:void addHeaders(java.net.HttpURLConnection):158:169 -> a
+    115:115:int readInputStream(byte[]):179:179 -> a
+    116:118:javax.net.ssl.SSLSocketFactory createSSLSocketFactory():200:202 -> a
+    1:1:void closeConnection(java.net.HttpURLConnection):227:227 -> b
+    1:8:void close():186:193 -> close
 com.infinite.downloader.reader.HttpStreamReader$TrustAllCerts -> com.infinite.downloader.keepsafe.d$a:
-    1:1:void <init>():171:171 -> <init>
-    1:1:java.security.cert.X509Certificate[] getAcceptedIssuers():184:184 -> getAcceptedIssuers
+    1:1:void <init>():208:208 -> <init>
+    1:1:java.security.cert.X509Certificate[] getAcceptedIssuers():221:221 -> getAcceptedIssuers
 com.infinite.downloader.reader.StreamReader -> com.infinite.downloader.keepsafe.e:
     com.infinite.downloader.config.FileInfo getFileInfo(java.lang.String,long) -> a
     int readInputStream(byte[]) -> a
@@ -185,7 +192,7 @@ com.infinite.downloader.recorder.Recorder -> com.infinite.downloader.keepsafe.f:
     long put(java.lang.String,com.infinite.downloader.config.FileInfo) -> a
     java.util.List query(int) -> a
     java.util.List queryByFinishTime(long) -> a
-    void shrink() -> a
+    int shrink() -> a
     int delete(java.lang.String) -> b
     void release() -> b
 com.infinite.downloader.recorder.SqliteRecorder -> com.infinite.downloader.keepsafe.g:
@@ -221,21 +228,21 @@ com.infinite.downloader.recorder.SqliteRecorder -> com.infinite.downloader.keeps
     10:13:java.util.List query(int):178:181 -> a
     14:25:java.util.List query(int):179:190 -> a
     26:26:java.util.List query(int):189:189 -> a
-    27:38:void shrink():196:207 -> a
-    39:43:long put(java.lang.String,com.infinite.downloader.config.FileInfo):244:248 -> a
-    44:48:long put(java.lang.String,com.infinite.downloader.config.FileInfo):247:251 -> a
-    49:49:long put(java.lang.String,com.infinite.downloader.config.FileInfo):250:250 -> a
-    50:51:int deleteList(java.util.List):275:276 -> a
-    52:54:java.util.List queryByFinishTime(long):283:285 -> a
-    55:66:java.util.List queryByFinishTime(long):284:295 -> a
-    67:67:java.util.List queryByFinishTime(long):294:294 -> a
-    68:81:android.content.ContentValues convertColumns(com.infinite.downloader.config.FileInfo):305:318 -> a
-    82:110:com.infinite.downloader.config.FileInfo convertFileInfo(android.database.Cursor):329:357 -> a
-    1:21:int deleteByList(java.util.List):213:233 -> b
-    22:23:int deleteByList(java.util.List):231:232 -> b
-    24:31:int delete(java.lang.String):262:269 -> b
-    32:32:int delete(java.lang.String):268:268 -> b
-    33:33:void release():301:301 -> b
+    27:39:int shrink():196:208 -> a
+    40:44:long put(java.lang.String,com.infinite.downloader.config.FileInfo):246:250 -> a
+    45:49:long put(java.lang.String,com.infinite.downloader.config.FileInfo):249:253 -> a
+    50:50:long put(java.lang.String,com.infinite.downloader.config.FileInfo):252:252 -> a
+    51:52:int deleteList(java.util.List):277:278 -> a
+    53:55:java.util.List queryByFinishTime(long):285:287 -> a
+    56:67:java.util.List queryByFinishTime(long):286:297 -> a
+    68:68:java.util.List queryByFinishTime(long):296:296 -> a
+    69:82:android.content.ContentValues convertColumns(com.infinite.downloader.config.FileInfo):307:320 -> a
+    83:111:com.infinite.downloader.config.FileInfo convertFileInfo(android.database.Cursor):331:359 -> a
+    1:21:int deleteByList(java.util.List):215:235 -> b
+    22:23:int deleteByList(java.util.List):233:234 -> b
+    24:31:int delete(java.lang.String):264:271 -> b
+    32:32:int delete(java.lang.String):270:270 -> b
+    33:33:void release():303:303 -> b
     1:17:void onCreate(android.database.sqlite.SQLiteDatabase):115:131 -> onCreate
     18:25:void onCreate(android.database.sqlite.SQLiteDatabase):127:134 -> onCreate
     26:40:void onCreate(android.database.sqlite.SQLiteDatabase):122:136 -> onCreate
@@ -267,17 +274,19 @@ com.infinite.downloader.task.DownloadTask -> com.infinite.downloader.task.Downlo
     com.infinite.downloader.recorder.Recorder recorder -> d
     1:1:void <init>(android.content.Context,java.lang.String):46:46 -> <init>
     2:9:void <init>(android.content.Context,java.lang.String,com.infinite.downloader.recorder.Recorder,com.infinite.downloader.config.Config):50:57 -> <init>
-    1:16:void onTaskFinish(boolean):263:278 -> a
-    17:22:void onTaskError(java.lang.String):284:289 -> a
-    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):318:326 -> a
+    1:16:void onTaskFinish(boolean):274:289 -> a
+    17:22:void onTaskError(java.lang.String):295:300 -> a
+    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):329:337 -> a
     1:2:void addDownloadListener(com.infinite.downloader.DownloadListener):168:169 -> addDownloadListener
     1:14:void close():190:203 -> b
-    1:51:void download():208:258 -> c
-    52:63:void download():247:258 -> c
-    64:66:void download():257:259 -> c
-    1:9:void onTaskTerminal():293:301 -> d
-    1:3:void reset():333:335 -> e
-    1:9:void resetDownloadInfo():305:313 -> f
+    1:36:void download():208:243 -> c
+    37:65:void download():241:269 -> c
+    66:68:void download():254:256 -> c
+    69:83:void download():255:269 -> c
+    84:86:void download():268:270 -> c
+    1:9:void onTaskTerminal():304:312 -> d
+    1:3:void reset():344:346 -> e
+    1:9:void resetDownloadInfo():316:324 -> f
     1:1:java.lang.String getUrl():164:164 -> getUrl
     1:1:java.lang.String getUrlMd5():160:160 -> getUrlMd5
     1:3:void removeAllDownloadListener():178:180 -> removeAllDownloadListener
@@ -306,13 +315,14 @@ com.infinite.downloader.utils.DLogger -> com.infinite.downloader.utils.DLogger:
     java.lang.String DEBUG_TAG -> a
     boolean debugEnable -> b
     1:1:void <init>():11:11 -> <init>
-    1:2:void d(java.lang.String):20:21 -> d
-    3:4:void d(java.lang.String,java.lang.String):26:27 -> d
-    1:2:void e(java.lang.String):32:33 -> e
-    3:4:void e(java.lang.String,java.lang.String):38:39 -> e
+    1:2:void d(java.lang.String):24:25 -> d
+    3:4:void d(java.lang.String,java.lang.String):30:31 -> d
+    1:2:void e(java.lang.String):36:37 -> e
+    3:4:void e(java.lang.String,java.lang.String):42:43 -> e
     1:1:void enable():16:16 -> enable
-    1:2:void i(java.lang.String,java.lang.String):44:45 -> i
-    3:4:void i(java.lang.String):50:51 -> i
+    1:2:void i(java.lang.String,java.lang.String):48:49 -> i
+    3:4:void i(java.lang.String):54:55 -> i
+    1:1:boolean isDebugEnable():20:20 -> isDebugEnable
 com.infinite.downloader.utils.DbUtils -> com.infinite.downloader.keepsafe.j:
     1:1:void <init>():18:18 -> <init>
     1:14:boolean hasTable(java.lang.String,android.database.sqlite.SQLiteDatabase):26:39 -> a

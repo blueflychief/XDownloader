@@ -210,9 +210,10 @@ public class DownloadTask extends ComparableTask {
         int length;
         long count = 1;
         long currentSize = fileInfo.getCurrentSize();
+        long startSize = currentSize;
         long start = currentSize;
         long costTime;
-        long nowTime;
+        long nowTime = 0;
         long notifyGrade = CommonUtils.notifyGrade(fileInfo.getFileSize());
         DLogger.d("start download file,start size:" + start + ",notify grade:" + notifyGrade);
         try {
@@ -221,6 +222,7 @@ public class DownloadTask extends ComparableTask {
             fileInfo.setStartTime(System.currentTimeMillis());
             updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
             recorder.put(requestUrlMd5, fileInfo);
+            long startTimestamp = SystemClock.elapsedRealtime();
             while ((length = streamReader.readInputStream(buffer)) != -1) {
                 if (!isStopped()) {
                     currentSize = writer.saveFile(buffer, length);
@@ -230,11 +232,16 @@ public class DownloadTask extends ComparableTask {
                     fileInfo.setCurrentSize(currentSize);
                     fileInfo.setMessage("file is downloading");
                     fileInfo.setCostTime(costTime + fileInfo.getCostTime());
-                    fileInfo.setSpeed(CommonUtils.computeSpeed(length, costTime));
+                    fileInfo.setSpeed(CommonUtils.computeSpeed(currentSize - startSize,
+                            nowTime - startTimestamp));
                     recorder.put(requestUrlMd5, fileInfo);
                     //256k
                     if (currentSize > ((count << notifyGrade) + start)) {
-                        DLogger.d("file " + fileInfo.getFileName() + " is downloading,current size:" + currentSize);
+                        if (DLogger.isDebugEnable()) {
+                            DLogger.d("file " + fileInfo.getFileName()
+                                    + " is downloading,current size:" + currentSize
+                                    + ",speed:" + fileInfo.getSpeed() + "KB/s");
+                        }
                         updateStatus(DownloadStatus.DOWNLOADING, fileInfo);
                         count++;
                     }
@@ -244,7 +251,11 @@ public class DownloadTask extends ComparableTask {
                     return;
                 }
             }
-            DLogger.d("file download finish,current size:" + currentSize);
+            if (DLogger.isDebugEnable()) {
+                DLogger.d("file download finish,current size:" + currentSize
+                        + "，average speed:" + CommonUtils.computeSpeed(currentSize - startSize,
+                        nowTime - startTimestamp) + "KB/s");
+            }
             fileInfo.setFinishTime(System.currentTimeMillis());
             recorder.put(requestUrlMd5, fileInfo);
             onTaskFinish(true);

@@ -8,6 +8,8 @@ import com.infinite.downloader.lru.TotalSizeLruDiskUsage;
 import com.infinite.downloader.utils.DLogger;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Email: 690797861@qq.com
@@ -25,6 +27,7 @@ public class Config {
     private int readTimeout = READ_TIMEOUT;
     private boolean checkRemote = false;
     private DiskUsage diskUsage;
+    private Map<String, String> requestHeaders = new HashMap<>(8);
 
     public static Config defaultConfig(Context context) {
         Config config = new Config();
@@ -113,6 +116,14 @@ public class Config {
 
     public void setDiskUsage(DiskUsage diskUsage) {
         this.diskUsage = diskUsage;
+    }
+
+    public void addHeader(String key, String value) {
+        requestHeaders.put(key, value);
+    }
+
+    public Map<String, String> getHeaders() {
+        return requestHeaders;
     }
 
     @Override
