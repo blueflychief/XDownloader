@@ -144,7 +144,7 @@ public class DownloadActivity extends AppCompatActivity {
                 String timestamp = etFinishTime.getEditableText().toString();
                 if (!TextUtils.isEmpty(timestamp)) {
                     long startTime = SystemClock.elapsedRealtime();
-                    DownloadApp.getDownload().deleteByFinishTime(parseLong(timestamp), true);
+                    DownloadApp.getDownload().deleteByFinishTime(0L, parseLong(timestamp), true);
                     DLogger.d("delete file finish,cost time " + (SystemClock.elapsedRealtime() - startTime));
                 }
             }

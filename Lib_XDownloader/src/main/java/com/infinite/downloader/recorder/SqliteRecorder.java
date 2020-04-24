@@ -281,10 +281,12 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
-    public List<FileInfo> queryByFinishTime(long timestamp) {
+    public List<FileInfo> queryByFinishTime(long minTimestamp, long maxTimestamp) {
         long start = SystemClock.elapsedRealtime();
-        Cursor cursor = getReadableDatabase().query(TABLE_NAME, ALL_COLUMNS, COL_FINISH_TIME + "<?",
-                new String[]{String.valueOf(timestamp)}, null, null,
+        Cursor cursor = getReadableDatabase().query(TABLE_NAME, ALL_COLUMNS,
+                COL_FINISH_TIME + " >= ? AND " + COL_FINISH_TIME + " <= ?",
+                new String[]{String.valueOf(minTimestamp), String.valueOf(maxTimestamp)},
+                null, null,
                 null, null);
         List<FileInfo> list = new ArrayList<>(32);
         if (cursor != null) {
@@ -293,8 +295,11 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             }
             cursor.close();
         }
-        DLogger.d("queryByFinishTime:" + timestamp + " item finish,count:" + list.size()
-                + ",cost time:" + (SystemClock.elapsedRealtime() - start));
+        if (DLogger.isDebugEnable()) {
+            DLogger.d("queryByFinishTime:" + minTimestamp + " to " + maxTimestamp
+                    + " item finish,count:" + list.size()
+                    + ",cost time:" + (SystemClock.elapsedRealtime() - start));
+        }
         return list;
     }
 

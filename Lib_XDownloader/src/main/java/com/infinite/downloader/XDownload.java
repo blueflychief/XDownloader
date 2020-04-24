@@ -146,20 +146,25 @@ public class XDownload {
     /**
      * Delete download record by finish time
      *
-     * @param timestamp
+     * @param minTimestamp
+     * @param maxTimestamp
+     * @param deleteFile
      * @return
      */
-    public int deleteByFinishTime(long timestamp, boolean deleteFile) {
+    public int deleteByFinishTime(long minTimestamp, long maxTimestamp, boolean deleteFile) {
         boolean tempRecorder = recorder == null;
         Recorder r = recorder != null ? recorder : new SqliteRecorder(appContext);
-        List<FileInfo> fileInfoList = r.queryByFinishTime(timestamp);
+        List<FileInfo> fileInfoList = r.queryByFinishTime(minTimestamp, maxTimestamp);
         int count = fileInfoList != null ? fileInfoList.size() : 0;
         if (count > 0) {
             if (deleteFile) {
                 for (FileInfo fileInfo : fileInfoList) {
                     if (fileInfo != null) {
+                        if (DLogger.isDebugEnable()) {
+                            DLogger.d("delete record file " + fileInfo.getFileName()
+                                    + ",finish time:" + fileInfo.getFinishTime());
+                        }
                         fileInfo.deleteFile();
-                        DLogger.d("delete record file " + fileInfo.getFileName());
                     }
                 }
             }

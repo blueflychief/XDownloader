@@ -20,7 +20,7 @@ public interface Recorder {
 
     int deleteList(List<FileInfo> fileInfoList);
 
-    List<FileInfo> queryByFinishTime(long timestamp);
+    List<FileInfo> queryByFinishTime(long minTimestamp, long maxTimestamp);
 
     List<FileInfo> query(int count);
 
