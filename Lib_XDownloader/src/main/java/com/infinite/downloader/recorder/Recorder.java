@@ -22,6 +22,8 @@ public interface Recorder {
 
     List<FileInfo> queryByFinishTime(long minTimestamp, long maxTimestamp);
 
+    List<FileInfo> queryByStartTime(long minTimestamp, long maxTimestamp);
+
     List<FileInfo> query(int count);
 
     int shrink();

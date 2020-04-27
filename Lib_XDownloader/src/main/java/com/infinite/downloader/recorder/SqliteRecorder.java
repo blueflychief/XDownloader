@@ -3,12 +3,15 @@ package com.infinite.downloader.recorder;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabaseCorruptException;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.SystemClock;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.infinite.downloader.config.FileInfo;
 import com.infinite.downloader.utils.DLogger;
@@ -62,6 +65,8 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
             COL_FINISH_TIME,
     };
 
+    private static final String SQL_DROP_RECORD_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
+
     private static final String SQL_CREATE_RECORD_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
                     COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
@@ -113,25 +118,30 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     @Override
     public void onCreate(SQLiteDatabase db) {
         DLogger.e("SQLiteDataSaver onCreate");
+        recreateDbTables(db);
+    }
+
+    private void recreateDbTables(SQLiteDatabase db) {
         try {
             db.beginTransaction();
             DbUtils.executeSQL(db, SQL_CREATE_RECORD_TABLE);
             DbUtils.executeSQL(db, SQL_CREATE_URL_MD5_INDEX);
             db.setTransactionSuccessful();
-        } catch (SQLiteDatabaseCorruptException var13) {
+        } catch (SQLiteException var13) {
             var13.printStackTrace();
+            DLogger.e(var13.getMessage());
             DbUtils.deleteDbFile(context, DB_NAME);
             DbUtils.executeSQL(db, SQL_CREATE_RECORD_TABLE);
             DbUtils.executeSQL(db, SQL_CREATE_URL_MD5_INDEX);
         } catch (Throwable throwable) {
-            DLogger.d(throwable.getMessage());
+            DLogger.e(throwable.getMessage());
         } finally {
             try {
                 if (db != null) {
                     db.endTransaction();
                 }
             } catch (Exception e) {
-                DLogger.d(e.getMessage());
+                DLogger.e(e.getMessage());
             }
         }
     }
@@ -139,18 +149,28 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         DLogger.d("SQLiteDataSaver onUpgrade,oldVersion:" + oldVersion + ",newVersion:" + newVersion);
-        long startTIme = SystemClock.elapsedRealtime();
+        long startTime = SystemClock.elapsedRealtime();
         if (oldVersion == 1 && newVersion == 2) {
-            DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME);
-            db.execSQL(SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME);
-            DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME);
-            db.execSQL(SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME);
-            DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_SET_START_TIME);
-            db.execSQL(SQL_VERSION2_UPGRADE_SET_START_TIME);
-            DLogger.e("execute sql:" + SQL_VERSION2_UPGRADE_SET_FINISH_TIME);
-            db.execSQL(SQL_VERSION2_UPGRADE_SET_FINISH_TIME);
+            try {
+                DbUtils.executeSQL(db, SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME);
+                DbUtils.executeSQL(db, SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME);
+                DbUtils.executeSQL(db, SQL_VERSION2_UPGRADE_SET_START_TIME);
+                DbUtils.executeSQL(db, SQL_VERSION2_UPGRADE_SET_FINISH_TIME);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                DLogger.e("onUpgrade exception:" + e.getMessage());
+                DLogger.e("delete db tables and recreate db tables!!!");
+                try {
+                    recoveryData(db);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    DLogger.e("recoveryData old data exception!!!，delete table");
+                    db.execSQL(SQL_DROP_RECORD_TABLE);
+                    recreateDbTables(db);
+                }
+            }
         }
-        DLogger.d("SQLiteDataSaver onUpgrade finish,cost time:" + (SystemClock.elapsedRealtime() - startTIme));
+        DLogger.d("SQLiteDataSaver onUpgrade finish,cost time:" + (SystemClock.elapsedRealtime() - startTime));
     }
 
     @Override
@@ -304,8 +324,110 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
+    public List<FileInfo> queryByStartTime(long minTimestamp, long maxTimestamp) {
+        long start = SystemClock.elapsedRealtime();
+        Cursor cursor = getReadableDatabase().query(TABLE_NAME, ALL_COLUMNS,
+                COL_START_TIME + " >= ? AND " + COL_START_TIME + " <= ?",
+                new String[]{String.valueOf(minTimestamp), String.valueOf(maxTimestamp)},
+                null, null,
+                null, null);
+        List<FileInfo> list = new ArrayList<>(32);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                list.add(convertFileInfo(cursor));
+            }
+            cursor.close();
+        }
+        if (DLogger.isDebugEnable()) {
+            DLogger.d("queryByStartTime:" + minTimestamp + " to " + maxTimestamp
+                    + " item finish,count:" + list.size()
+                    + ",cost time:" + (SystemClock.elapsedRealtime() - start));
+        }
+        return list;
+    }
+
+    @Override
     public void release() {
         close();
+    }
+
+    private void recoveryData(SQLiteDatabase db) {
+        int count = 0;
+        List<FileInfo> oldDataList = queryOldData(db);
+        count = oldDataList.size();
+        DLogger.e("queryOldData,count:" + count);
+
+        db.execSQL(SQL_DROP_RECORD_TABLE);
+        DLogger.e("drop table sql " + SQL_DROP_RECORD_TABLE);
+        recreateDbTables(db);
+        DLogger.e("recreateDbTables");
+
+        count = restoreOldData(db, oldDataList);
+        DLogger.e("restoreOldData cost time,count:" + count);
+    }
+
+    @NonNull
+    private List<FileInfo> queryOldData(SQLiteDatabase db) {
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        List<FileInfo> dataList = new ArrayList<>(64);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                dataList.add(convertOldFileInfo(cursor));
+            }
+            cursor.close();
+        }
+        return dataList;
+    }
+
+    private int restoreOldData(SQLiteDatabase db, List<FileInfo> dataList) {
+        int count = 0;
+        if (dataList != null && dataList.size() > 0) {
+            StringBuilder sql = new StringBuilder(100);
+            sql.append("INSERT INTO ").append(TABLE_NAME).append(" (");
+            sql.append(COL_ID).append(",");
+            sql.append(COL_URL_MD5).append(",");
+            sql.append(COL_REQUEST_URL).append(",");
+            sql.append(COL_DOWNLOAD_URL).append(",");
+            sql.append(COL_FILE_LENGTH).append(",");
+            sql.append(COL_FILE_MD5).append(",");
+            sql.append(COL_SAVE_PATH).append(",");
+            sql.append(COL_CONTENT_TYPE).append(",");
+            sql.append(COL_COMPLETED_LENGTH).append(",");
+            sql.append(COL_SUPPORT_RANGE).append(",");
+            sql.append(COL_COST_TIME).append(",");
+            sql.append(COL_FILE_NAME).append(")");
+            sql.append(" VALUES (?,?,?,?,?,?,?,?,?,?,?,?);");
+            db.beginTransaction();
+            if (DLogger.isDebugEnable()) {
+                DLogger.e("restoreOldData sql is:");
+                DLogger.e(sql.toString());
+            }
+            SQLiteStatement stat = db.compileStatement(sql.toString());
+            for (FileInfo info : dataList) {
+                if (info != null) {
+                    //这里index是必须是从1开始
+                    stat.bindLong(1, info.getId());
+                    DbUtils.bindMaybeNull(stat, info.getUrlMd5(), 2);
+                    DbUtils.bindMaybeNull(stat, info.getRequestUrl(), 3);
+                    DbUtils.bindMaybeNull(stat, info.getDownloadUrl(), 4);
+                    stat.bindLong(5, info.getFileSize());
+                    DbUtils.bindMaybeNull(stat, info.getFileMd5(), 6);
+                    DbUtils.bindMaybeNull(stat, info.getSaveDirPath(), 7);
+                    DbUtils.bindMaybeNull(stat, info.getContentType(), 8);
+                    stat.bindLong(9, info.getCurrentSize());
+                    stat.bindLong(10, info.isSupportRange() ? 1 : 0);
+                    stat.bindLong(11, info.getCostTime());
+                    DbUtils.bindMaybeNull(stat, info.getFileName(), 12);
+                    if (stat.executeInsert() > -1) {
+                        count++;
+                    }
+                    stat.clearBindings();
+                }
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+        return count;
     }
 
     private ContentValues convertColumns(FileInfo fileInfo) {
@@ -333,6 +455,16 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
      * @return FileInfo
      */
     private FileInfo convertFileInfo(Cursor cursor) {
+        FileInfo fileInfo = convertOldFileInfo(cursor);
+
+        long startTime = cursor.getLong(12);
+        long finishTime = cursor.getLong(13);
+        fileInfo.setStartTime(startTime);
+        fileInfo.setFinishTime(finishTime);
+        return fileInfo;
+    }
+
+    private FileInfo convertOldFileInfo(Cursor cursor) {
         long id = cursor.getLong(0);
         String urlMd5 = cursor.getString(1);
         String requestUrl = cursor.getString(2);
@@ -345,8 +477,6 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         int supportRange = cursor.getInt(9);
         long costTime = cursor.getLong(10);
         String fileName = cursor.getString(11);
-        long startTime = cursor.getLong(12);
-        long finishTime = cursor.getLong(13);
         FileInfo fileInfo = new FileInfo();
         fileInfo.setId(id);
         fileInfo.setUrlMd5(urlMd5);
@@ -360,8 +490,6 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
         fileInfo.setSupportRange(supportRange == 1);
         fileInfo.setCostTime(costTime);
         fileInfo.setFileName(fileName);
-        fileInfo.setStartTime(startTime);
-        fileInfo.setFinishTime(finishTime);
         return fileInfo;
     }
 }

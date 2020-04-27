@@ -57,8 +57,8 @@ public class XDownload {
             recorder = new SqliteRecorder(appContext);
             int cpuCount = Runtime.getRuntime().availableProcessors();
             threadPoolExecutor = new ThreadPoolExecutor(
-                    cpuCount + 1,
-                    cpuCount << 2 + 1,
+                    cpuCount + 3,
+                    cpuCount << 2 + 3,
                     60, TimeUnit.SECONDS,
                     new LinkedBlockingQueue<Runnable>(),
                     new ThreadFactory() {
@@ -152,9 +152,27 @@ public class XDownload {
      * @return
      */
     public int deleteByFinishTime(long minTimestamp, long maxTimestamp, boolean deleteFile) {
+        return deleteByTime(true, minTimestamp, maxTimestamp, deleteFile);
+    }
+
+    /**
+     * Delete download record by start time
+     *
+     * @param minTimestamp
+     * @param maxTimestamp
+     * @param deleteFile
+     * @return
+     */
+    public int deleteByStartTime(long minTimestamp, long maxTimestamp, boolean deleteFile) {
+        return deleteByTime(false, minTimestamp, maxTimestamp, deleteFile);
+    }
+
+    private int deleteByTime(boolean isFinishTime, long minTimestamp, long maxTimestamp, boolean deleteFile) {
         boolean tempRecorder = recorder == null;
         Recorder r = recorder != null ? recorder : new SqliteRecorder(appContext);
-        List<FileInfo> fileInfoList = r.queryByFinishTime(minTimestamp, maxTimestamp);
+        List<FileInfo> fileInfoList = isFinishTime ?
+                r.queryByFinishTime(minTimestamp, maxTimestamp) :
+                r.queryByStartTime(minTimestamp, maxTimestamp);
         int count = fileInfoList != null ? fileInfoList.size() : 0;
         if (count > 0) {
             if (deleteFile) {
