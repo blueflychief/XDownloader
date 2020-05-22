@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: f9af857
+# pg_map_id: 9d8371e
 com.infinite.downloader.BuildConfig -> com.infinite.downloader.keepsafe.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -24,20 +24,22 @@ com.infinite.downloader.XDownload -> com.infinite.downloader.XDownload:
     15:15:void <init>(android.content.Context,com.infinite.downloader.config.Config):49:49 -> <init>
     16:27:void <init>(android.content.Context,com.infinite.downloader.config.Config):39:50 -> <init>
     1:25:void init(android.content.Context,com.infinite.downloader.config.Config):54:78 -> a
-    26:43:void shrink():277:294 -> a
+    26:38:int deleteByTime(boolean,long,long,boolean):171:183 -> a
+    39:49:int deleteByTime(boolean,long,long,boolean):182:192 -> a
+    50:67:void shrink():295:312 -> a
     1:1:com.infinite.downloader.task.DownloadTask addTask(java.lang.String):89:89 -> addTask
     2:21:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):101:120 -> addTask
     22:38:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):108:124 -> addTask
-    1:11:int deleteByFinishTime(long,long,boolean):155:165 -> deleteByFinishTime
-    12:22:int deleteByFinishTime(long,long,boolean):164:174 -> deleteByFinishTime
-    1:5:int deleteInvalidRecord():185:189 -> deleteInvalidRecord
-    1:9:java.io.File getFile(java.lang.String):233:241 -> getFile
-    1:1:com.infinite.downloader.recorder.Recorder getRecorder():222:222 -> getRecorder
-    1:1:java.lang.String getSaveDirPath():246:246 -> getSaveDirPath
+    1:1:int deleteByFinishTime(long,long,boolean):155:155 -> deleteByFinishTime
+    1:1:int deleteByStartTime(long,long,boolean):167:167 -> deleteByStartTime
+    1:5:int deleteInvalidRecord():203:207 -> deleteInvalidRecord
+    1:9:java.io.File getFile(java.lang.String):251:259 -> getFile
+    1:1:com.infinite.downloader.recorder.Recorder getRecorder():240:240 -> getRecorder
+    1:1:java.lang.String getSaveDirPath():264:264 -> getSaveDirPath
     1:5:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):137:141 -> getTask
-    1:7:boolean removeTask(java.lang.String):201:207 -> removeTask
-    1:20:void shutdown():254:273 -> shutdown
-    21:21:void shutdown():267:267 -> shutdown
+    1:7:boolean removeTask(java.lang.String):219:225 -> removeTask
+    1:20:void shutdown():272:291 -> shutdown
+    21:21:void shutdown():285:285 -> shutdown
 com.infinite.downloader.XDownload$1 -> com.infinite.downloader.XDownload$a:
     com.infinite.downloader.XDownload this$0 -> b
     int index -> a
@@ -192,9 +194,10 @@ com.infinite.downloader.recorder.Recorder -> com.infinite.downloader.keepsafe.f:
     com.infinite.downloader.config.FileInfo get(java.lang.String) -> a
     long put(java.lang.String,com.infinite.downloader.config.FileInfo) -> a
     java.util.List query(int) -> a
-    java.util.List queryByFinishTime(long,long) -> a
+    java.util.List queryByStartTime(long,long) -> a
     int shrink() -> a
     int delete(java.lang.String) -> b
+    java.util.List queryByFinishTime(long,long) -> b
     void release() -> b
 com.infinite.downloader.recorder.SqliteRecorder -> com.infinite.downloader.keepsafe.g:
     android.content.Context context -> a
@@ -206,9 +209,9 @@ com.infinite.downloader.recorder.SqliteRecorder -> com.infinite.downloader.keeps
     java.lang.String COL_COST_TIME -> p
     int DB_VERSION -> b
     java.lang.String COL_START_TIME -> r
-    java.lang.String SQL_CREATE_URL_MD5_INDEX -> v
-    java.lang.String SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME -> x
-    java.lang.String SQL_VERSION2_UPGRADE_SET_FINISH_TIME -> z
+    java.lang.String SQL_CREATE_RECORD_TABLE -> v
+    java.lang.String SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME -> x
+    java.lang.String SQL_VERSION2_UPGRADE_SET_START_TIME -> z
     java.lang.String[] ALL_COLUMNS -> t
     java.lang.String DB_NAME -> c
     java.lang.String URL_MD5_INDEX_NAME -> e
@@ -219,35 +222,45 @@ com.infinite.downloader.recorder.SqliteRecorder -> com.infinite.downloader.keeps
     java.lang.String COL_SUPPORT_RANGE -> o
     java.lang.String COL_FILE_NAME -> q
     java.lang.String COL_FINISH_TIME -> s
-    java.lang.String SQL_CREATE_RECORD_TABLE -> u
-    java.lang.String SQL_VERSION2_UPGRADE_TABLE_ADD_START_TIME -> w
-    java.lang.String SQL_VERSION2_UPGRADE_SET_START_TIME -> y
+    java.lang.String SQL_DROP_RECORD_TABLE -> u
+    java.lang.String SQL_CREATE_URL_MD5_INDEX -> w
+    java.lang.String SQL_VERSION2_UPGRADE_TABLE_ADD_FINISH_TIME -> y
+    java.lang.String SQL_VERSION2_UPGRADE_SET_FINISH_TIME -> A
     java.lang.String TABLE_NAME -> d
-    1:55:void <clinit>():48:102 -> <clinit>
-    1:2:void <init>(android.content.Context):109:110 -> <init>
-    1:9:com.infinite.downloader.config.FileInfo get(java.lang.String):160:168 -> a
-    10:13:java.util.List query(int):178:181 -> a
-    14:25:java.util.List query(int):179:190 -> a
-    26:26:java.util.List query(int):189:189 -> a
-    27:39:int shrink():196:208 -> a
-    40:44:long put(java.lang.String,com.infinite.downloader.config.FileInfo):246:250 -> a
-    45:49:long put(java.lang.String,com.infinite.downloader.config.FileInfo):249:253 -> a
-    50:50:long put(java.lang.String,com.infinite.downloader.config.FileInfo):252:252 -> a
-    51:52:int deleteList(java.util.List):277:278 -> a
-    53:56:java.util.List queryByFinishTime(long,long):285:288 -> a
-    57:72:java.util.List queryByFinishTime(long,long):286:301 -> a
-    73:73:java.util.List queryByFinishTime(long,long):299:299 -> a
-    74:87:android.content.ContentValues convertColumns(com.infinite.downloader.config.FileInfo):312:325 -> a
-    88:116:com.infinite.downloader.config.FileInfo convertFileInfo(android.database.Cursor):336:364 -> a
-    1:21:int deleteByList(java.util.List):215:235 -> b
-    22:23:int deleteByList(java.util.List):233:234 -> b
-    24:31:int delete(java.lang.String):264:271 -> b
-    32:32:int delete(java.lang.String):270:270 -> b
-    33:33:void release():308:308 -> b
-    1:17:void onCreate(android.database.sqlite.SQLiteDatabase):115:131 -> onCreate
-    18:25:void onCreate(android.database.sqlite.SQLiteDatabase):127:134 -> onCreate
-    26:40:void onCreate(android.database.sqlite.SQLiteDatabase):122:136 -> onCreate
-    1:13:void onUpgrade(android.database.sqlite.SQLiteDatabase,int,int):141:153 -> onUpgrade
+    1:57:void <clinit>():51:107 -> <clinit>
+    1:2:void <init>(android.content.Context):114:115 -> <init>
+    1:9:com.infinite.downloader.config.FileInfo get(java.lang.String):193:201 -> a
+    10:13:java.util.List query(int):211:214 -> a
+    14:25:java.util.List query(int):212:223 -> a
+    26:26:java.util.List query(int):222:222 -> a
+    27:39:int shrink():229:241 -> a
+    40:44:long put(java.lang.String,com.infinite.downloader.config.FileInfo):279:283 -> a
+    45:49:long put(java.lang.String,com.infinite.downloader.config.FileInfo):282:286 -> a
+    50:50:long put(java.lang.String,com.infinite.downloader.config.FileInfo):285:285 -> a
+    51:52:int deleteList(java.util.List):310:311 -> a
+    53:56:java.util.List queryByStartTime(long,long):341:344 -> a
+    57:72:java.util.List queryByStartTime(long,long):342:357 -> a
+    73:73:java.util.List queryByStartTime(long,long):355:355 -> a
+    74:80:java.util.List queryOldData(android.database.sqlite.SQLiteDatabase):384:390 -> a
+    81:125:int restoreOldData(android.database.sqlite.SQLiteDatabase,java.util.List):397:441 -> a
+    126:139:android.content.ContentValues convertColumns(com.infinite.downloader.config.FileInfo):447:460 -> a
+    140:145:com.infinite.downloader.config.FileInfo convertFileInfo(android.database.Cursor):471:476 -> a
+    1:21:int deleteByList(java.util.List):248:268 -> b
+    22:23:int deleteByList(java.util.List):266:267 -> b
+    24:31:int delete(java.lang.String):297:304 -> b
+    32:32:int delete(java.lang.String):303:303 -> b
+    33:36:java.util.List queryByFinishTime(long,long):318:321 -> b
+    37:52:java.util.List queryByFinishTime(long,long):319:334 -> b
+    53:53:java.util.List queryByFinishTime(long,long):332:332 -> b
+    54:54:void release():364:364 -> b
+    55:65:void recoveryData(android.database.sqlite.SQLiteDatabase):369:379 -> b
+    66:90:com.infinite.downloader.config.FileInfo convertOldFileInfo(android.database.Cursor):481:505 -> b
+    1:16:void recreateDbTables(android.database.sqlite.SQLiteDatabase):126:141 -> c
+    17:24:void recreateDbTables(android.database.sqlite.SQLiteDatabase):137:144 -> c
+    25:40:void recreateDbTables(android.database.sqlite.SQLiteDatabase):131:146 -> c
+    1:2:void onCreate(android.database.sqlite.SQLiteDatabase):120:121 -> onCreate
+    1:8:void onDowngrade(android.database.sqlite.SQLiteDatabase,int,int):178:185 -> onDowngrade
+    1:23:void onUpgrade(android.database.sqlite.SQLiteDatabase,int,int):151:173 -> onUpgrade
 com.infinite.downloader.task.ComparableTask -> com.infinite.downloader.keepsafe.h:
     boolean stopped -> a
     int priority -> b

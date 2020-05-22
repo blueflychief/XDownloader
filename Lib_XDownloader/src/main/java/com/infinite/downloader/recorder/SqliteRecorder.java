@@ -174,6 +174,19 @@ public class SqliteRecorder extends SQLiteOpenHelper implements Recorder {
     }
 
     @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        DLogger.e("SQLiteDataSaver onDowngrade,oldVersion:" + oldVersion + ",newVersion:" + newVersion);
+        try {
+            recoveryData(db);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            DLogger.e("recoveryData old data exception!!!，delete table");
+            db.execSQL(SQL_DROP_RECORD_TABLE);
+            recreateDbTables(db);
+        }
+    }
+
+    @Override
     public FileInfo get(String urlMd5) {
 //        long start = System.currentTimeMillis();
         FileInfo fileInfo = null;
