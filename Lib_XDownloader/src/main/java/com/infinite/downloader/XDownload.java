@@ -34,7 +34,7 @@ public class XDownload {
     private Context appContext;
     private ThreadPoolExecutor threadPoolExecutor;
     private Config downloadConfig;
-    private Recorder recorder;
+    private static Recorder recorder;//use static,SQLite must be a singleton
     private boolean initialized;
     private final Map<String, DownloadTask> TASK_MAP = new HashMap<>(32);
 
@@ -54,11 +54,13 @@ public class XDownload {
         if (!initialized) {
             appContext = context.getApplicationContext();
             downloadConfig = config != null ? config : Config.defaultConfig(appContext);
-            recorder = new SqliteRecorder(appContext);
+            if (recorder == null) {
+                recorder = new SqliteRecorder(appContext);
+            }
             int cpuCount = Runtime.getRuntime().availableProcessors();
             threadPoolExecutor = new ThreadPoolExecutor(
                     cpuCount + 3,
-                    cpuCount << 2 + 3,
+                    cpuCount << 5,
                     60, TimeUnit.SECONDS,
                     new LinkedBlockingQueue<Runnable>(),
                     new ThreadFactory() {
@@ -251,9 +253,18 @@ public class XDownload {
         String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
         boolean tempRecorder = recorder == null;
         Recorder r = recorder != null ? recorder : new SqliteRecorder(appContext);
-        FileInfo fileInfo = r.get(md5);
+        FileInfo fileInfo = null;
+        try {
+            fileInfo = r.get(md5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (tempRecorder) {
-            r.release();
+            try {
+                r.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         DLogger.e("getFile info:" + fileInfo);
         return fileInfo != null ? fileInfo.finished() : null;

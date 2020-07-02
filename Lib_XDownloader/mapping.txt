@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 9d8371e
+# pg_map_id: 18d0d45
 com.infinite.downloader.BuildConfig -> com.infinite.downloader.keepsafe.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -13,38 +13,38 @@ com.infinite.downloader.BuildConfig -> com.infinite.downloader.keepsafe.a:
 com.infinite.downloader.XDownload -> com.infinite.downloader.XDownload:
     android.content.Context appContext -> a
     com.infinite.downloader.config.Config downloadConfig -> c
-    boolean initialized -> e
     java.util.concurrent.ThreadPoolExecutor threadPoolExecutor -> b
-    com.infinite.downloader.recorder.Recorder recorder -> d
-    java.util.Map TASK_MAP -> f
+    java.util.Map TASK_MAP -> e
+    com.infinite.downloader.recorder.Recorder recorder -> f
+    boolean initialized -> d
     1:1:void <init>():41:41 -> <init>
     2:5:void <init>():39:42 -> <init>
     6:6:void <init>(android.content.Context):45:45 -> <init>
     7:14:void <init>(android.content.Context):39:46 -> <init>
     15:15:void <init>(android.content.Context,com.infinite.downloader.config.Config):49:49 -> <init>
     16:27:void <init>(android.content.Context,com.infinite.downloader.config.Config):39:50 -> <init>
-    1:25:void init(android.content.Context,com.infinite.downloader.config.Config):54:78 -> a
-    26:38:int deleteByTime(boolean,long,long,boolean):171:183 -> a
-    39:49:int deleteByTime(boolean,long,long,boolean):182:192 -> a
-    50:67:void shrink():295:312 -> a
-    1:1:com.infinite.downloader.task.DownloadTask addTask(java.lang.String):89:89 -> addTask
-    2:21:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):101:120 -> addTask
-    22:38:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):108:124 -> addTask
-    1:1:int deleteByFinishTime(long,long,boolean):155:155 -> deleteByFinishTime
-    1:1:int deleteByStartTime(long,long,boolean):167:167 -> deleteByStartTime
-    1:5:int deleteInvalidRecord():203:207 -> deleteInvalidRecord
-    1:9:java.io.File getFile(java.lang.String):251:259 -> getFile
-    1:1:com.infinite.downloader.recorder.Recorder getRecorder():240:240 -> getRecorder
-    1:1:java.lang.String getSaveDirPath():264:264 -> getSaveDirPath
-    1:5:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):137:141 -> getTask
-    1:7:boolean removeTask(java.lang.String):219:225 -> removeTask
-    1:20:void shutdown():272:291 -> shutdown
-    21:21:void shutdown():285:285 -> shutdown
+    1:27:void init(android.content.Context,com.infinite.downloader.config.Config):54:80 -> a
+    28:40:int deleteByTime(boolean,long,long,boolean):173:185 -> a
+    41:51:int deleteByTime(boolean,long,long,boolean):184:194 -> a
+    52:69:void shrink():306:323 -> a
+    1:1:com.infinite.downloader.task.DownloadTask addTask(java.lang.String):91:91 -> addTask
+    2:21:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):103:122 -> addTask
+    22:38:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):110:126 -> addTask
+    1:1:int deleteByFinishTime(long,long,boolean):157:157 -> deleteByFinishTime
+    1:1:int deleteByStartTime(long,long,boolean):169:169 -> deleteByStartTime
+    1:5:int deleteInvalidRecord():205:209 -> deleteInvalidRecord
+    1:18:java.io.File getFile(java.lang.String):253:270 -> getFile
+    1:1:com.infinite.downloader.recorder.Recorder getRecorder():242:242 -> getRecorder
+    1:1:java.lang.String getSaveDirPath():275:275 -> getSaveDirPath
+    1:5:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):139:143 -> getTask
+    1:7:boolean removeTask(java.lang.String):221:227 -> removeTask
+    1:20:void shutdown():283:302 -> shutdown
+    21:21:void shutdown():296:296 -> shutdown
 com.infinite.downloader.XDownload$1 -> com.infinite.downloader.XDownload$a:
     com.infinite.downloader.XDownload this$0 -> b
     int index -> a
-    1:1:void <init>(com.infinite.downloader.XDownload):64:64 -> <init>
-    1:2:java.lang.Thread newThread(java.lang.Runnable):69:70 -> newThread
+    1:1:void <init>(com.infinite.downloader.XDownload):66:66 -> <init>
+    1:2:java.lang.Thread newThread(java.lang.Runnable):71:72 -> newThread
 com.infinite.downloader.config.Config -> com.infinite.downloader.config.Config:
     1:11:void <init>():20:30 -> <init>
     1:1:void addHeader(java.lang.String,java.lang.String):122:122 -> addHeader
