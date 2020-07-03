@@ -44,6 +44,26 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00FF00"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btMultiStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开始多XDownload下载" />
+
+            <Button
+                android:id="@+id/btMultiEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="停止多XDownload下载" />
+
+        </LinearLayout>
+
 
         <ScrollView
             android:layout_width="match_parent"
