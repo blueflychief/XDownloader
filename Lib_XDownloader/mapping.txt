@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 18d0d45
+# pg_map_id: b4c2272
 com.infinite.downloader.BuildConfig -> com.infinite.downloader.keepsafe.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -24,22 +24,22 @@ com.infinite.downloader.XDownload -> com.infinite.downloader.XDownload:
     15:15:void <init>(android.content.Context,com.infinite.downloader.config.Config):49:49 -> <init>
     16:27:void <init>(android.content.Context,com.infinite.downloader.config.Config):39:50 -> <init>
     1:27:void init(android.content.Context,com.infinite.downloader.config.Config):54:80 -> a
-    28:40:int deleteByTime(boolean,long,long,boolean):173:185 -> a
-    41:51:int deleteByTime(boolean,long,long,boolean):184:194 -> a
-    52:69:void shrink():306:323 -> a
+    28:40:int deleteByTime(boolean,long,long,boolean):177:189 -> a
+    41:51:int deleteByTime(boolean,long,long,boolean):188:198 -> a
+    52:69:void shrink():312:329 -> a
     1:1:com.infinite.downloader.task.DownloadTask addTask(java.lang.String):91:91 -> addTask
-    2:21:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):103:122 -> addTask
-    22:38:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):110:126 -> addTask
-    1:1:int deleteByFinishTime(long,long,boolean):157:157 -> deleteByFinishTime
-    1:1:int deleteByStartTime(long,long,boolean):169:169 -> deleteByStartTime
-    1:5:int deleteInvalidRecord():205:209 -> deleteInvalidRecord
-    1:18:java.io.File getFile(java.lang.String):253:270 -> getFile
-    1:1:com.infinite.downloader.recorder.Recorder getRecorder():242:242 -> getRecorder
-    1:1:java.lang.String getSaveDirPath():275:275 -> getSaveDirPath
-    1:5:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):139:143 -> getTask
-    1:7:boolean removeTask(java.lang.String):221:227 -> removeTask
-    1:20:void shutdown():283:302 -> shutdown
-    21:21:void shutdown():296:296 -> shutdown
+    2:21:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):104:123 -> addTask
+    22:41:com.infinite.downloader.task.DownloadTask addTask(java.lang.String,com.infinite.downloader.DownloadListener):111:130 -> addTask
+    1:1:int deleteByFinishTime(long,long,boolean):161:161 -> deleteByFinishTime
+    1:1:int deleteByStartTime(long,long,boolean):173:173 -> deleteByStartTime
+    1:5:int deleteInvalidRecord():209:213 -> deleteInvalidRecord
+    1:18:java.io.File getFile(java.lang.String):257:274 -> getFile
+    1:1:com.infinite.downloader.recorder.Recorder getRecorder():246:246 -> getRecorder
+    1:1:java.lang.String getSaveDirPath():279:279 -> getSaveDirPath
+    1:5:com.infinite.downloader.task.DownloadTask getTask(java.lang.String):143:147 -> getTask
+    1:7:boolean removeTask(java.lang.String):225:231 -> removeTask
+    1:21:void shutdown():287:307 -> shutdown
+    22:22:void shutdown():301:301 -> shutdown
 com.infinite.downloader.XDownload$1 -> com.infinite.downloader.XDownload$a:
     com.infinite.downloader.XDownload this$0 -> b
     int index -> a
@@ -345,14 +345,7 @@ com.infinite.downloader.utils.DbUtils -> com.infinite.downloader.keepsafe.j:
     31:32:void executeSQL(android.database.sqlite.SQLiteDatabase,java.lang.String):63:64 -> a
     33:37:void endTransaction(android.database.sqlite.SQLiteDatabase):69:73 -> a
     38:41:void bindMaybeNull(android.database.sqlite.SQLiteStatement,java.lang.String,int):79:82 -> a
-com.infinite.downloader.utils.FileUtils -> com.infinite.downloader.keepsafe.k:
-    java.lang.String HOLDER_DEFAULT_AD_SAVE_FILES_PATH -> a
-    java.lang.String HOLDER_DEFAULT_AD_SAVE_CACHE_PATH -> b
-    1:1:void <init>():17:17 -> <init>
-    1:7:java.io.File getExternalFiles(android.content.Context,boolean):51:57 -> a
-    8:14:java.io.File getExternalFiles(android.content.Context,boolean):55:61 -> a
-    1:16:java.lang.String getExternalFilesDir(android.content.Context,boolean):29:44 -> b
-com.infinite.downloader.writer.FileWriter -> com.infinite.downloader.keepsafe.l:
+com.infinite.downloader.writer.FileWriter -> com.infinite.downloader.keepsafe.k:
     java.nio.MappedByteBuffer mbb -> c
     java.io.RandomAccessFile raf -> b
     java.lang.String filePath -> a
@@ -361,5 +354,5 @@ com.infinite.downloader.writer.FileWriter -> com.infinite.downloader.keepsafe.l:
     1:11:void <init>(java.lang.String,long):24:34 -> <init>
     1:5:long saveFile(byte[],int):40:44 -> a
     1:5:void close():49:53 -> close
-com.infinite.downloader.writer.Writer -> com.infinite.downloader.keepsafe.m:
+com.infinite.downloader.writer.Writer -> com.infinite.downloader.keepsafe.l:
     long saveFile(byte[],int) -> a

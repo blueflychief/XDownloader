@@ -35,7 +35,7 @@ public class XDownload {
     private ThreadPoolExecutor threadPoolExecutor;
     private Config downloadConfig;
     private static Recorder recorder;//use static,SQLite must be a singleton
-    private boolean initialized;
+    private volatile boolean initialized;
     private final Map<String, DownloadTask> TASK_MAP = new HashMap<>(32);
 
     private XDownload() {
@@ -100,30 +100,34 @@ public class XDownload {
      */
     @Nullable
     public DownloadTask addTask(String url, DownloadListener listener) {
-        shrink();
         DownloadTask task = null;
-        String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
-        if (!TextUtils.isEmpty(md5)) {
-            synchronized (TASK_MAP) {
-                DownloadTask t = TASK_MAP.get(md5);
-                if (t == null || t.dead()) {
-                    task = new DownloadTask(appContext, url, recorder, downloadConfig);
-                    TASK_MAP.put(md5, task);
-                    if (listener != null) {
-                        task.addDownloadListener(listener);
+        if (initialized) {
+            shrink();
+            String md5 = CommonUtils.computeTaskMd5(url, downloadConfig.getSaveDirPath());
+            if (!TextUtils.isEmpty(md5)) {
+                synchronized (TASK_MAP) {
+                    DownloadTask t = TASK_MAP.get(md5);
+                    if (t == null || t.dead()) {
+                        task = new DownloadTask(appContext, url, recorder, downloadConfig);
+                        TASK_MAP.put(md5, task);
+                        if (listener != null) {
+                            task.addDownloadListener(listener);
+                        }
+                        threadPoolExecutor.submit(task);
+                        DLogger.d("add a new task:" + task.getUrlMd5());
+                    } else {
+                        task = t;
+                        if (listener != null) {
+                            task.addDownloadListener(listener);
+                        }
+                        DLogger.d("task:" + task.getUrlMd5() + " has exist already");
                     }
-                    threadPoolExecutor.submit(task);
-                    DLogger.d("add a new task:" + task.getUrlMd5());
-                } else {
-                    task = t;
-                    if (listener != null) {
-                        task.addDownloadListener(listener);
-                    }
-                    DLogger.d("task:" + task.getUrlMd5() + " has exist already");
                 }
+            } else {
+                DLogger.e("add task fail,md5 is " + md5);
             }
         } else {
-            DLogger.e("add task fail,md5 is " + md5);
+            DLogger.e("add task fail,xdownload not  initialized!");
         }
         return task;
     }
@@ -280,26 +284,28 @@ public class XDownload {
     }
 
     public void shutdown() {
-        synchronized (TASK_MAP) {
-            if (TASK_MAP.size() > 0) {
-                Iterator<Map.Entry<String, DownloadTask>> iterator = TASK_MAP.entrySet()
-                        .iterator();
-                DownloadTask task;
-                while (iterator.hasNext()) {
-                    task = iterator.next().getValue();
-                    task.stop();
-                    task.removeAllDownloadListener();
-                    DLogger.d("shutdown,remove task " + task.getUrl());
-                    iterator.remove();
+        if (initialized) {
+            synchronized (TASK_MAP) {
+                if (TASK_MAP.size() > 0) {
+                    Iterator<Map.Entry<String, DownloadTask>> iterator = TASK_MAP.entrySet()
+                            .iterator();
+                    DownloadTask task;
+                    while (iterator.hasNext()) {
+                        task = iterator.next().getValue();
+                        task.stop();
+                        task.removeAllDownloadListener();
+                        DLogger.d("shutdown,remove task " + task.getUrl());
+                        iterator.remove();
+                    }
                 }
             }
+            threadPoolExecutor.shutdownNow();
+            if (recorder != null) {
+                recorder.release();
+                recorder = null;
+            }
+            initialized = false;
         }
-        threadPoolExecutor.shutdownNow();
-        if (recorder != null) {
-            recorder.release();
-            recorder = null;
-        }
-        initialized = false;
     }
 
     private void shrink() {

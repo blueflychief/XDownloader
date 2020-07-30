@@ -10,6 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.infinite.downloaderapp.chain.OkHttpClient;
 import com.infinite.downloaderapp.chain.Response;
 import com.infinite.downloaderapp.http.KLog;
+import com.infinite.downloaderapp.json.CityEntity;
+import com.infinite.downloaderapp.json.ProvinceEntity;
+
+import java.util.ArrayList;
 
 /**
  * Email: 690797861@qq.com
@@ -66,7 +70,29 @@ public class HttpActivity extends AppCompatActivity {
         btPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ProvinceEntity provinceEntity = new ProvinceEntity();
+                final CityEntity cityEntity1 = new CityEntity();
+                cityEntity1.setCityName("beijing");
+                cityEntity1.setCityCode("010");
+                cityEntity1.setCityId(1);
 
+                final CityEntity cityEntity2 = new CityEntity();
+                cityEntity2.setCityName("shanghai");
+                cityEntity2.setCityId(2);
+                provinceEntity.setCityList(new ArrayList<CityEntity>() {
+                    {
+                        add(cityEntity1);
+                        add(new CityEntity());
+                        add(new CityEntity());
+                        add(cityEntity2);
+                    }
+                });
+                String province = provinceEntity.toJson();
+                KLog.d("province to json:" + province);
+
+                ProvinceEntity provinceEntity1 = ProvinceEntity.toObject(province);
+
+                KLog.d("json to province:" + provinceEntity1);
             }
         });
     }
