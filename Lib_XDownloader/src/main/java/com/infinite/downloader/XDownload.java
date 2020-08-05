@@ -57,10 +57,9 @@ public class XDownload {
             if (recorder == null) {
                 recorder = new SqliteRecorder(appContext);
             }
-            int cpuCount = Runtime.getRuntime().availableProcessors();
             threadPoolExecutor = new ThreadPoolExecutor(
-                    cpuCount + 3,
-                    cpuCount << 5,
+                    16,
+                    128,
                     60, TimeUnit.SECONDS,
                     new LinkedBlockingQueue<Runnable>(),
                     new ThreadFactory() {

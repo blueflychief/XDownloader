@@ -256,6 +256,7 @@ public class DownloadTask extends ComparableTask {
                         + "，average speed:" + CommonUtils.computeSpeed(currentSize - startSize,
                         nowTime - startTimestamp) + "KB/s");
             }
+            fileInfo.setFileSize(currentSize);
             fileInfo.setFinishTime(System.currentTimeMillis());
             recorder.put(requestUrlMd5, fileInfo);
             onTaskFinish(true);

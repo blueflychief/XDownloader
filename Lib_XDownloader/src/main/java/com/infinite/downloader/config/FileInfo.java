@@ -16,6 +16,7 @@ import java.io.Serializable;
  * Description: Class description
  */
 public class FileInfo implements Serializable {
+    public static final long CHUNKED_LENGTH = -1;
     private long id;
     private String requestUrl;
     private String downloadUrl;
@@ -131,7 +132,12 @@ public class FileInfo implements Serializable {
     }
 
     public boolean canDownload() {
-        return fileSize > 0;
+        //If url just support chunked transfer,set contentLength=-1,otherwise contentLength=0 and not support download!
+        return fileSize > 0 || isChunked();
+    }
+
+    public boolean isChunked() {
+        return CHUNKED_LENGTH == fileSize;
     }
 
     public String getFileSavePath() {

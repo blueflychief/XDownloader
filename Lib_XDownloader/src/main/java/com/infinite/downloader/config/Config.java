@@ -19,8 +19,8 @@ import java.util.Map;
  */
 public class Config {
     private static final long ONE_M = 1_048_576L;
-    private static final int CONNECT_TIMEOUT = 15_000;
-    private static final int READ_TIMEOUT = 15_000;
+    private static final int CONNECT_TIMEOUT = 30_000;
+    private static final int READ_TIMEOUT = 30_000;
     private static final String DEFAULT_DOWNLOAD_DIR = "xdownload";
     private String saveDirPath;
     private int connectTimeout = CONNECT_TIMEOUT;

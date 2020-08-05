@@ -31,6 +31,8 @@ import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
  * Author: Infinite
  * Date: 10/9/2019 - 22:23
  * Description: class description
+ * File support range refer link
+ * https://www.cnblogs.com/nxlhero/archive/2019/10/14/11670942.html
  */
 public class HttpStreamReader implements StreamReader {
 
@@ -104,9 +106,18 @@ public class HttpStreamReader implements StreamReader {
                         boolean supportRange =
                                 (responseCode == HttpURLConnection.HTTP_PARTIAL)
                                         && !TextUtils.isEmpty(contentRange);
+                        boolean isChunked = false;
+                        if (contentLength == FileInfo.CHUNKED_LENGTH) {
+                            supportRange = false;
+                            //If url just support chunked transfer,set contentLength=-1,otherwise contentLength=0 and not support download!
+                            isChunked = isChunkedTransfer(connection);
+                            contentLength = isChunked ? FileInfo.CHUNKED_LENGTH : 0;
+                        }
                         DLogger.d("contentRange is " + contentRange
-                                + ",connection length:" + contentLength
-                                + ",supportRange:" + supportRange + ",download url:" + url);
+                                + ",supportRange:" + supportRange
+                                + ",connectionLength:" + contentLength
+                                + ",isChunked:" + isChunked
+                                + ",download url:" + url);
                         fileInfo.setFileName(CommonUtils.parseFileName(fileInfo.getRequestUrl()));
                         fileInfo.setFileSize(supportRange && contentLength > 0 ? (contentLength + offset) : contentLength);
                         fileInfo.setContentType(connection.getContentType());
@@ -226,6 +237,10 @@ public class HttpStreamReader implements StreamReader {
         if (conn != null) {
             conn.disconnect();
         }
+    }
+
+    private boolean isChunkedTransfer(HttpURLConnection connection) {
+        return "chunked".equals(connection.getHeaderField("Transfer-Encoding"));
     }
 }
 
