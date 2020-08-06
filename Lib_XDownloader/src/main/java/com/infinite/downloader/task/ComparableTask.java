@@ -28,9 +28,7 @@ public abstract class ComparableTask implements Runnable, Comparable<ComparableT
     }
 
     protected boolean isStopped() {
-        boolean isStopped = stopped || Thread.currentThread().isInterrupted();
-//        DLogger.d("task is shutdown?" + isStopped + ",thread name:" + Thread.currentThread().getName());
-        return isStopped;
+        return stopped || Thread.currentThread().isInterrupted();
     }
 
     public boolean dead() {

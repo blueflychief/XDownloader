@@ -17,12 +17,18 @@ import java.util.concurrent.Executors;
  */
 public abstract class LruDiskUsage implements DiskUsage {
     private static int MIN_NOT_ALLOWED_DELETE_COUNT = 4;
+    private static final long TOUCH_GAP = 2000L;
+    private volatile long lastTouchTime;
 
     private final ExecutorService workerThread = Executors.newSingleThreadExecutor();
 
     @Override
     public void touch(File file) throws IOException {
-        workerThread.submit(new TouchCallable(file));
+        long nowTime = System.currentTimeMillis();
+        if ((nowTime - lastTouchTime) > TOUCH_GAP) {
+            workerThread.submit(new TouchCallable(file));
+            lastTouchTime = nowTime;
+        }
     }
 
     private void touchInBackground(File file) throws IOException {

@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 1.5.68
-# pg_map_id: 711f9e1
+# pg_map_id: 1d92092
 com.infinite.downloader.BuildConfig -> com.infinite.downloader.keepsafe.a:
     java.lang.String VERSION_NAME -> g
     int VERSION_CODE -> f
@@ -132,28 +132,30 @@ com.infinite.downloader.lru.Files$LastModifiedComparator -> com.infinite.downloa
     1:1:int compare(java.io.File,java.io.File):86:86 -> a
     1:1:int compare(java.lang.Object,java.lang.Object):82:82 -> compare
 com.infinite.downloader.lru.LruDiskUsage -> com.infinite.downloader.lru.LruDiskUsage:
-    int MIN_NOT_ALLOWED_DELETE_COUNT -> b
-    java.util.concurrent.ExecutorService workerThread -> a
-    1:4:void <init>():18:21 -> <init>
+    long lastTouchTime -> a
+    long TOUCH_GAP -> d
+    java.util.concurrent.ExecutorService workerThread -> b
+    int MIN_NOT_ALLOWED_DELETE_COUNT -> c
+    1:6:void <init>():18:23 -> <init>
     boolean accept(java.io.File,long,int) -> a
     1:1:void access$000(com.infinite.downloader.lru.LruDiskUsage,java.io.File):18:18 -> a
-    2:2:void touch(java.io.File):25:25 -> a
-    3:4:long countTotalSize(java.util.List):69:70 -> a
-    1:9:void touchInBackground(java.io.File):29:37 -> b
-    10:26:void trim(java.util.List):45:61 -> b
+    2:5:void touch(java.io.File):27:30 -> a
+    6:7:long countTotalSize(java.util.List):75:76 -> a
+    1:9:void touchInBackground(java.io.File):35:43 -> b
+    10:26:void trim(java.util.List):51:67 -> b
 com.infinite.downloader.lru.LruDiskUsage$TouchCallable -> com.infinite.downloader.lru.LruDiskUsage$a:
     java.io.File file -> a
     com.infinite.downloader.lru.LruDiskUsage this$0 -> b
-    1:2:void <init>(com.infinite.downloader.lru.LruDiskUsage,java.io.File):79:80 -> <init>
-    1:1:java.lang.Object call():75:75 -> call
-    2:4:java.lang.Void call():86:88 -> call
+    1:2:void <init>(com.infinite.downloader.lru.LruDiskUsage,java.io.File):85:86 -> <init>
+    1:1:java.lang.Object call():81:81 -> call
+    2:4:java.lang.Void call():92:94 -> call
 com.infinite.downloader.lru.TotalCountLruDiskUsage -> com.infinite.downloader.lru.TotalCountLruDiskUsage:
-    int maxCount -> c
+    int maxCount -> e
     1:5:void <init>(int):15:19 -> <init>
     6:6:void <init>(int):17:17 -> <init>
     1:1:boolean accept(java.io.File,long,int):24:24 -> a
 com.infinite.downloader.lru.TotalSizeLruDiskUsage -> com.infinite.downloader.lru.TotalSizeLruDiskUsage:
-    long maxSize -> c
+    long maxSize -> e
     1:5:void <init>(long):15:19 -> <init>
     6:6:void <init>(long):17:17 -> <init>
     1:1:boolean accept(java.io.File,long,int):24:24 -> a
@@ -272,8 +274,8 @@ com.infinite.downloader.task.ComparableTask -> com.infinite.downloader.keepsafe.
     5:12:void <init>(int):12:19 -> <init>
     1:1:boolean isStopped():31:31 -> a
     1:1:int compareTo(java.lang.Object):11:11 -> compareTo
-    2:2:int compareTo(com.infinite.downloader.task.ComparableTask):45:45 -> compareTo
-    1:1:boolean dead():37:37 -> dead
+    2:2:int compareTo(com.infinite.downloader.task.ComparableTask):43:43 -> compareTo
+    1:1:boolean dead():35:35 -> dead
     1:1:void setPriority(int):23:23 -> setPriority
     1:1:void stop():27:27 -> stop
 com.infinite.downloader.task.DownloadTask -> com.infinite.downloader.task.DownloadTask:
@@ -290,19 +292,20 @@ com.infinite.downloader.task.DownloadTask -> com.infinite.downloader.task.Downlo
     com.infinite.downloader.recorder.Recorder recorder -> d
     1:1:void <init>(android.content.Context,java.lang.String):46:46 -> <init>
     2:9:void <init>(android.content.Context,java.lang.String,com.infinite.downloader.recorder.Recorder,com.infinite.downloader.config.Config):50:57 -> <init>
-    1:16:void onTaskFinish(boolean):275:290 -> a
-    17:22:void onTaskError(java.lang.String):296:301 -> a
-    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):330:338 -> a
+    1:16:void onTaskFinish(boolean):282:297 -> a
+    17:22:void onTaskError(java.lang.String):303:308 -> a
+    23:31:void updateStatus(int,com.infinite.downloader.config.FileInfo):337:345 -> a
     1:2:void addDownloadListener(com.infinite.downloader.DownloadListener):168:169 -> addDownloadListener
     1:14:void close():190:203 -> b
     1:36:void download():208:243 -> c
-    37:66:void download():241:270 -> c
-    67:69:void download():254:256 -> c
-    70:85:void download():255:270 -> c
-    86:88:void download():269:271 -> c
-    1:9:void onTaskTerminal():305:313 -> d
-    1:3:void reset():345:347 -> e
-    1:9:void resetDownloadInfo():317:325 -> f
+    37:73:void download():241:277 -> c
+    74:76:void download():254:256 -> c
+    77:99:void download():255:277 -> c
+    100:106:void download():271:277 -> c
+    107:109:void download():276:278 -> c
+    1:9:void onTaskTerminal():312:320 -> d
+    1:3:void reset():352:354 -> e
+    1:9:void resetDownloadInfo():324:332 -> f
     1:1:java.lang.String getUrl():164:164 -> getUrl
     1:1:java.lang.String getUrlMd5():160:160 -> getUrlMd5
     1:3:void removeAllDownloadListener():178:180 -> removeAllDownloadListener

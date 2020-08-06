@@ -256,10 +256,17 @@ public class DownloadTask extends ComparableTask {
                         + "，average speed:" + CommonUtils.computeSpeed(currentSize - startSize,
                         nowTime - startTimestamp) + "KB/s");
             }
-            fileInfo.setFileSize(currentSize);
+            if (fileInfo.isChunked()) {
+                DLogger.d("chunked file download finish");
+                fileInfo.setFileSize(currentSize);
+            }
             fileInfo.setFinishTime(System.currentTimeMillis());
             recorder.put(requestUrlMd5, fileInfo);
-            onTaskFinish(true);
+            if (currentSize < 1) {
+                onTaskError("current size is " + currentSize + ",not a available file");
+            } else {
+                onTaskFinish(true);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             fileInfo.setMessage(e.getMessage());
