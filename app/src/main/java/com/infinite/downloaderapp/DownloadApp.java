@@ -28,6 +28,7 @@ public class DownloadApp extends Application {
             saveDir.mkdir();
         }
         config.setSaveDirPath(saveDir.getAbsolutePath());
+        config.setCheckRemote(true);
         config.setDiskUsage(new TotalSizeLruDiskUsage(400 * 1024 * 1024));
 //        config.addHeader("xtoken", "121313");
 //        config.addHeader("newd", "new231");

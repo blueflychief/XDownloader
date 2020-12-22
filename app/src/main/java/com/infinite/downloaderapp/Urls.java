@@ -8,6 +8,7 @@ package com.infinite.downloaderapp;
  */
 public class Urls {
 
+    public static final String FILE_DYNAMIC_GENERATE = "https://img-x.jd.com/resize.jpg?w=720&h=1280&1=jfs/t1/154800/17/8450/60818/5fc9038dEa74e04df/2ae6c0f9271fe024.jpg";
 
     //需要Accept-Encoding
     private static final String FILE_IMAGE = "https://img.10155.com/img/dsp/20200224/8253021582510651-0-204-720x1280.jpg";
@@ -16,7 +17,7 @@ public class Urls {
     private static final String FILE_18M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/25/7/110_a8ae85326043fa36a663b6b414d7945e.apk";
     private static final String FILE_53M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/24/8/110_d3e19c0b2fefab343cb4eccfd5f9db46.apk";
     private static final String FILE_80M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/12/19/10/110_e7ecd7e82f4de9d61daa4e5cdb3f89a5.apk";
-    private static final String FILE_128M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/26/6/106_d12f9e86d342cfb7a8f1e0551de38a24.apk";
+    public static final String FILE_128M = "https://alissl.ucdl.pp.uc.cn/fs08/2019/09/26/6/106_d12f9e86d342cfb7a8f1e0551de38a24.apk";
     private static final String FILE_1600M = "https://c33f0aa1ecb7e77e853ed245e88d4539.dd.cdntips.com/imtt.dd.qq.com/16891/apk/8E7CE9BCC242F472D0F4B88860851876.apk";
     private static final String FILE_1800M = "https://alissl.ucdl.pp.uc.cn/fs08/2020/03/31/7/109_487710ce9f006adca04fa3ef34a86ffe.apk";
 
@@ -34,6 +35,7 @@ public class Urls {
     };
 
     public static final String[] IMAGES = {
+            FILE_DYNAMIC_GENERATE,
             "http://a.hiphotos.baidu.com/zhidao/pic/item/ae51f3deb48f8c54048ef19d38292df5e0fe7f26.jpg",
 
             FILE_10M,

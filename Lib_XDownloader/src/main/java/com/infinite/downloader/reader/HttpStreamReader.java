@@ -90,7 +90,7 @@ public class HttpStreamReader implements StreamReader {
                     connection.setRequestMethod(method);
                     String range = "bytes=" + offset + "-";
                     connection.setRequestProperty("Range", range);
-                    connection.setRequestProperty("Content-Type", "");
+//                    connection.setRequestProperty("Content-Type", "");//这个Content-Type不能设置，有些服务器动态生成图片可能获取到的图片不正确！！！
                     connection.setRequestProperty("Accept-Encoding", "identity");
                     addHeaders(connection);
                     int responseCode = connection.getResponseCode();
