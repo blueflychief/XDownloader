@@ -76,7 +76,7 @@ public class DownloadActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         super.run();
-                        for (String image : Urls.IMAGES) {
+                        for (String image : Urls.JD_DY) {
                             DownloadApp.getDownload().addTask(image, allDownloadListener);
 //                            try {
 //                                Thread.sleep(200);
@@ -92,7 +92,7 @@ public class DownloadActivity extends AppCompatActivity {
         findViewById(R.id.btAllEnd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (String image : Urls.IMAGES) {
+                for (String image : Urls.JD_DY) {
                     DownloadApp.getDownload().removeTask(image);
                 }
             }
